@@ -1,4 +1,4 @@
-export const baseUrl = "http://localhost:3000";
+export const baseUrl = "https://backend-1-hzgq.onrender.com/";
 
 //admin
 export const login_api = "/api/login";
