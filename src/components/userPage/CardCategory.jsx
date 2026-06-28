@@ -15,8 +15,7 @@ export default function CardCategory() {
   const fetch = () => {
     allCategory(data).then((res) => {
       console.log(res.data.data);
-      const reversedData = res.data.data ? [...res.data.data].reverse() : [];
-      setdata(reversedData);
+      setdata(res.data.data || []);
     })
       .catch((err) => {
         console.error(err);
