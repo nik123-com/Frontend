@@ -15,10 +15,12 @@ export default function CardCategory() {
   const fetch = () => {
     allCategory(data).then((res) => {
       console.log(res.data.data);
-      setdata(res.data.data || []);
+      setdata(res.data.data);
     })
       .catch((err) => {
-        console.error(err);
+        status: 200
+        success: false
+        message: err
       });
   };
   const fetchproductsbycat = async (id) => {
@@ -50,41 +52,38 @@ export default function CardCategory() {
       </div>
       <div className="container-fluid fruite py-5">
         <div className="container py-5">
-          <h1 className="mb-4 text-center fw-bold">Categories</h1>
+          <h1 className="mb-4">Categories</h1>
           <div className="row g-4">
             <div className="col-lg-12">
               <div className="row g-4">
-                <div className="col-lg-12">
+                <div className="col-lg-10">
                   <div className="row g-4 d-flex justify-content-center">
                     {data?.map((el, index) => (
-                      <div className="col-md-6 col-lg-4 col-xl-3" key={el._id || index}>
-                        <div className="rounded position-relative fruite-item shadow-sm border h-100 d-flex flex-column transition-all hover-shadow">
-                          <div className="fruite-img" style={{ height: "240px", overflow: "hidden" }}>
+                      <div className="col-md-6 col-lg-6 col-xl-4">
+                        <div className="rounded position-relative fruite-item">
+                          <div className="fruite-img" style={
+                            {
+                              height: "300px"
+                            }
+                          }>
                             <img
                               src={el?.image}
-                              className="img-fluid w-100 h-100 rounded-top"
-                              style={{ objectFit: "cover" }}
-                              alt="Image"
-                            />
+                              className="img-fluid w-100 rounded-top"
+                              height={300} alt="Image" />
                           </div>
                           <div
-                            className="text-white bg-primary px-3 py-1 rounded position-absolute text-capitalize font-weight-bold"
-                            style={{ top: 10, left: 10, fontSize: "0.85rem", letterSpacing: "0.5px" }}
+                            className="text-white bg-secondary px-3 py-1 rounded position-absolute"
+                            style={{ top: 10, left: 10 }}
                           >
                             {el?.name}
                           </div>
-                          <div className="p-4 d-flex flex-column align-items-center text-center flex-grow-1">
-                            <h5 className="fw-bold mb-2 text-dark">{el?.name}</h5>
-                            <p className="text-muted small mb-3 flex-grow-1" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                            <h4>{el?.name}</h4>
+                            <p>
                               {el.description}
                             </p>
-                            <button
-                              onClick={() => navigate(`/products/${el._id}`)}
-                              type="button"
-                              className="btn btn-success text-white px-4 rounded-pill shadow-sm"
-                            >
-                              View Products
-                            </button>
+                            <button onClick={() => navigate(`/products/${el._id}`)} type="button" className="btn btn-success"><center>View</center></button>
+
                           </div>
                         </div>
                       </div>
