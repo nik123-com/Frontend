@@ -108,20 +108,21 @@ export default function ManageCategory() {
         </div>
       )
       }
-      <br />
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">
           <div className="p-5 rounded bg-light">
             <div className="row g-4">
               <div className="col-12">
-                <div className="text-center mx-auto" style={{ maxWidth: "700px" }}>
+                <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
                   <h1 className="fw-bold" style={{ color: "#81c408" }}>
                     Manage Category
                   </h1>
-                  <table class="table border">
-                    <thead>
+                </div>
+                <div className="table-responsive shadow-sm rounded border bg-white mt-4">
+                  <table className="table table-hover align-middle mb-0">
+                    <thead className="table-light text-secondary">
                       <tr>
-                        <th scope="col">Sr No</th>
+                        <th scope="col" className="ps-4">Sr No</th>
                         <th scope="col">Name</th>
                         <th scope="col">Description</th>
                         <th scope="col">Image</th>
@@ -132,21 +133,59 @@ export default function ManageCategory() {
                     </thead>
                     <tbody>
                       {currentdata.map((element, index) => (
-                        <tr>
-                          <td>{index + 1}</td>
-                          <td>{element.name}</td>
-                          <td>{element.description}</td>
-                          <td><img src={element.image} width={50} height={50} alt="Image" /></td>
-                          <td><Switch onChange={() => { SoftDelete(element._id) }} checked={element.status} /></td>
-                          <td><button onClick={() => { deleteCategory(element._id); }} style={{ border: "none", cursor: "pointer" }}><i class="fa-solid fa-trash-can fa-2x"></i></button></td>
-                          <td><button onClick={() => navigate(`/admin/updateCategory/${element._id}`)} style={{ border: "none", cursor: "pointer" }}><i class="fa-solid fa-pen fa-2x"></i></button></td>
+                        <tr key={element._id}>
+                          <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
+                          <td className="fw-bold text-dark">{element.name}</td>
+                          <td className="text-muted">{element.description}</td>
+                          <td>
+                            <img
+                              src={element.image}
+                              width={50}
+                              height={50}
+                              alt="Image"
+                              className="rounded border"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </td>
+                          <td>
+                            <Switch
+                              onChange={() => { SoftDelete(element._id) }}
+                              checked={element.status}
+                              onColor="#81c408"
+                              height={20}
+                              width={40}
+                              handleDiameter={16}
+                              checkedIcon={false}
+                              uncheckedIcon={false}
+                            />
+                          </td>
+                          <td>
+                            <button
+                              onClick={() => { deleteCategory(element._id); }}
+                              className="btn btn-link text-danger p-0"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <i className="fa-solid fa-trash-can fa-xl"></i>
+                            </button>
+                          </td>
+                          <td>
+                            <button
+                              onClick={() => navigate(`/admin/updateCategory/${element._id}`)}
+                              className="btn btn-link text-primary p-0"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <i className="fa-solid fa-pen fa-xl"></i>
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  {/* React Paging  */}
+                </div>
+                {/* React Paging  */}
+                <div className="d-flex justify-content-center mt-4">
                   <ResponsivePagination
-                    className="d-flex"
+                    className="pagination mb-0"
                     onPageChange={setcurrentpage}
                     total={totalpages}
                     current={currentpage}

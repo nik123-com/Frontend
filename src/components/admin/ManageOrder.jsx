@@ -103,42 +103,44 @@ export default function ManageOrder() {
                     <div className="card-header bg-white py-3">
                       <h5 className="m-0 fw-bold">Items Ordered</h5>
                     </div>
-                    <div className="card-body">
-                      <table className="table align-middle">
-                        <thead className="table-light">
-                          <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th className="text-end">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedOrder.products?.map((item, index) => (
-                            <tr key={index}>
-                              <td>
-                                <div className="d-flex align-items-center gap-3">
-                                  <img
-                                    src={item.productId?.image?.[0] || item.productId?.image || item.image}
-                                    alt=""
-                                    style={{ width: 50, height: 50, borderRadius: 8, objectFit: "cover" }}
-                                  />
-                                  <span className="fw-medium">{item.productId?.name || item.name}</span>
-                                </div>
-                              </td>
-                              <td>₹{Number(item.productId?.price) || 0}</td>
-                              <td>{item.quantity}</td>
-                              <td className="text-end fw-bold">₹{(Number(item.productId?.price) || 0) * item.quantity}</td>
+                    <div className="card-body p-0">
+                      <div className="table-responsive">
+                        <table className="table align-middle mb-0">
+                          <thead className="table-light">
+                            <tr>
+                              <th className="ps-4">Product</th>
+                              <th>Price</th>
+                              <th>Quantity</th>
+                              <th className="text-end pe-4">Total</th>
                             </tr>
-                          ))}
-                        </tbody>
-                        <tfoot className="table-light">
-                          <tr>
-                            <td colSpan="3" className="text-end fw-bold">Grand Total:</td>
-                            <td className="text-end fw-bold text-primary">₹{selectedOrder.grandTotal}</td>
-                          </tr>
-                        </tfoot>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {selectedOrder.products?.map((item, index) => (
+                              <tr key={index}>
+                                <td className="ps-4">
+                                  <div className="d-flex align-items-center gap-3">
+                                    <img
+                                      src={item.productId?.image?.[0] || item.productId?.image || item.image}
+                                      alt=""
+                                      style={{ width: 50, height: 50, borderRadius: 8, objectFit: "cover" }}
+                                    />
+                                    <span className="fw-medium">{item.productId?.name || item.name}</span>
+                                  </div>
+                                </td>
+                                <td>₹{Number(item.productId?.price) || 0}</td>
+                                <td>{item.quantity}</td>
+                                <td className="text-end fw-bold pe-4">₹{(Number(item.productId?.price) || 0) * item.quantity}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          <tfoot className="table-light">
+                            <tr>
+                              <td colSpan="3" className="text-end fw-bold">Grand Total:</td>
+                              <td className="text-end fw-bold text-primary pe-4">₹{selectedOrder.grandTotal}</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -194,25 +196,26 @@ export default function ManageOrder() {
 
   return (
     <>
-      <br />
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">
           <div className="p-5 rounded bg-light">
             <div className="row g-4">
               <div className="col-12">
-                <div className="text-center mx-auto" style={{ maxWidth: "700px" }}>
+                <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
                   <h1 className="fw-bold" style={{ color: "#81c408" }}>
                     Manage Orders
                   </h1>
-                  {loading ? (
-                    <div className="d-flex justify-content-center py-5">
-                      <HashLoader color="#81c408" />
-                    </div>
-                  ) : (
-                    <table className="table border">
-                      <thead>
+                </div>
+                {loading ? (
+                  <div className="d-flex justify-content-center py-5">
+                    <HashLoader color="#81c408" />
+                  </div>
+                ) : (
+                  <div className="table-responsive shadow-sm rounded border bg-white mt-4">
+                    <table className="table table-hover align-middle mb-0">
+                      <thead className="table-light text-secondary">
                         <tr>
-                          <th scope="col">#</th>
+                          <th scope="col" className="ps-4">#</th>
                           <th scope="col">Customer</th>
                           <th scope="col">Items</th>
                           <th scope="col">Total</th>
@@ -226,10 +229,13 @@ export default function ManageOrder() {
                         {orders?.length > 0 ? (
                           orders.map((order, index) => (
                             <tr key={order._id}>
-                              <td>{index + 1}</td>
-                              <td>{order.customerId?.name || "N/A"}</td>
+                              <td className="ps-4 fw-semibold text-muted">{index + 1}</td>
+                              <td>
+                                <div className="fw-bold text-dark">{order.customerId?.name || "N/A"}</div>
+                                <div className="text-muted small">{order.customerId?.email || ""}</div>
+                              </td>
                               <td>{order.products?.length || 0}</td>
-                              <td className="fw-bold">₹{order.grandTotal}</td>
+                              <td className="fw-bold">₹{(order.grandTotal || 0).toLocaleString("en-IN")}</td>
                               <td>
                                 <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
                                   {order.paymentStatus}
@@ -270,8 +276,8 @@ export default function ManageOrder() {
                         )}
                       </tbody>
                     </table>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

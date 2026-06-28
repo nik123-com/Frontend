@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+
 function AdminHeader() {
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
+  const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
+
   return (
     <>
       {/* Navbar start */}
@@ -41,14 +46,13 @@ function AdminHeader() {
             <button
               className="navbar-toggler py-2 px-3"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarCollapse"
+              onClick={handleNavCollapse}
             >
-              <span className="fa fa-bars text-primary" />
+              <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
-            <div className="collapse navbar-collapse bg-white" id="navbarCollapse">
+            <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
               <div className="navbar-nav mx-auto">
-                <Link to="/admin" className="nav-item nav-link active">
+                <Link to="/admin" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
                   Dashboard
                 </Link>
                 <div className="nav-item dropdown">
@@ -60,10 +64,10 @@ function AdminHeader() {
                     Category
                   </a>
                   <div className="dropdown-menu m-0 bg-secondary rounded-0">
-                    <Link to="/admin/addcategory" className="dropdown-item">
+                    <Link to="/admin/addcategory" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Add
                     </Link>
-                    <Link to="/admin/ManageCategory" className="dropdown-item">
+                    <Link to="/admin/ManageCategory" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Manage
                     </Link>
 
@@ -79,10 +83,10 @@ function AdminHeader() {
                     Product
                   </a>
                   <div className="dropdown-menu m-0 bg-secondary rounded-0">
-                    <Link to="/admin/addProduct" className="dropdown-item">
+                    <Link to="/admin/addProduct" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Add
                     </Link>
-                    <Link to="/admin/productmanage" className="dropdown-item">
+                    <Link to="/admin/productmanage" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Manage
                     </Link>
                   </div>
@@ -96,15 +100,15 @@ function AdminHeader() {
                     Brand
                   </a>
                   <div className="dropdown-menu m-0 bg-secondary rounded-0">
-                    <Link to="/admin/addbrand" className="dropdown-item">
+                    <Link to="/admin/addbrand" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Add
                     </Link>
-                    <Link to="/admin/managebrand" className="dropdown-item">
+                    <Link to="/admin/managebrand" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Manage
                     </Link>
                   </div>
                 </div>
-                <Link to="/admin/customermanage" className="nav-item nav-link active">
+                <Link to="/admin/customermanage" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
                   Customer Manage
                 </Link>
                 <div className="nav-item dropdown">
@@ -116,15 +120,15 @@ function AdminHeader() {
                     Coupon
                   </a>
                   <div className="dropdown-menu m-0 bg-secondary rounded-0">
-                    <Link to="/admin/addCoupon" className="dropdown-item">
+                    <Link to="/admin/addCoupon" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Add Coupon
                     </Link>
-                    <Link to="/admin/manageCoupon" className="dropdown-item">
+                    <Link to="/admin/manageCoupon" className="dropdown-item" onClick={() => setIsNavCollapsed(true)}>
                       Manage Coupon
                     </Link>
                   </div>
                 </div>
-                <Link to="/admin/manageorder" className="nav-item nav-link active">
+                <Link to="/admin/manageorder" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
                   Orders
                 </Link>
               </div>
@@ -134,7 +138,7 @@ function AdminHeader() {
                 {/* User Profile Icon 
                 <a href="#" className="my-auto">
                   <i className="fas fa-user fa-2x"></i> </a> */}
-                <Link className="btn btn-primary text-light m-1 " to="/Login">
+                <Link className="btn btn-primary text-light m-1 " to="/Login" onClick={() => setIsNavCollapsed(true)}>
                   Logout
                 </Link>
               </div>

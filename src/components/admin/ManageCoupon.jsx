@@ -109,46 +109,46 @@ export default function ManageCoupon() {
         </div>
       )
     }
-    <br />
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">
           <div className="p-5 rounded bg-light">
             <div className="row g-4">
               <div className="col-12">
-                <div className="text-center mx-auto" style={{ maxWidth: "700px" }}>
+                <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
                   <h1 className="fw-bold" style={{ color: "#81c408" }}>
                     Manage Coupon
                   </h1>
-                  <table class="table border">
-                    <thead>
+                </div>
+                <div className="table-responsive shadow-sm rounded border bg-white mt-4">
+                  <table className="table table-hover align-middle mb-0">
+                    <thead className="table-light text-secondary">
                       <tr>
-                        <th scope="col">Sr No</th>
-                        <th scope="col">code</th>
+                        <th scope="col" className="ps-4">Sr No</th>
+                        <th scope="col">Code</th>
                         <th scope="col">Discount</th>
                         <th scope="col">Discount Type</th>
-                        <th scope="col">Minimium Amount Spend</th>
+                        <th scope="col">Minimum Spend</th>
                         <th scope="col">Expiry Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentdata.map((element, index) => (
-                        <tr>
-                          <td>{index + 1}</td>
-                          <td>{element.code}</td>
-                          <td>{element.discount}</td>
-                          <td>{element.discountType}</td>
-                          <td>{element.minAmoutSpend}</td>
-                          <td>{element.expiryDate}</td>
-                          {/* <td><Switch onChange={() => { SoftDelete(element._id) }} checked={element._id, element.status} /></td> */}
-                          {/* <td><button onClick={() => { deleteCategory(element._id); }} style={{ border: "none", cursor: "pointer" }}><i class="fa-solid fa-trash-can fa-2x"></i></button></td> */}
-                          {/* <td><button onClick={() => navigate(`/admin/updateCategory/${element._id}`)} style={{ border: "none", cursor: "pointer" }}><i class="fa-solid fa-pen fa-2x"></i></button></td> */}
+                        <tr key={element._id}>
+                          <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
+                          <td className="fw-bold text-dark">{element.code}</td>
+                          <td className="fw-bold text-success">{element.discount}</td>
+                          <td className="text-capitalize">{element.discountType}</td>
+                          <td>₹{(element.minAmoutSpend || 0).toLocaleString("en-IN")}</td>
+                          <td className="text-muted">{element.expiryDate ? new Date(element.expiryDate).toLocaleDateString() : "N/A"}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  {/* React Paging  */}
-                <ResponsivePagination
-                   className="d-flex"
+                </div>
+                {/* React Paging  */}
+                <div className="d-flex justify-content-center mt-4">
+                  <ResponsivePagination
+                    className="pagination mb-0"
                     onPageChange={setcurrentpage}
                     total={totalpages}
                     current={currentpage}

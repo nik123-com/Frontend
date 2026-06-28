@@ -82,30 +82,30 @@ function UserHeader() {
               type="button"
               onClick={handleNavCollapse}
             >
-              <span className="fa fa-bars text-primary" />
+              <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
             <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
               <div className="navbar-nav mx-auto">
-                <Link to="/" className="nav-item nav-link active">
+                <Link to="/" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
                   Home
                 </Link>
-                <Link to="/CardCategory" className="nav-item nav-link">
+                <Link to="/CardCategory" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   Category
                 </Link>
-                <Link to="/cardProduct" className="nav-item nav-link">
+                <Link to="/cardProduct" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   Product
                 </Link>
-                <Link to="/cardBrand" className="nav-item nav-link">
+                <Link to="/cardBrand" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   Brand
                 </Link>
 
-                <Link to="/Contact" className="nav-item nav-link">
+                <Link to="/Contact" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   Contact
                 </Link>
-                <Link to="/viewWishlist" className="nav-item nav-link">
+                <Link to="/viewWishlist" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   View WishList
                 </Link>
-                <Link to="/myorders" className="nav-item nav-link">
+                <Link to="/myorders" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   My Orders
                 </Link>
 
@@ -115,10 +115,11 @@ function UserHeader() {
                   className="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
                   data-bs-toggle="modal"
                   data-bs-target="#searchModal"
+                  onClick={() => setIsNavCollapsed(true)}
                 >
                   <i className="fas fa-search text-primary" />
                 </button>
-                <Link to="/cart" className="position-relative me-4 my-auto">
+                <Link to="/cart" className="position-relative me-4 my-auto" onClick={() => setIsNavCollapsed(true)}>
                   <i className="fa fa-shopping-bag fa-2x" />
                   {isLogin && (
                     <span
@@ -145,7 +146,7 @@ function UserHeader() {
                     Logout
                   </button>
                 ) : (
-                  <Link className="btn btn-primary text-light m-1" to="/Login">
+                  <Link className="btn btn-primary text-light m-1" to="/Login" onClick={() => setIsNavCollapsed(true)}>
                     Login
                   </Link>
                 )}
