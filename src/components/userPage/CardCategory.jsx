@@ -83,7 +83,7 @@ export default function CardCategory() {
                               {el.description}
                             </p>
                             <button onClick={() => navigate(`/products/${el._id}`)} type="button" className="btn btn-success"><center>View</center></button>
-
+ 
                           </div>
                         </div>
                       </div>
