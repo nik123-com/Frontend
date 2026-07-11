@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
+import { baseUrl } from '../endpoints';
 
 export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
@@ -29,7 +30,7 @@ export default function ResetPassword() {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/resetPassword/${token}`, {
+      const response = await fetch(`${baseUrl}/api/resetPassword/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
