@@ -35,6 +35,8 @@ import MyChatBot from "./components/layout/Chat"
 import ChangePassword from "./components/userPage/ChangePassword"
 import ViewWishList from "./components/userPage/ViewWishList"
 import VoiceSearch from "./components/layout/VoiceSearch"
+import ForgotPassword from "./components/auth/ForgotPassword"
+import ResetPassword from "./components/auth/ResetPassword"
 
 function App() {
   return (
@@ -68,6 +70,8 @@ function App() {
             {/* Signup  */}
             <Route path="/customerReg" element={<CustomerReg />}></Route>
             <Route path="/changepass" element={<ChangePassword />}></Route>
+            <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+            <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
           </Route>
           {/* Items  */}
           <Route path="/admin" element={<AdminMaster />}>

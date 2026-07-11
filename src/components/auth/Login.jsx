@@ -236,7 +236,7 @@ export default function Login() {
                       />
                     </div>
                   <div className="mb-3  d-flex me-2" style={{gap:"30px"}}>
-                    <Link to="/changepass">Forgot Password</Link>
+                    <Link to="/forgot-password">Forgot Password</Link>
                     <Link to="/customerReg">Register</Link>
                   </div>
                   
