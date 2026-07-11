@@ -56,6 +56,8 @@ export default function ResetPassword() {
   };
 
   return (
+    <>
+    <br /><br /><br />
     <div className="container mt-5 mb-5 pt-5 pb-5">
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
@@ -104,5 +106,6 @@ export default function ResetPassword() {
         </div>
       </div>
     </div>
+    </>
   );
 }
