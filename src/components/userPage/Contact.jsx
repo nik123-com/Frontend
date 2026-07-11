@@ -46,31 +46,59 @@ return(
             </div>
           </div>
           <div className="col-lg-7">
-            <form action="" className="">
-              <input
-                type="text"
-                className="w-100 form-control border-0 py-3 mb-4"
-                placeholder="Your Name"
-              />
-              <input
-                type="email"
-                className="w-100 form-control border-0 py-3 mb-4"
-                placeholder="Enter Your Email"
-              />
-              <textarea
-                className="w-100 form-control border-0 mb-4"
-                rows={5}
-                cols={10}
-                placeholder="Your Message"
-                defaultValue={""}
-              />
-              <button
-                className="w-100 btn form-control border-secondary py-3 bg-white text-primary "
-                type="submit"
-              >
-                Submit
-              </button>
-            </form>
+            <form
+      action="https://api.web3forms.com/submit"
+      method="POST"
+      className=""
+    >
+      {/* Web3Forms Access Key */}
+      <input
+        type="hidden"
+        name="access_key"
+        value="b991fb51-796c-456e-9fbd-d6c361f504ce"
+      />
+
+      {/* Optional Subject */}
+      <input
+        type="hidden"
+        name="subject"
+        value="New Contact Form Submission"
+      />
+
+      {/* Optional Redirect */}
+      {/* <input type="hidden" name="redirect" value="https://yourwebsite.com/thank-you" /> */}
+
+      <input
+        type="text"
+        name="name"
+        className="w-100 form-control border-0 py-3 mb-4"
+        placeholder="Your Name"
+        required
+      />
+
+      <input
+        type="email"
+        name="email"
+        className="w-100 form-control border-0 py-3 mb-4"
+        placeholder="Enter Your Email"
+        required
+      />
+
+      <textarea
+        name="message"
+        className="w-100 form-control border-0 mb-4"
+        rows={5}
+        placeholder="Your Message"
+        required
+      ></textarea>
+
+      <button
+        className="w-100 btn form-control border-secondary py-3 bg-white text-primary"
+        type="submit"
+      >
+        Submit
+      </button>
+    </form>
           </div>
           <div className="col-lg-5">
             <div className="d-flex p-4 rounded mb-4 bg-white">
