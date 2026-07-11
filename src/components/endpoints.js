@@ -1,4 +1,4 @@
-export const baseUrl = "https://aventra-backend-epeu.onrender.com"; // Link from Render
+export const baseUrl = "https://aventra-backend-epeu.onrender.com/"; // Link from Render
 
 //admin
 export const login_api = "/api/login";
