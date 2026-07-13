@@ -49,7 +49,7 @@ export default function ForgotPassword() {
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
           <div className="card shadow border-0 rounded-4 p-4">
-            <h2 className="text-center mb-4" style={{ color: 'var(--primary-color)' }}>Forgot Password</h2>
+            <h2 className="text-center mb-4">Forgot Password</h2>
             <p className="text-center text-muted mb-4">Enter your registered email to receive a password reset link.</p>
             <form onSubmit={handleForgotPassword}>
               <div className="form-group mb-4">
@@ -66,9 +66,9 @@ export default function ForgotPassword() {
               </div>
               <button
                 type="submit"
-                className="btn btn-primary btn-lg w-100 fw-bold shadow-sm"
+                className="btn btn-primary btn-lg w-100 fw-bold shadow-sm text-light"
                 disabled={loading}
-                style={{ borderRadius: '10px', backgroundColor: 'var(--primary-color, #0d6efd)' }}
+                style={{ borderRadius: '10px' }}
               >
                 {loading ? (
                   <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -78,7 +78,7 @@ export default function ForgotPassword() {
               </button>
             </form>
             <div className="text-center mt-4">
-              <a href="/Login" className="text-decoration-none fw-bold" style={{ color: 'var(--primary-color, #0d6efd)' }}>
+              <a href="/Login" className="text-success text-decoration-none fw-bold">
                 Back to Login
               </a>
             </div>

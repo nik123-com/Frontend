@@ -62,7 +62,7 @@ export default function ResetPassword() {
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
           <div className="card shadow border-0 rounded-4 p-4">
-            <h2 className="text-center mb-4" style={{ color: 'var(--primary-color, #0d6efd)' }}>Reset Password</h2>
+            <h2 className="text-center mb-4">Reset Password</h2>
             <p className="text-center text-muted mb-4">Enter your new password below.</p>
             <form onSubmit={handleResetPassword}>
               <div className="form-group mb-3">
@@ -91,9 +91,9 @@ export default function ResetPassword() {
               </div>
               <button
                 type="submit"
-                className="btn btn-primary btn-lg w-100 fw-bold shadow-sm"
+                className="btn btn-primary btn-lg w-100 fw-bold shadow-sm text-light"
                 disabled={loading}
-                style={{ borderRadius: '10px', backgroundColor: 'var(--primary-color, #0d6efd)' }}
+                style={{ borderRadius: '10px' }}
               >
                 {loading ? (
                   <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
