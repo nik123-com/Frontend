@@ -1,5 +1,6 @@
 import ChatBot from "react-chatbotify";
 import axios from "axios";
+import "../../index.css";
 
 const GROQ_API_KEY = "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";
 
@@ -222,6 +223,17 @@ export default function SanaChatBot() {
         chatHistory: {
           storageKey: "sana-shopping-history",
         },
+
+        chatButton: {
+          icon: "/assets/img/custom-chat-icon.svg"
+        },
+        notification: {
+          disabled: false,
+          showCount: true,
+        },
+        tooltip: {
+          mode: "NEVER",
+        }
       }}
       styles={{
         headerStyle: {
@@ -255,6 +267,14 @@ export default function SanaChatBot() {
         sendButtonStyle: {
           background: "#81c408",
         },
+        
+        chatButtonStyle: {
+          backgroundImage: "linear-gradient(to right, rgb(73, 29, 141), rgb(66, 176, 197))"
+        },
+
+        tooltipStyle: {
+          display: "none"
+        }
       }}
       botAvatar="/images/sana.png"
     />

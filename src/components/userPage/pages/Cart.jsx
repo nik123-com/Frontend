@@ -279,7 +279,7 @@ export default function Cart() {
           <div className="mt-5">
             <input
               type="text"
-              className="border-0 border-bottom rounded me-5 py-3 mb-4"
+              className="border border-primary rounded me-5 py-3 px-3 mb-4 bg-white text-dark"
               placeholder="Coupon Code"
               value={coupon}
               onChange={(e) => { setcoupon(e.target.value) }}
@@ -412,6 +412,7 @@ export default function Cart() {
       <a
         href="#"
         className="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+        style={{ display: 'none' }}
       >
         <i className="fa fa-arrow-up" />
       </a>

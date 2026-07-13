@@ -17,7 +17,7 @@
  .back-to-top {
     position: fixed;
     right: 30px;
-    bottom: 30px;
+    bottom: 337px;
     display: flex;
     width: 45px;
     height: 45px;
@@ -223,6 +223,15 @@
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+.page-header .breadcrumb-item a {
+    color: #ffffff !important;
+    transition: 0.3s;
+}
+
+.page-header .breadcrumb-item a:hover {
+    opacity: 0.8;
 }
 
 @media (min-width: 992px) {
@@ -523,7 +532,10 @@
     background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
     height: 563px;
     background-position: center;
+    background-repeat: no-repeat;
+    max-width: 100%;
     width: 1109px;
+    margin: 0 auto;
 }
 
 .four_zero_four_bg h1{
