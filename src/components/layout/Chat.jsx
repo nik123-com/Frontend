@@ -118,7 +118,7 @@ Keep responses professional and concise.
 const flow = {
   start: {
     message:
-      "👋 Welcome to Aventra !\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
+      "👋 Welcome to Aventra !\n\nI'm Sana, your personal shopping assistant.\n\n What's your name?",
     path: "capture_name",
   },
 
@@ -174,7 +174,7 @@ I can help with:
 
         const history = params.chatHistory || [];
 
-        let customerName = "Customer";
+        let customerName = {customerName};
 
         const firstUserMessage =
           history.find(item => item?.role === "user");
