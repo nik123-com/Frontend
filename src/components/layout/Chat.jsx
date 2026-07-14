@@ -174,7 +174,7 @@ I can help with:
 
         const history = params.chatHistory || [];
 
-        let customerName = {customerName};
+        let customerName = "Customer";
 
         const firstUserMessage =
           history.find(item => item?.role === "user");
