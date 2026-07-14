@@ -118,7 +118,7 @@ Keep responses professional and concise.
 const flow = {
   start: {
     message:
-      "👋 Welcome to our store!\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
+      "👋 Welcome to Aventra !\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
     path: "capture_name",
   },
 
