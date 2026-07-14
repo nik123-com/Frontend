@@ -2,7 +2,7 @@ import ChatBot from "react-chatbotify";
 import axios from "axios";
 import "../../index.css";
 
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY = "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";
 
 const blockedKeywords = [
   "hack",
