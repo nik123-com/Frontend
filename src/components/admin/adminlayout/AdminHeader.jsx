@@ -40,9 +40,10 @@ function AdminHeader() {
         </div>
         <div className="container px-0">
           <nav className="navbar navbar-light bg-white navbar-expand-xl">
-            <a href="index.html" className="navbar-brand">
-              <h1 className="text-primary display-6">Aventra</h1>
-            </a>
+            <Link to="/admin" className="navbar-brand d-flex align-items-center">
+              <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
+              <h1 className="text-primary display-6 mb-0">Aventra</h1>
+            </Link>
             <button
               className="navbar-toggler py-2 px-3"
               type="button"

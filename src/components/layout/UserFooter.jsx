@@ -10,10 +10,11 @@ function UserFooter(){
       >
         <div className="row g-4">
           <div className="col-lg-3">
-            <a href="#">
+            <a href="#" className="d-flex align-items-center mb-2">
+              <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "40px", marginRight: "10px" }} />
               <h1 className="text-primary mb-0">Aventra</h1>
-              <p className="text-secondary mb-0">Fresh products</p>
             </a>
+            <p className="text-secondary mb-0">Fresh products</p>
           </div>
           <div className="col-lg-6">
             <div className="position-relative mx-auto">

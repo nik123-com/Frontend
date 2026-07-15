@@ -175,6 +175,7 @@ export default function Login() {
             <div className="row g-4">
               <div className="col-12">
                 <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
+                  <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "80px", marginBottom: "15px" }} />
                   <h1 className="text-primary">Login Page</h1>
                 </div>
               </div>
