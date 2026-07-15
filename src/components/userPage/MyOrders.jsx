@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { allOrder } from "../server/Order";
+import { numberToWords } from "../../utils/numberToWords";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -100,7 +101,12 @@ export default function MyOrders() {
                             )}
                           </div>
                         </td>
-                        <td className="fw-bold">₹{order.grandTotal}</td>
+                        <td className="fw-bold">
+                          <div>₹{order.grandTotal}</div>
+                          <small className="text-muted fw-normal d-block" style={{ fontSize: "0.75rem", marginTop: "2px" }}>
+                            {numberToWords(order.grandTotal)}
+                          </small>
+                        </td>
                         <td>
                           <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
                             {order.paymentStatus}
@@ -155,6 +161,9 @@ export default function MyOrders() {
                                   <p className="mb-1"><strong>Shipping:</strong> ₹70</p>
                                   {order.discount > 0 && <p className="mb-1 text-success"><strong>Discount:</strong> -₹{order.discount}</p>}
                                   <p className="fw-bold text-primary mb-0"><strong>Grand Total:</strong> ₹{order.grandTotal}</p>
+                                  <small className="text-muted d-block" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                                    {numberToWords(order.grandTotal)}
+                                  </small>
                                 </div>
                               </div>
                             </div>

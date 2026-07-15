@@ -5,6 +5,7 @@ import { allCart, decrement, HardDelete, increment } from "../../server/Cart";
 import { addOrder } from "../../server/Order";
 import {allCoupon} from "../../server/Coupon";
 import {AllAddress} from '../../server/Address'
+import { numberToWords } from "../../../utils/numberToWords";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -94,6 +95,9 @@ export default function Cart() {
 
       if (res.data.success) {
         setData3(res.data.data);
+        if (res.data.data && res.data.data.length > 0) {
+          setAddress(res.data.data[0]._id);
+        }
       } else {
         toast.warning("Failed to load Address");
       }
@@ -381,7 +385,12 @@ export default function Cart() {
                 </div>
                 <div className="py-4 mb-4 border-top border-bottom d-flex justify-content-between px-4">
                   <h5 className="mb-0">Total</h5>
-                  <p className="mb-0">₹{total + deliveryCharge}</p>
+                  <div className="text-end">
+                    <p className="mb-0 fw-bold">₹{total + deliveryCharge}</p>
+                    <small className="text-muted d-block" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                      {numberToWords(total + deliveryCharge)}
+                    </small>
+                  </div>
                 </div>
                 <div className="text-center mb-4">
                   <button
