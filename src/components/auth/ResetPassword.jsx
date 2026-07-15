@@ -23,10 +23,6 @@ export default function ResetPassword() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters long');
-      return;
-    }
 
     setLoading(true);
     try {
