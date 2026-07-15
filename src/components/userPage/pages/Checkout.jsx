@@ -281,7 +281,7 @@ export default function Checkout() {
                     <h5 className="fw-bold">Total</h5>
                     <div className="text-end">
                       <h5 className="fw-bold text-primary">Rs.{grandTotal}</h5>
-                      <small className="text-muted d-block" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                      <small className="text-muted d-block fw-bold" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
                         {numberToWords(grandTotal)}
                       </small>
                     </div>

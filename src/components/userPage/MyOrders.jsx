@@ -103,7 +103,7 @@ export default function MyOrders() {
                         </td>
                         <td className="fw-bold">
                           <div>₹{order.grandTotal}</div>
-                          <small className="text-muted fw-normal d-block" style={{ fontSize: "0.75rem", marginTop: "2px" }}>
+                          <small className="text-muted fw-bold d-block" style={{ fontSize: "0.75rem", marginTop: "2px" }}>
                             {numberToWords(order.grandTotal)}
                           </small>
                         </td>
@@ -161,7 +161,7 @@ export default function MyOrders() {
                                   <p className="mb-1"><strong>Shipping:</strong> ₹70</p>
                                   {order.discount > 0 && <p className="mb-1 text-success"><strong>Discount:</strong> -₹{order.discount}</p>}
                                   <p className="fw-bold text-primary mb-0"><strong>Grand Total:</strong> ₹{order.grandTotal}</p>
-                                  <small className="text-muted d-block" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                                  <small className="text-muted d-block fw-bold" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
                                     {numberToWords(order.grandTotal)}
                                   </small>
                                 </div>

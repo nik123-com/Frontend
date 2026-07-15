@@ -387,7 +387,7 @@ export default function Cart() {
                   <h5 className="mb-0">Total</h5>
                   <div className="text-end">
                     <p className="mb-0 fw-bold">₹{total + deliveryCharge}</p>
-                    <small className="text-muted d-block" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                    <small className="text-muted d-block fw-bold" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
                       {numberToWords(total + deliveryCharge)}
                     </small>
                   </div>
