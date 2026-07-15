@@ -23,7 +23,6 @@ export default function ResetPassword() {
       return;
     }
 
-
     setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/api/resetPassword/${token}`, {
