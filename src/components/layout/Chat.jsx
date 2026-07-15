@@ -273,7 +273,7 @@ export default function MyChatBot() {
           width: 60px;
           height: 60px;
           border-radius: 50%;
-          background: linear-gradient(135deg, rgb(73, 29, 141), rgb(66, 176, 197));
+          background: linear-gradient(135deg, #81c408, #6fa606);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
           border: none;
           cursor: pointer;

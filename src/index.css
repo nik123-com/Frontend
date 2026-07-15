@@ -36,7 +36,7 @@ a:hover {
     border: none !important;
     cursor: pointer !important;
     box-shadow: 0 2px 4px #0003 !important;
-    background: linear-gradient(to right, rgb(73, 29, 141), rgb(66, 176, 197)) !important;
+    background: linear-gradient(to right, #81c408, #6fa606) !important;
 }
 
 .rcb-chat-tooltip {
@@ -44,7 +44,7 @@ a:hover {
 }
 
 .rcb-chat-tooltip-tail {
-    border-color: transparent transparent transparent rgb(73, 29, 141) !important;
+    border-color: transparent transparent transparent #81c408 !important;
     bottom: 13px !important; /* Adjust tail position if needed, otherwise let default handle it */
 }
 
