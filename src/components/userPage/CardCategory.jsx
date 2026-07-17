@@ -83,7 +83,7 @@ export default function CardCategory() {
                               {el.description}
                             </p>
                             <button onClick={() => navigate(`/products/${el._id}`)} type="button" className="btn btn-success"><center>View</center></button>
-
+ 
                           </div>
                         </div>
                       </div>
@@ -99,6 +99,7 @@ export default function CardCategory() {
       <a
         href="#"
         className="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+        style={{ display: 'none' }}
       >
         <i className="fa fa-arrow-up" />
       </a>

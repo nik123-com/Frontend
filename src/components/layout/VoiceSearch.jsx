@@ -82,7 +82,7 @@ function VoiceSearch() {
   };
 
   return (
-    <div style={{ position: "fixed", bottom: "80px", right: "20px", zIndex: 1000, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+    <div style={{ position: "fixed", bottom: "20px", right: "110px", zIndex: 1000, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
       {text && (
         <div className="bg-dark text-white p-2 rounded mb-2 shadow">
           {text}
@@ -91,8 +91,8 @@ function VoiceSearch() {
       <button 
         onClick={startListening}
         className={`btn rounded-circle shadow-lg d-flex align-items-center justify-content-center ${listening ? "btn-danger" : "btn-primary"}`}
-        style={{ width: "60px", height: "60px", fontSize: "24px" }}
         title="Voice Search"
+        style={{ width: "60px", height: "60px", fontSize: "24px" }}
       >
         <i className={`fas fa-microphone${listening ? "" : "-slash"}`}></i>
       </button>

@@ -74,9 +74,10 @@ function UserHeader() {
         </div>
         <div className="container px-0">
           <nav className="navbar navbar-light bg-white navbar-expand-xl">
-            <a href="index.html" className="navbar-brand">
-              <h1 className="text-primary display-6">Aventra</h1>
-            </a>
+            <Link to="/" className="navbar-brand d-flex align-items-center">
+              <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
+              <h1 className="text-primary display-6 mb-0">Aventra</h1>
+            </Link>
             <button
               className="navbar-toggler py-2 px-3"
               type="button"
@@ -120,7 +121,7 @@ function UserHeader() {
                   <i className="fas fa-search text-primary" />
                 </button>
                 <Link to="/cart" className="position-relative me-4 my-auto" onClick={() => setIsNavCollapsed(true)}>
-                  <i className="fa fa-shopping-bag fa-2x" />
+                  <i className="fa fa-shopping-bag fa-2x text-primary" />
                   {isLogin && (
                     <span
                       className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"

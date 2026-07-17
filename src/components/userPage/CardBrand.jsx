@@ -100,6 +100,7 @@ export default function CardBrand() {
             <a
                 href="#"
                 className="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+                style={{ display: 'none' }}
             >
                 <i className="fa fa-arrow-up" />
             </a>

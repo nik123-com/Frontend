@@ -22,12 +22,50 @@ a:hover {
   color: #535bf2;
 }
 
+/* Custom Chatbot Styling */
+.rcb-toggle-button {
+    display: flex !important;
+    flex-direction: row !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+    width: 75px !important;
+    height: 75px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px #0003 !important;
+    background: linear-gradient(to right, #81c408, #6fa606) !important;
+}
+
+.rcb-chat-tooltip {
+    display: none !important;
+}
+
+.rcb-chat-tooltip-tail {
+    border-color: transparent transparent transparent #81c408 !important;
+    bottom: 13px !important; /* Adjust tail position if needed, otherwise let default handle it */
+}
+
+.rcb-toggle-icon {
+    background-image: url("/assets/img/custom-chat-icon.svg") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    width: 75px !important;
+    height: 75px !important;
+    display: inline-block !important;
+}
+
+.rcb-toggle-icon svg,
+.rcb-toggle-icon img {
+    display: none !important;
+}
+
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {

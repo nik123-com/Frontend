@@ -5,6 +5,7 @@ import { allCart, decrement, HardDelete, increment } from "../../server/Cart";
 import { addOrder } from "../../server/Order";
 import {allCoupon} from "../../server/Coupon";
 import {AllAddress} from '../../server/Address'
+import { numberToWords } from "../../../utils/numberToWords";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -94,6 +95,9 @@ export default function Cart() {
 
       if (res.data.success) {
         setData3(res.data.data);
+        if (res.data.data && res.data.data.length > 0) {
+          setAddress(res.data.data[0]._id);
+        }
       } else {
         toast.warning("Failed to load Address");
       }
@@ -279,7 +283,7 @@ export default function Cart() {
           <div className="mt-5">
             <input
               type="text"
-              className="border-0 border-bottom rounded me-5 py-3 mb-4"
+              className="border border-primary rounded me-5 py-3 px-3 mb-4 bg-white text-dark"
               placeholder="Coupon Code"
               value={coupon}
               onChange={(e) => { setcoupon(e.target.value) }}
@@ -381,7 +385,12 @@ export default function Cart() {
                 </div>
                 <div className="py-4 mb-4 border-top border-bottom d-flex justify-content-between px-4">
                   <h5 className="mb-0">Total</h5>
-                  <p className="mb-0">₹{total + deliveryCharge}</p>
+                  <div className="text-end">
+                    <p className="mb-0 fw-bold">₹{total + deliveryCharge}</p>
+                    <small className="text-muted d-block fw-bold" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                      {numberToWords(total + deliveryCharge)}
+                    </small>
+                  </div>
                 </div>
                 <div className="text-center mb-4">
                   <button
@@ -412,6 +421,7 @@ export default function Cart() {
       <a
         href="#"
         className="btn btn-primary border-3 border-primary rounded-circle back-to-top"
+        style={{ display: 'none' }}
       >
         <i className="fa fa-arrow-up" />
       </a>

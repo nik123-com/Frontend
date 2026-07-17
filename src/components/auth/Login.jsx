@@ -133,7 +133,7 @@ export default function Login() {
             nav("/");
           }
         } else {
-          toast.error("User not Found");
+          toast.error(res.data.massage || res.data.message || "User not Found");
         }
       })
       .catch(() => {
@@ -175,6 +175,7 @@ export default function Login() {
             <div className="row g-4">
               <div className="col-12">
                 <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
+                  <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "80px", marginBottom: "15px" }} />
                   <h1 className="text-primary">Login Page</h1>
                 </div>
               </div>
@@ -236,8 +237,8 @@ export default function Login() {
                       />
                     </div>
                   <div className="mb-3  d-flex me-2" style={{gap:"30px"}}>
-                    <Link to="/changepass">Forgot Password</Link>
-                    <Link to="/customerReg">Register</Link>
+                    <Link to="/forgot-password" className="text-success">Forgot Password</Link>
+                    <Link to="/customerReg" className="text-success">Register</Link>
                   </div>
                   
 

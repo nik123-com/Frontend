@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { allCart } from "../../server/Cart";
 import { AllAddress } from "../../server/Address";
 import { addOrder } from "../../server/Order";
+import { numberToWords } from "../../../utils/numberToWords";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -32,7 +33,12 @@ export default function Checkout() {
         AllAddress({ userId })
       ]);
       if (cartRes.data.success) setCartItems(cartRes.data.data);
-      if (addrRes.data.success) setAddresses(addrRes.data.data);
+      if (addrRes.data.success) {
+        setAddresses(addrRes.data.data);
+        if (addrRes.data.data && addrRes.data.data.length > 0) {
+          setSelectedAddress(addrRes.data.data[0]._id);
+        }
+      }
     } catch (err) {
       console.log(err);
       toast.error("Failed to load checkout data");
@@ -273,7 +279,12 @@ export default function Checkout() {
                   <hr />
                   <div className="d-flex justify-content-between mb-4">
                     <h5 className="fw-bold">Total</h5>
-                    <h5 className="fw-bold text-primary">Rs.{grandTotal}</h5>
+                    <div className="text-end">
+                      <h5 className="fw-bold text-primary">Rs.{grandTotal}</h5>
+                      <small className="text-muted d-block fw-bold" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+                        {numberToWords(grandTotal)}
+                      </small>
+                    </div>
                   </div>
                   <button
                     className="btn btn-primary w-100 py-3 rounded-pill fw-bold"

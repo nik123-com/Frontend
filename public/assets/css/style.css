@@ -17,7 +17,7 @@
  .back-to-top {
     position: fixed;
     right: 30px;
-    bottom: 30px;
+    bottom: 337px;
     display: flex;
     width: 45px;
     height: 45px;
@@ -223,6 +223,15 @@
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+.page-header .breadcrumb-item a {
+    color: #ffffff !important;
+    transition: 0.3s;
+}
+
+.page-header .breadcrumb-item a:hover {
+    opacity: 0.8;
 }
 
 @media (min-width: 992px) {
@@ -451,25 +460,37 @@
 
 /*** Single Page Start ***/
 .pagination {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
 }
   
-.pagination a {
+.pagination li a {
     color: var(--bs-dark);
     padding: 10px 16px;
     text-decoration: none;
     transition: 0.5s;
     border: 1px solid var(--bs-secondary);
     margin: 0 4px;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 4px;
 }
   
+.pagination li.active a,
 .pagination a.active {
     background-color: var(--bs-primary);
-    color: var(--bs-light);
-    border: 1px solid var(--bs-secondary);
+    color: var(--bs-white);
+    border: 1px solid var(--bs-primary);
 }
   
-.pagination a:hover:not(.active) {background-color: var(--bs-primary)}
+.pagination li a:hover:not(.active),
+.pagination a:hover:not(.active) {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}
 
 .nav.nav-tabs .nav-link.active {
     border-bottom: 2px solid var(--bs-secondary) !important;
@@ -511,7 +532,10 @@
     background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
     height: 563px;
     background-position: center;
+    background-repeat: no-repeat;
+    max-width: 100%;
     width: 1109px;
+    margin: 0 auto;
 }
 
 .four_zero_four_bg h1{
