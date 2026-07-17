@@ -7,6 +7,7 @@ import Checkout from "./components/userPage/pages/Checkout"
 import Testimonial from "./components/userPage/pages/Testimonial"
 import Error from "./components/userPage/pages/Error"
 import { ToastContainer } from "react-toastify"
+import "react-responsive-pagination/themes/bootstrap.css";
 import AdminMaster from "./components/admin/adminlayout/AdminMaster"
 import Admindashboard from "./components/admin/Admindashboard"
 import Category from "./components/admin/Category"

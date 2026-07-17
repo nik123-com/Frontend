@@ -533,3 +533,13 @@
 .contant_box_404{ 
     margin-top:-50px;
 }
+
+/* React Responsive Pagination Theme Colors */
+.pagination {
+    --pagination-color: #81c408;
+    --pagination-active-bg: #81c408;
+    --pagination-active-border-color: #81c408;
+    --pagination-hover-color: #6a9f06;
+    --pagination-focus-color: #6a9f06;
+    --pagination-focus-box-shadow: 0 0 0 0.25rem rgba(129, 196, 8, 0.25);
+}
