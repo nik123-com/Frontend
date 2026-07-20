@@ -1,46 +1,7 @@
-<<<<<<< HEAD
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Contact from "./components/userPage/Contact"
-import Home from "./components/userPage/Home"
-import ShopDetail from "./components/userPage/ShopDetail"
-import MasterPage from "./components/layout/MasterPage"
-import Checkout from "./components/userPage/pages/Checkout"
-import Testimonial from "./components/userPage/pages/Testimonial"
-import Error from "./components/userPage/pages/Error"
-import { ToastContainer } from "react-toastify"
-import "react-responsive-pagination/themes/bootstrap.css";
-import AdminMaster from "./components/admin/adminlayout/AdminMaster"
-import Admindashboard from "./components/admin/Admindashboard"
-import Category from "./components/admin/Category"
-import Product from "./components/admin/Product"
-import Brand from "./components/admin/Brand"
-import ManageCategory from "./components/admin/ManageCategory"
-import Login from "./components/auth/Login"
-import CustomerReg from "./components/signup/CustomerReg"
-import ManageCustomer from "./components/admin/ManageCustomer"
-import UpdateCategory from "./components/admin/UpdateCategory"
-import UpdateProduct from "./components/admin/UpdateProduct"
-import UpdateBrand from "./components/admin/UpdateBrand"
-import ManageBrand from "./components/admin/ManageBrand"
-import CardCategory from "./components/userPage/CardCategory"
-import CardBrand from "./components/userPage/CardBrand"
-import CardProduct from "./components/userPage/CardProduct"
-import ManageProduct from "./components/admin/ManageProduct"
-import Cart from "./components/userPage/pages/Cart"
-import Coupon from "./components/admin/Coupon"
-import ManageCoupon from "./components/admin/ManageCoupon"
-import Address from "./components/userPage/Address"
-import ShowWishList from "./components/userPage/ShowWishList"
-import MyOrders from "./components/userPage/MyOrders"
-import ManageOrder from "./components/admin/ManageOrder"
-import MyChatBot from "./components/layout/Chat"
-import ChangePassword from "./components/userPage/ChangePassword"
-import ViewWishList from "./components/userPage/ViewWishList"
-import VoiceSearch from "./components/layout/VoiceSearch"
-=======
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
+import "react-responsive-pagination/themes/bootstrap.css";
 
 // Layout components (loaded statically for stable shell rendering)
 import MasterPage from "./components/layout/MasterPage";
@@ -90,7 +51,7 @@ const PageLoader = () => (
     </div>
   </div>
 );
->>>>>>> 19cb33a7224bf8264166c61cc095f5c4e919f236
+
 
 function App() {
   return (
@@ -101,23 +62,31 @@ function App() {
             <Route path="/" element={<MasterPage />} >
               <Route index element={<Home />} ></Route>
               <Route path="/CardCategory" element={<CardCategory />} ></Route>
+              <Route path="/cardCategory" element={<CardCategory />} ></Route>
+              <Route path="/CardProduct" element={<CardProduct />} ></Route>
               <Route path="/cardProduct" element={<CardProduct />} ></Route>
               <Route path="/products/:category_id" element={<CardProduct />} ></Route>
               <Route path="/CardBrand" element={<CardBrand />} ></Route>
+              <Route path="/cardBrand" element={<CardBrand />} ></Route>
               <Route path="/products/brand/:brand_id" element={<CardProduct />} ></Route>
               <Route path="/ShopDetail" element={<ShopDetail />} ></Route>
               <Route path="/ShopDetail/:_id" element={<ShopDetail />} ></Route>
+              <Route path="/shopDetail" element={<ShopDetail />} ></Route>
+              <Route path="/shopDetail/:_id" element={<ShopDetail />} ></Route>
               <Route path="/viewWishlist" element={<ShowWishList />} ></Route>
               <Route path="/wishlist/:_id" element={<ViewWishList />} ></Route>
 
               {/* Page Column : */}
               <Route path="/cart" element={<Cart />} ></Route>
               <Route path="/Checkout" element={<Checkout />} ></Route>
+              <Route path="/checkout" element={<Checkout />} ></Route>
 
               <Route path="/address/add" element={<Address />} ></Route>
               <Route path="/myorders" element={<MyOrders />} ></Route>
               <Route path="/Contact" element={<Contact />} ></Route>
+              <Route path="/contact" element={<Contact />} ></Route>
               <Route path="/Login" element={<Login />} ></Route>
+              <Route path="/login" element={<Login />} ></Route>
               {/* Signup  */}
               <Route path="/customerReg" element={<CustomerReg />}></Route>
               <Route path="/changepass" element={<ChangePassword />}></Route>

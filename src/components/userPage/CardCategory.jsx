@@ -18,9 +18,7 @@ export default function CardCategory() {
       setdata(res.data.data);
     })
       .catch((err) => {
-        status: 200
-        success: false
-        message: err
+        console.error("Error fetching categories:", err);
       });
   };
   const fetchproductsbycat = async (id) => {

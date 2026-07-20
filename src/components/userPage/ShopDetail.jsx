@@ -499,7 +499,7 @@ export default function ShopDetail() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            addToCart(data)
+                            addToCart(card)
                           }}
                           className="btn border border-secondary rounded-pill px-3 text-primary"
                         >

@@ -93,7 +93,7 @@ export default function Login() {
   }
 
   function validateCaptcha() {
-    return captchaInput === captchaText;
+    return captchaInput.trim().toUpperCase() === captchaText.toUpperCase();
   }
 
   useEffect(() => {

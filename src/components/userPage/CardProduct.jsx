@@ -12,11 +12,6 @@ import { allCategory } from "../server/Category";
 import { Colors } from "chart.js";
 
 
-const isLogin = sessionStorage.getItem("isLogin") === "true";
-console.log(sessionStorage.getItem("isLogin"));
-console.log(typeof sessionStorage.getItem("isLogin"));
-console.log(isLogin);
-
 const customStyles = {
   content: {
     top: '50%',
@@ -31,6 +26,7 @@ const customStyles = {
 
 
 export default function CardProduct() {
+  const isLogin = sessionStorage.getItem("isLogin") === "true";
   const { category_id, brand_id } = useParams();
 
   const [data, setdata] = useState([]);

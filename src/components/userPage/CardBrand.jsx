@@ -18,9 +18,7 @@ export default function CardBrand() {
             setdata(res.data.data);
         })
             .catch((err) => {
-                status: 200
-                success: false
-                message: err
+                console.error("Error fetching brands:", err);
             });
     };
 

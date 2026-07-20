@@ -130,7 +130,6 @@ function UserHeader() {
                       {cartCount}</span>
                   )}
                 </Link>
-                <Link></Link>
 
                 {/* User Profile Icon   */}
                 {/* <a href="#" class="my-auto">

@@ -87,7 +87,8 @@ export default function Checkout() {
 
 
   };
-  const handleRazorpayPayment = () => {
+  const handleRazorpayPayment = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     const options = {
       key: "rzp_test_T3MqnpQkpq38GN",
 
@@ -133,7 +134,6 @@ export default function Checkout() {
 
     const rzp = new window.Razorpay(options);
     rzp.open();
-    e.preventDefault();
   };
   return (
     <>
