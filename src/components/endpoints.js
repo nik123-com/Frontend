@@ -1,4 +1,4 @@
-export const baseUrl = "https://backend-5sps.onrender.com"; // Link from Render
+export const baseUrl = "https://backend-99kd.onrender.com"; // Link from Render
 
 //admin
 export const login_api = "/api/login";
