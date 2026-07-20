@@ -240,9 +240,8 @@ export default function CustomerReg() {
                   <div className="mb-4">
                     <input
                       type="tel"
-                      className={`w-100 form-control border-0 py-3 ${
-                        contactTouched && !isContactValid ? "border border-danger text-danger" : ""
-                      }`}
+                      className={`w-100 form-control border-0 py-3 ${contactTouched && !isContactValid ? "border border-danger text-danger" : ""
+                        }`}
                       placeholder="Enter Your 10-Digit Contact Number"
                       onChange={ChangeContact}
                       value={Contact}
@@ -308,13 +307,12 @@ export default function CustomerReg() {
                     <div className="position-relative">
                       <input
                         type="text"
-                        className={`w-100 form-control border-0 py-3 ${
-                          govtIdTouched && !isGovtIdValid
+                        className={`w-100 form-control border-0 py-3 ${govtIdTouched && !isGovtIdValid
                             ? "border border-danger text-danger"
                             : GovtID && isGovtIdValid
-                            ? "border border-success text-success"
-                            : ""
-                        }`}
+                              ? "border border-success text-success"
+                              : ""
+                          }`}
                         placeholder={currentIdConfig.placeholder}
                         onChange={ChangeGovtID}
                         value={GovtID}
