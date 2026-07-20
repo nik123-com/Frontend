@@ -201,9 +201,6 @@ export default function Cart() {
           <li className="breadcrumb-item">
             <Link to="/">Home</Link>
           </li>
-          <li className="breadcrumb-item">
-            <a href="#">Pages</a>
-          </li>
           <li className="breadcrumb-item active text-white">Cart</li>
         </ol>
       </div>
