@@ -1,4 +1,5 @@
-export const baseUrl = "https://backend-99kd.onrender.com"; // Link from Render
+export const baseUrl = "https://backend-5sps.onrender.com"; // Link from Render
+// export const baseUrl = "http://localhost:3000";
 
 //admin
 export const login_api = "/api/login";
@@ -13,16 +14,16 @@ export const HardDelete = "/api/category/DeleteOne";
 
 
 //Brands
-export const add_Brand = "/api/Brand/add";
-export const all_Brand = "/api/Brand/all";
-export const update_brand = "/api/Brand/update";
-export const single_brand = "/api/Brand/single";
-export const softDelete_brand = "/api/Brand/softDelete";
-export const HardDelete_brand = "/api/Brand/DeleteOne";
+export const add_Brand = "/api/brand/add";
+export const all_Brand = "/api/brand/all";
+export const update_brand = "/api/brand/update";
+export const single_brand = "/api/brand/single";
+export const softDelete_brand = "/api/brand/softDelete";
+export const HardDelete_brand = "/api/brand/DeleteOne";
 export const delete_Document = "/api/document/delete"
 export const customer_all_Document = "/customer/document/all"
 export const toggle_block_customer = "/api/customer/toggleBlock";
-export const customer_Brand = "/customer/Brand/all";
+export const customer_Brand = "/customer/brand/all";
 
 
 //Products
@@ -39,7 +40,7 @@ export const filterbrand = "/customer/product/filterbrand";
 
 
 //Customers
-export const register_Api = "/customer/register";
+export const register_Api = "/customer/Register";
 export const all_Customer = "/api/customer/all";
 export const softDelete_Customer = "/api/customer/softDelete";
 export const change_password = "/api/changePassword"
