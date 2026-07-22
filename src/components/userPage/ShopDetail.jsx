@@ -454,7 +454,7 @@ export default function ShopDetail() {
           {/* Related products header */}
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h1 className="fw-bold mb-0">Related products</h1>
-            <div className="d-flex gap-3">
+            {/* <div className="d-flex gap-3">
               <button
                 type="button"
                 className="btn border border-secondary rounded-pill px-4 py-2 text-primary"
@@ -468,7 +468,7 @@ export default function ShopDetail() {
               >
                 <i className="fa fa-arrow-right" />
               </button>
-            </div>
+            </div> */}
           </div>
           <div className="row g-4">
 
