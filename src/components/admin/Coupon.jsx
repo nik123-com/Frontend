@@ -1,7 +1,6 @@
 // import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { HashLoader } from "react-spinners";
 import { addCoupon } from "../server/Coupon";
 
 export default function Coupon() {
@@ -54,27 +53,6 @@ export default function Coupon() {
 
   return (
     <>
-
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: "9999"
-          }
-          }>
-
-          <HashLoader size={50} color={"green"} />
-        </div>
-      )
-      }
       <br />
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">

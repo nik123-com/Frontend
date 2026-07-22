@@ -128,7 +128,7 @@ export default function CardProduct() {
       }
     })
       .catch((err) => {
-        toast.error(res.data.data);
+        toast.error(err.response?.data?.message || "Something went wrong");
       });
   };
 

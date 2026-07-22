@@ -15,7 +15,6 @@ import { allProduct } from "../server/Product";
 import { allCustomer } from "../server/Customer";
 import { adminAllOrders } from "../server/Order";
 import { toast } from "react-toastify";
-import { HashLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 
 ChartJS.register(
@@ -191,24 +190,6 @@ export default function Admindashboard() {
 
   return (
     <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: "9999",
-          }}
-        >
-          <HashLoader size={50} color={"#81c408"} />
-        </div>
-      )}
 
       <div className="container-fluid py-4">
         <br />

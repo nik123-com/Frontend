@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { allwishList, DeleteWishList, inviteFriend, toggleWishlistAccess } from "../server/WishList";
 import Swal from 'sweetalert2'
-import { HashLoader } from "react-spinners";  
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import { toast } from "react-toastify";
@@ -270,27 +269,7 @@ const AddFriend = () => {
 
                     </div>
 
-                    {/* Loading */}
-                    {loading ? (
-
-    <div
-    style={{
-      position: "fixed",
-      width: "100%",
-      height: "100%",
-      top: 0,
-      left: 0,
-      backgroundColor: "rgba(0,0,0,0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: "9999"
-    }
-  }>
-          <HashLoader size={50} color={"green"} />
-        </div>
-                    ) : (
-                        <div className="row">
+                    <div className="row">
 
                             {data?.length > 0 ? (
 
@@ -503,8 +482,6 @@ const AddFriend = () => {
                             )}
 
                         </div>
-
-                    )}
 
                 </div>
                 <div>

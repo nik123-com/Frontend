@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { viewproduct, sendMessageApi } from "../server/WishList";
 import { addCart } from "../server/Cart";
@@ -11,7 +11,8 @@ export default function ViewWishList() {
   const [data2, setdata2] = useState();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const {_id}=useParams()
+  const {_id}=useParams();
+  const navigate = useNavigate();
   
 
   useEffect(() => {
@@ -33,9 +34,9 @@ export default function ViewWishList() {
   
       const data2 = {
         user_id: user,
-        product_id: element?._id,
+        product_id: element?.productId?._id || element?._id,
         qty: 1,
-        price: element?.productId.price
+        price: element?.productId?.price
       };  
   
       addCart(data2).then((res) => {
@@ -49,7 +50,7 @@ export default function ViewWishList() {
         }
       })
         .catch((err) => {
-          toast.error(res.data.data);
+          toast.error(err.response?.data?.message || "Something went wrong");
         });
     };
  const fetchWishlist = () => {

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { HashLoader } from "react-spinners";
 import { allCategory } from "../server/Category";
 import { allBrand } from "../server/Brand";
 import { addProduct } from "../server/Product";
@@ -122,24 +121,6 @@ export default function Product() {
 
   return (
     <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: "9999",
-          }}
-        >
-          <HashLoader size={50} color={"green"} />
-        </div>
-      )}
 
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">

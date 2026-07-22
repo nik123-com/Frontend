@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { Navigate, useNavigate } from "react-router-dom";
 import { allBrand, HardDelete, softDelete } from "../server/Brand";
-import { HashLoader } from "react-spinners";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
 
@@ -82,25 +81,6 @@ export default function ManageBrand() {
 
   return (
     <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: "9999"
-          }
-          }>
-          <HashLoader size={50} color={"green"} />
-        </div>
-      )
-      }
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">
           <div className="p-5 rounded bg-light">

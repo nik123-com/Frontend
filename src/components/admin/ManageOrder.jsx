@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { HashLoader } from "react-spinners";
 import { adminAllOrders, adminSingleOrder, adminUpdateOrder } from "../server/Order";
 
 export default function ManageOrder() {
@@ -206,11 +204,6 @@ export default function ManageOrder() {
                     Manage Orders
                   </h1>
                 </div>
-                {loading ? (
-                  <div className="d-flex justify-content-center py-5">
-                    <HashLoader color="#81c408" />
-                  </div>
-                ) : (
                   <div className="table-responsive shadow-sm rounded border bg-white mt-4">
                     <table className="table table-hover align-middle mb-0">
                       <thead className="table-light text-secondary">
@@ -277,7 +270,6 @@ export default function ManageOrder() {
                       </tbody>
                     </table>
                   </div>
-                )}
               </div>
             </div>
           </div>

@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
 
 function UserHeader() {
+  const location = useLocation();
   const isLogin = sessionStorage.getItem("isLogin") === "true";
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
@@ -37,7 +38,7 @@ function UserHeader() {
     return () => {
       window.removeEventListener("cartUpdated", fetchCartCount);
     };
-  }, []);
+  }, [location]);
 
   return (
     <>

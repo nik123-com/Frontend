@@ -139,9 +139,16 @@ function AdminHeader() {
                 {/* User Profile Icon 
                 <a href="#" className="my-auto">
                   <i className="fas fa-user fa-2x"></i> </a> */}
-                <Link className="btn btn-primary text-light m-1 " to="/Login" onClick={() => setIsNavCollapsed(true)}>
+                <button
+                  className="btn btn-primary text-light m-1"
+                  onClick={() => {
+                    sessionStorage.clear();
+                    setIsNavCollapsed(true);
+                    window.location.href = "/Login";
+                  }}
+                >
                   Logout
-                </Link>
+                </button>
               </div>
             </div>
           </nav>

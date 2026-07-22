@@ -24,7 +24,7 @@ export default function ShopDetail() {
   // Reviews
   const userId = sessionStorage.getItem("userId");
   const [username, setUsername] = useState(sessionStorage.getItem("userId.name") || "");
-  const [usermail, setUsermail] = useState(sessionStorage.getItem('email'));
+  const [usermail, setUsermail] = useState(sessionStorage.getItem('email') || "");
   const [message, setMessage] = useState();
   const [rating, setRating] = useState(0);
   const ChangeUsername = (e) => {
@@ -44,10 +44,17 @@ export default function ShopDetail() {
   const Reviews = (e) => {
     e.preventDefault();
 
+    const user = sessionStorage.getItem("userId");
+    if (!user) {
+      alert("Login first");
+      navigate("/login");
+      return;
+    }
+
     let feedback = {
       comment: message,
       rating: rating,
-      productId : _id
+      productId: _id
     };
 
     console.log("Sending:", feedback);
@@ -173,9 +180,6 @@ export default function ShopDetail() {
           <li className="breadcrumb-item">
             <Link to="/">Home</Link>
           </li>
-          <li className="breadcrumb-item">
-            <a href="#">Pages</a>
-          </li>
           <li className="breadcrumb-item active text-white">Shop Detail</li>
         </ol>
       </div>
@@ -219,9 +223,7 @@ export default function ShopDetail() {
                   <p className="mb-4">
                     {data?.description}
                   </p>
-                  <p className="mb-4">
-                    {data?.description}
-                  </p>
+
 
 
                   <button
@@ -273,9 +275,6 @@ export default function ShopDetail() {
                       role="tabpanel"
                       aria-labelledby="nav-about-tab"
                     >
-                      <p>
-                        {data?.description}
-                      </p>
 
                       <div className="px-2">
                         <div className="row g-4">
@@ -336,40 +335,42 @@ export default function ShopDetail() {
                       aria-labelledby="nav-mission-tab"
                     >
                       {review?.map((el, index) => (
-                        <div className="d-flex">
-                          <img
-                            src="/assets/img/avatar.jpg"
-                            className="img-fluid rounded-circle p-3"
-                            style={{ width: 100, height: 100 }}
-                            alt=""
-                          />
-                          <div>
-                            <p className="mb-2" style={{ fontSize: 14 }}>
-                              {new Date(el.createdAt).toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })}
-                            </p>
-                            <div className="d-flex justify-content-between">
-                              <h5>{el?.userId?.name}</h5>
-                              &nbsp;
-                              <div className="d-flex mb-3">
-                                <ReactStars
-                                  count={5}
-                                  value={Number(el.rating)}
-                                  edit={false}
-                                  size={24}
-                                  color2={"#ffd700"}
-                                />
+                        <div key={index} className="d-flex mb-4 p-3 border rounded shadow-sm bg-white align-items-start">
+                          <div className="me-3" style={{ flexShrink: 0 }}>
+                            <img
+                              src="/assets/img/avatar.jpg"
+                              className="img-fluid rounded-circle"
+                              style={{ width: 60, height: 60, objectFit: "cover" }}
+                              alt="avatar"
+                            />
+                          </div>
+                          <div className="flex-grow-1">
+                            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-2">
+                              <div className="d-flex align-items-center gap-2 flex-wrap">
+                                <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: "16px" }}>{el?.userId?.name}</h5>
+                                <div className="d-flex align-items-center" style={{ pointerEvents: 'none', height: '24px' }}>
+                                  <ReactStars
+                                    count={5}
+                                    value={Number(el.rating)}
+                                    edit={false}
+                                    size={18}
+                                    color2={"#ffd700"}
+                                  />
+                                </div>
                               </div>
+                              <span className="text-muted" style={{ fontSize: "13px" }}>
+                                {new Date(el.createdAt).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                })}
+                              </span>
                             </div>
-                            <p>
+                            <p className="mb-0 text-secondary" style={{ fontSize: "14px", lineHeight: "1.5" }}>
                               {el.comment}
                             </p>
                           </div>
                         </div>
-
                       ))}
                     </div>
                   </div>
@@ -458,14 +459,14 @@ export default function ShopDetail() {
                 type="button"
                 className="btn border border-secondary rounded-pill px-4 py-2 text-primary"
               >
-                 <i className="fa fa-arrow-left" />
-               
+                <i className="fa fa-arrow-left" />
+
               </button>
               <button
                 type="button"
                 className="btn border border-secondary rounded-pill px-4 py-2 text-primary"
               >
-                 <i className="fa fa-arrow-right" />
+                <i className="fa fa-arrow-right" />
               </button>
             </div>
           </div>

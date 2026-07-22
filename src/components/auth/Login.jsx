@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { login } from "../server/auth";
-import { HashLoader } from "react-spinners";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -105,6 +104,18 @@ export default function Login() {
   const handleForm = (e) => {
     e.preventDefault();
 
+    if (!email.trim()) {
+      toast.error("Please Fill your email");
+      return;
+    }
+    if (!password.trim()) {
+      toast.error("Please Enter Password");
+      return;
+    }
+    if (!captchaInput.trim()) {
+      toast.error("Please enter captcha to proceed");
+      return;
+    }
     if (!validateCaptcha()) {
       toast.error("Wrong Captcha");
       generateCaptcha();
@@ -120,6 +131,7 @@ export default function Login() {
       .then((res) => {
         if (res.data.success) {
           sessionStorage.setItem("userId", res.data.data.userId);
+          sessionStorage.setItem("userId.name", res.data.data.name);
           sessionStorage.setItem("email", res.data.data.email);
           sessionStorage.setItem("userType", res.data.data.userType);
           sessionStorage.setItem("token", res.data.token);
@@ -148,25 +160,6 @@ export default function Login() {
 
   return (
     <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-          }}
-        >
-          <HashLoader size={50} color={"green"} />
-        </div>
-      )}
-
       <br />
 
       <div className="container-fluid contact py-5 mt-2">

@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { allProduct } from "../server/Product";
 import { allCategory } from "../server/Category";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { addCart } from "../server/Cart";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 
 function Home() {
@@ -73,7 +76,7 @@ function Home() {
       }
     })
       .catch((err) => {
-        toast.error(res.data.data);
+        toast.error(err.response?.data?.message || "Something went wrong");
       });
   };
 

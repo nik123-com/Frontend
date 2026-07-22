@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
-import { HashLoader } from "react-spinners";
 import { allCustomer, toggleBlockCustomer } from "../server/Customer";
 import ResponsivePagination from "react-responsive-pagination";
 
@@ -96,25 +95,6 @@ export default function ManageCustomer() {
 
   return (
     <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: "9999"
-          }}
-        >
-          <HashLoader size={50} color={"#81c408"} />
-        </div>
-      )}
-
       <div className="container-fluid py-5 mt-2">
         <div className="container py-5">
           <div className="p-5 rounded bg-light shadow-sm">

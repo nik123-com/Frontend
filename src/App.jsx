@@ -1,7 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "react-responsive-pagination/themes/bootstrap.css";
+import { HashLoader } from "react-spinners";
+import { LoadingProvider } from "./components/layout/LoadingContext";
 
 // Layout components (loaded statically for stable shell rendering)
 import MasterPage from "./components/layout/MasterPage";
@@ -45,17 +48,28 @@ const ForgotPassword = lazy(() => import("./components/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/auth/ResetPassword"));
 
 const PageLoader = () => (
-  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
-    <div className="spinner-border text-primary" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </div>
+  <div
+    style={{
+      position: "fixed",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999,
+    }}
+  >
+    <HashLoader size={60} color={"#81c408"} />
   </div>
 );
 
 
 function App() {
   return (
-    <>
+    <LoadingProvider>
       <BrowserRouter>
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -117,7 +131,7 @@ function App() {
       </BrowserRouter>
       <MyChatBot />
       <ToastContainer />
-    </>
-  )
+    </LoadingProvider>
+  );
 }
 export default App;
