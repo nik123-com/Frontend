@@ -1,5 +1,5 @@
 // export const baseUrl = "http://localhost:3000"; // Link from Render
-export const baseUrl = "https://backend-99kd.onrender.com"
+export const baseUrl = "https://backend-99kd.onrender.com"; // Link from Render
 //admin
 export const login_api = "/api/login";
 
