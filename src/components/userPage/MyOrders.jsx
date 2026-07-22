@@ -7,6 +7,14 @@ import { numberToWords } from "../../utils/numberToWords";
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [expandedOrders, setExpandedOrders] = useState({});
+
+  const toggleOrderExpand = (index) => {
+    setExpandedOrders((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -121,16 +129,15 @@ export default function MyOrders() {
                           <button
                             className="btn btn-sm btn-outline-primary rounded-pill"
                             type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#orderDetail${index}`}
+                            onClick={() => toggleOrderExpand(index)}
                           >
-                            View Items
+                            {expandedOrders[index] ? "Hide Items" : "View Items"}
                           </button>
                         </td>
                       </tr>
                       <tr>
                         <td colSpan={7} className="p-0">
-                          <div className="collapse" id={`orderDetail${index}`}>
+                          <div className={`collapse ${expandedOrders[index] ? "show" : ""}`} id={`orderDetail${index}`}>
                             <div className="p-3 bg-light rounded">
                               <div className="row g-3">
                                 {order.products?.map((item, i) => (
