@@ -313,7 +313,7 @@ const AddFriend = () => {
 
                                                 <img
                                                     src={
-                                                        element?.items?.[0]?.productId?.image ||
+                                                        (Array.isArray(element?.items?.[0]?.productId?.image) ? element?.items?.[0]?.productId?.image?.[0] : element?.items?.[0]?.productId?.image) ||
                                                         "https://via.placeholder.com/500x300"
                                                     }
                                                     alt=""
@@ -379,7 +379,7 @@ const AddFriend = () => {
                                                             >
 
                                                                 <img
-                                                                    src={item?.productId?.image}
+                                                                    src={Array.isArray(item?.productId?.image) ? item?.productId?.image?.[0] : item?.productId?.image}
                                                                     alt=""
                                                                     width="55"
                                                                     height="55"

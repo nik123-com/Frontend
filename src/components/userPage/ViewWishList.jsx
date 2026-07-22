@@ -136,7 +136,7 @@ export default function ViewWishList() {
                       >
 
                         <img
-                          src={el?.productId?.image}
+                          src={Array.isArray(el?.productId?.image) ? el?.productId?.image?.[0] : el?.productId?.image}
                           className="img-fluid w-100 rounded-top"
                           alt="product"
                           style={{

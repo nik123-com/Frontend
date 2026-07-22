@@ -8,7 +8,7 @@ import { addProduct } from "../server/Product";
 export default function Product() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState([]);
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [brandId, setBrandId] = useState("");
@@ -61,7 +61,7 @@ export default function Product() {
       toast.error("Please Enter Description");
       return;
     }
-    if (!image) {
+    if (!image || image.length === 0) {
       toast.error("Image is Required");
       return;
     }
@@ -83,7 +83,9 @@ export default function Product() {
     let formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("image", image);
+    image.forEach((file) => {
+      formData.append("image", file);
+    });
     formData.append("price", price);
     formData.append("category_id", categoryId);
     formData.append("brand_id", brandId);
@@ -102,10 +104,11 @@ export default function Product() {
         toast.success(res.data.message);
         setName("");
         setDescription("");
-        setImage(null);
+        setImage([]);
         setPrice("");
         setCategoryId("");
         setBrandId("");
+        e.target.reset();
       } else {
         toast.warning(res.data.message);
       }
@@ -216,8 +219,9 @@ export default function Product() {
                   </label>
                   <input
                     type="file"
+                    multiple
                     className="form-control py-3"
-                    onChange={(e) => setImage(e.target.files[0])}
+                    onChange={(e) => setImage(Array.from(e.target.files))}
                   />
                 </div>
 

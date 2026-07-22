@@ -18,7 +18,7 @@ export default function ManageCoupon() {
 // React Paging
   const [currentpage, setcurrentpage] = useState(1);
   const [totalpages, settotalpages] = useState(1);
-  const limit = 2;
+  const limit = 10;
 
   useEffect(() => {
     fetch();

@@ -191,7 +191,7 @@ export default function ShopDetail() {
                   <div className="border rounded">
                     <a href="#">
                       <img
-                        src={data?.image}
+                        src={Array.isArray(data?.image) ? data?.image?.[0] : data?.image}
                         className="img-fluid rounded"
                         alt="Image"
                       />
@@ -478,7 +478,7 @@ export default function ShopDetail() {
                   <div className="rounded position-relative fruite-item">
                     <div className="fruite-img">
                       <img
-                        src={card?.image}
+                        src={Array.isArray(card?.image) ? card?.image?.[0] : card?.image}
                         className="img-fluid w-100 rounded-top " style={{ height: "300px" }}
                         alt="Image is loading..."
                       />

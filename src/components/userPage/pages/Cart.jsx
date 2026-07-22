@@ -226,7 +226,7 @@ export default function Cart() {
                     <th scope="row">
                       <div className="d-flex align-items-center">
                         <img
-                          src={Element?.product_id?.image}
+                          src={Array.isArray(Element?.product_id?.image) ? Element?.product_id?.image?.[0] : Element?.product_id?.image}
                           className="img-fluid me-5 rounded-circle"
                           style={{ width: 80, height: 80 }}
                           alt=""

@@ -12,7 +12,7 @@ export default function ManageProduct() {
   const [loading, setLoading] = useState(false);
   const [currentpage, setcurrentpage] = useState(1);
   const [totalpages, settotalpages] = useState(1);
-  const limit = 2;
+  const limit = 10;
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function ManageProduct() {
                           </td>
                           <td>
                             <img
-                              src={element?.image}
+                              src={Array.isArray(element?.image) ? element?.image?.[0] : element?.image}
                               width={60}
                               height={60}
                               alt="Image"

@@ -15,7 +15,7 @@ export default function ManageBrand() {
   // React Paging
   const [currentpage, setcurrentpage] = useState(1);
   const [totalpages, settotalpages] = useState(1);
-  const limit = 2;
+  const limit = 10;
 
   const fetch = () => {
     allBrand(data).then((res) => {

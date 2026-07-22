@@ -7,7 +7,12 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 function Home() {
   const [productData, setProductData] = useState();
   const [categoryData, setCategoryData] = useState();
+  const [activeCategory, setActiveCategory] = useState("all");
   const navigate = useNavigate();
+
+  const filteredProducts = activeCategory === "all"
+    ? productData
+    : productData?.filter((el) => el.category_id?._id === activeCategory);
 
   const fetchProduct = (data) => {
     allProduct(data).then((res) => {
@@ -208,27 +213,63 @@ function Home() {
       <div className="container-fluid fruite py-5">
         <div className="container py-5">
           <div className="tab-class text-center">
-            <div className="row g-4">
+            <div className="row g-4 align-items-center mb-4">
               <div className="col-lg-4 text-start">
-                <h1>Our Organic Products</h1>
+                <h1 className="fw-bold text-dark mb-0">Our Organic Products</h1>
               </div>
+            </div>
 
-              <div className="col-lg-8 text-end">
-                <ul className="nav nav-pills d-inline-flex text-center mb-5">
+            <div className="row mb-5">
+              <div className="col-12">
+                <div className="d-flex overflow-auto py-2 scrollbar-hidden" style={{
+                  gap: "10px",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                  whiteSpace: "nowrap",
+                  WebkitOverflowScrolling: "touch"
+                }}>
+                  <style>{`
+                    .scrollbar-hidden::-webkit-scrollbar {
+                      display: none;
+                    }
+                    .category-tab-btn {
+                      background-color: #f4f6f8;
+                      color: #495057;
+                      font-weight: 600;
+                      font-size: 14px;
+                      padding: 10px 24px;
+                      border-radius: 50px;
+                      border: none;
+                      cursor: pointer;
+                      transition: all 0.2s ease-in-out;
+                      white-space: nowrap;
+                    }
+                    .category-tab-btn:hover {
+                      background-color: #e9ecef;
+                      color: #212529;
+                    }
+                    .category-tab-btn.active {
+                      background-color: #81c408;
+                      color: white !important;
+                      box-shadow: 0 4px 10px rgba(129, 196, 8, 0.2);
+                    }
+                  `}</style>
+                  <button 
+                    className={`category-tab-btn ${activeCategory === "all" ? "active" : ""}`}
+                    onClick={() => setActiveCategory("all")}
+                  >
+                    All Products
+                  </button>
                   {categoryData?.map((category) => (
-                    <li className="nav-item">
-                      <a
-                        className="d-flex m-2 py-2 bg-light rounded-pill active"
-                        data-bs-toggle="pill"
-                        href="#tab-1"
-                      >
-                        <span className="text-dark" style={{ width: 130 }}>
-                          {category.name}
-                        </span>
-                      </a>
-                    </li>
+                    <button
+                      key={category._id}
+                      className={`category-tab-btn ${activeCategory === category._id ? "active" : ""}`}
+                      onClick={() => setActiveCategory(category._id)}
+                    >
+                      {category.name}
+                    </button>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
 
@@ -239,15 +280,15 @@ function Home() {
                     <div className="row g-4">
                       <div className="col-lg-12">
                         <div className="row g-4">
-                          {productData?.map((el) => (
+                          {filteredProducts?.map((el, index) => (
                             <div
-                              key={el._id}
+                              key={el._id || index}
                               className="col-md-6 col-lg-4 col-xl-3"
                             >
-                              <div className="rounded position-relative fruite-item">
+                              <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
                                 <div className="fruite-img">
                                   <img
-                                    src={el.image}
+                                    src={Array.isArray(el.image) ? el.image?.[0] : el.image}
                                     className="img-fluid w-100 rounded-top"
                                     alt={el.name}
                                   />
@@ -260,12 +301,12 @@ function Home() {
                                   {el.category_id?.name}
                                 </div>
 
-                                <div className="p-4 border border-secondary border-top-0 rounded-bottom text-center">
+                                <div className="p-4 border border-secondary border-top-0 rounded-bottom text-center d-flex flex-column flex-grow-1">
                                   <h4>{el.name}</h4>
 
-                                  <p>{el.description}</p>
+                                  <p className="flex-grow-1">{el.description}</p>
 
-                                  <div className="d-flex justify-content-center align-items-center gap-3 flex-lg-wrap mt-3">
+                                  <div className="d-flex justify-content-center align-items-center gap-3 flex-lg-wrap mt-auto">
                                     <p className="text-dark fs-5 fw-bold mb-0">
                                       ₹{el.price}
                                     </p>
@@ -362,15 +403,15 @@ function Home() {
           <h1 className="mb-4">Quality Products, Delivered to Your Door</h1>
 
           <div className="row g-4">
-            {productData?.map((el) => (
+            {productData?.map((el, index) => (
               <div
-                key={el._id}
+                key={el._id || index}
                 className="col-md-6 col-lg-4 col-xl-3"
               >
-                <div className="rounded position-relative fruite-item">
+                <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
                   <div className="fruite-img">
                     <img
-                      src={el?.image}
+                      src={Array.isArray(el?.image) ? el?.image?.[0] : el?.image}
                       className="img-fluid w-100 rounded-top"
                       alt={el?.name}
                     />
@@ -383,12 +424,12 @@ function Home() {
                     {el?.category_id?.name}
                   </div>
 
-                  <div className="p-4 border border-primary border-top-0 rounded-bottom text-center">
+                  <div className="p-4 border border-primary border-top-0 rounded-bottom text-center d-flex flex-column flex-grow-1">
                     <h4>{el?.name}</h4>
 
-                    <p>{el?.description}</p>
+                    <p className="flex-grow-1">{el?.description}</p>
 
-                    <div className="d-flex justify-content-center align-items-center gap-3 flex-lg-wrap mt-3">
+                    <div className="d-flex justify-content-center align-items-center gap-3 flex-lg-wrap mt-auto">
                       <p className="text-dark fs-5 fw-bold mb-0">
                         ₹{el?.price}
                       </p>
@@ -477,7 +518,7 @@ function Home() {
             <div className="row align-items-center">
               <div className="col-6">
                 <img
-                  src={e.image}
+                  src={Array.isArray(e.image) ? e.image?.[0] : e.image}
                   className="img-fluid rounded-circle w-100"
                   alt={e.name}
                 />

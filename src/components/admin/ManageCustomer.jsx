@@ -3,11 +3,18 @@ import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { HashLoader } from "react-spinners";
 import { allCustomer, toggleBlockCustomer } from "../server/Customer";
+import ResponsivePagination from "react-responsive-pagination";
 
 export default function ManageCustomer() {
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentpage, setcurrentpage] = useState(1);
+  const limit = 10;
+
+  useEffect(() => {
+    setcurrentpage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchCustomers();
@@ -69,6 +76,13 @@ export default function ManageCustomer() {
       (customer.GovtID && customer.GovtID.includes(query))
     );
   });
+
+  const totalpages = Math.ceil(filteredCustomers.length / limit);
+
+  // React Paging index
+  const startindex = (currentpage - 1) * limit;
+  const endindex = startindex + limit;
+  const currentdata = filteredCustomers.slice(startindex, endindex);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "N/A";
@@ -145,10 +159,10 @@ export default function ManageCustomer() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredCustomers.length > 0 ? (
-                        filteredCustomers.map((element, index) => (
+                      {currentdata.length > 0 ? (
+                        currentdata.map((element, index) => (
                           <tr key={element._id}>
-                            <td className="ps-4 fw-semibold text-muted">{index + 1}</td>
+                            <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
                             <td>
                               <div className="fw-bold text-dark">{element.name}</div>
                               <div className="text-muted small">{element.email}</div>
@@ -202,6 +216,18 @@ export default function ManageCustomer() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* React Paging  */}
+                {totalpages > 0 && (
+                  <div className="d-flex justify-content-center mt-4">
+                    <ResponsivePagination
+                      className="pagination mb-0"
+                      onPageChange={setcurrentpage}
+                      total={totalpages}
+                      current={currentpage}
+                    />
+                  </div>
+                )}
 
               </div>
             </div>

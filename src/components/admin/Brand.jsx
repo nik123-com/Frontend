@@ -13,6 +13,7 @@ export default function Brand () {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     const token = sessionStorage.getItem("token");
     const head = { 
       Authorization: token
@@ -22,15 +23,17 @@ export default function Brand () {
     data.append("logo", image)
      addBrand(data).then((res) => {
       console.log(res.data);
-      setLoading(true)
       if (res.data.success) {
         toast.success(res.data.message);
+        setName("");
+        setImage("");
+        e.target.reset();
       } else {
         toast.warning(res.data.message);
       }
     }).catch((err) => {
       console.log(err);
-      toast.error(res.data.message);
+      toast.error(err.response?.data?.message || "Something went wrong");
     }).finally(()=>{
       setLoading(false)
     })

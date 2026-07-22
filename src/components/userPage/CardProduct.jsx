@@ -333,18 +333,18 @@ export default function CardProduct() {
                     {data?.filter(el => (
                       el.name.toLowerCase().includes(search.toLowerCase())
                     )).map((el, index) => (
-                      <div className="col-md-6 col-lg-6 col-xl-4">
+                      <div className="col-md-6 col-lg-6 col-xl-4" key={el._id || index}>
                         <div onClick={() => {
                           navotShop(el._id)
-                        }}>
-                          <div className="rounded position-relative fruite-item">
+                        }} className="h-100">
+                          <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
                             <div className="fruite-img" style={
                               {
                                 height: "300px"
                               }
                             }>
                               <img
-                                src={el?.image}
+                                src={Array.isArray(el?.image) ? el?.image?.[0] : el?.image}
                                 className="img-fluid w-100 rounded-top"
                                 style={{ height: "300px" }} alt="Image"
                               />
@@ -355,12 +355,12 @@ export default function CardProduct() {
                             >
                               {el.category_id?.name}
                             </div>
-                            <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                            <div className="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column flex-grow-1">
                               <h4>{el?.name}</h4>
-                              <p>
+                              <p className="flex-grow-1">
                                 {el?.description}
                               </p>
-                              <div className="d-flex justify-content-between flex-lg-wrap">
+                              <div className="d-flex justify-content-between flex-lg-wrap mt-auto">
                                 <p className="text-dark fs-5 fw-bold mb-0">
                                   ₹{el?.price}
                                 </p>

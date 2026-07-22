@@ -57,8 +57,8 @@ export default function CardCategory() {
                 <div className="col-lg-10">
                   <div className="row g-4 d-flex justify-content-center">
                     {data?.map((el, index) => (
-                      <div className="col-md-6 col-lg-6 col-xl-4">
-                        <div className="rounded position-relative fruite-item">
+                      <div className="col-md-6 col-lg-6 col-xl-4" key={el._id || index}>
+                        <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
                           <div className="fruite-img" style={
                             {
                               height: "300px"
@@ -75,13 +75,12 @@ export default function CardCategory() {
                           >
                             {el?.name}
                           </div>
-                          <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                          <div className="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column flex-grow-1">
                             <h4>{el?.name}</h4>
-                            <p>
+                            <p className="flex-grow-1">
                               {el.description}
                             </p>
-                            <button onClick={() => navigate(`/products/${el._id}`)} type="button" className="btn btn-success"><center>View</center></button>
- 
+                            <button onClick={() => navigate(`/products/${el._id}`)} type="button" className="btn btn-success mt-auto align-self-start">View</button>
                           </div>
                         </div>
                       </div>
