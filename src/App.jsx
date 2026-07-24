@@ -12,9 +12,9 @@ import MasterPage from "./components/layout/MasterPage";
 import AdminMaster from "./components/admin/adminlayout/AdminMaster";
 import MyChatBot from "./components/layout/Chat";
 import VoiceSearch from "./components/layout/VoiceSearch";
+import Home from "./components/userPage/Home";
 
 // Lazy-loaded pages
-const Home = lazy(() => import("./components/userPage/Home"));
 const Contact = lazy(() => import("./components/userPage/Contact"));
 const ShopDetail = lazy(() => import("./components/userPage/ShopDetail"));
 const Checkout = lazy(() => import("./components/userPage/pages/Checkout"));

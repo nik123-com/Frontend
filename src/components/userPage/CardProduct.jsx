@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { HashLoader } from "react-spinners";
 import { allProduct, getproductbycat, getproductbybrand } from "../server/Product";
 import { addCart } from "../server/Cart"
 import { addItem, addwishList, allwishList } from '../server/WishList'
@@ -43,6 +44,7 @@ export default function CardProduct() {
   const { category_id, brand_id } = useParams();
 
   const [data, setdata] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setsearch] = useState("");
   const [data1, setdata1] = useState([]);
   const [cart, setcart] = useState();
@@ -70,6 +72,7 @@ export default function CardProduct() {
 
   const fetch = (data) => {
     console.log("HLo", data);
+    setLoading(true);
 
     allProduct(data).then((res) => {
       console.log(res);
@@ -79,6 +82,9 @@ export default function CardProduct() {
       .catch((err) => {
         console.log(err);
 
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
   const fetchWishList = (WishListData) => {
@@ -228,6 +234,7 @@ export default function CardProduct() {
   }
   const fetchproductsbycat = async (id) => {
     try {
+      setLoading(true);
       if (id === "ALL") {
         fetch();
       } else {
@@ -235,14 +242,17 @@ export default function CardProduct() {
         const res = await getproductbycat(data4);
         console.log(res);
         setdata(res.data.data);
+        setLoading(false);
       }
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
   const fetchproductsbybrand = async (id) => {
     try {
+      setLoading(true);
       if (id === "ALL") {
         fetch();
       } else {
@@ -250,9 +260,11 @@ export default function CardProduct() {
         const res = await getproductbybrand(brandData);
         console.log(res);
         setdata(res.data.data);
+        setLoading(false);
       }
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
@@ -338,9 +350,14 @@ export default function CardProduct() {
                 <div className="col-12 col-lg-9">
                   <div className="row g-4">
 
-                    {data?.filter(el => (
-                      el.name.toLowerCase().includes(search.toLowerCase())
-                    )).map((el, index) => (
+                    {loading ? (
+                      <div className="col-12 d-flex justify-content-center align-items-center py-5 my-5">
+                        <HashLoader size={60} color={"#81c408"} />
+                      </div>
+                    ) : (
+                      data?.filter(el => (
+                        el.name.toLowerCase().includes(search.toLowerCase())
+                      )).map((el, index) => (
                       <div className="col-12 col-sm-6 col-md-6 col-lg-4" key={el._id || index}>
                         <div onClick={() => {
                           navotShop(el._id)
@@ -388,7 +405,7 @@ export default function CardProduct() {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )))}
                   </div>
                 </div>
               </div>
