@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { addreview, allreview } from "../server/Review";
 import ReactStars from 'react-stars'
 import React from 'react'
+import AddToCartButton from "../common/AddToCartButton";
 
 export default function ShopDetail() {
 
@@ -226,16 +227,7 @@ export default function ShopDetail() {
 
 
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart(data)
-                    }}
-                    className="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"
-                  >
-                    <i className="fa fa-shopping-bag me-2 text-primary" /> Add to
-                    cart
-                  </button>
+                  <AddToCartButton product={data} variant="full" className="mb-4" />
                 </div>
                 <div className="col-lg-12">
                   <nav>
@@ -482,16 +474,7 @@ export default function ShopDetail() {
                       </p>
                       <div className="d-flex justify-content-between flex-lg-wrap">
                         <p className="text-dark fs-5 fw-bold mb-0">{card.price}</p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(card)
-                          }}
-                          className="btn border border-secondary rounded-pill px-3 text-primary"
-                        >
-                          <i className="fa fa-shopping-bag me-2 text-primary" /> Add to
-                          cart
-                        </button>
+                        <AddToCartButton product={card} />
                       </div>
                     </div>
                   </div>

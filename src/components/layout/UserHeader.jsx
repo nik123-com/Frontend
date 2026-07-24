@@ -110,6 +110,9 @@ function UserHeader() {
                 <Link to="/myorders" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
                   My Orders
                 </Link>
+                <Link to="/queries" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                  Queries
+                </Link>
 
               </div>
               <div className="d-flex m-3 me-0">

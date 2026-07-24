@@ -52,7 +52,10 @@ export default function Admindashboard() {
         setProducts(resProducts.data.data || []);
       }
       if (resOrders.data.success) {
-        setOrders(resOrders.data.data || []);
+        const sortedOrders = [...(resOrders.data.data || [])].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setOrders(sortedOrders);
       }
       if (resCustomers.data.success) {
         setCustomers(resCustomers.data.data || []);

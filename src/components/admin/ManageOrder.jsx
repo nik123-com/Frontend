@@ -16,7 +16,10 @@ export default function ManageOrder() {
     adminAllOrders({})
       .then((res) => {
         if (res.data.success) {
-          setOrders(res.data.data);
+          const sorted = [...(res.data.data || [])].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+          setOrders(sorted);
         } else {
           toast.error(res.data.message);
         }

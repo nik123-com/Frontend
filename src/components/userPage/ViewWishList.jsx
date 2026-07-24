@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { viewproduct, sendMessageApi } from "../server/WishList";
 import { addCart } from "../server/Cart";
 import { toast } from "react-toastify";
+import AddToCartButton from "../common/AddToCartButton";
 
 
 export default function ViewWishList() {
@@ -177,16 +178,7 @@ export default function ViewWishList() {
                           ₹ {el?.productId?.price}
                         </h5>
 
-                        <button onClick={(e) => {
-                                  e.stopPropagation();
-                                  addToCart(el)
-                                }}
-                                  to="/"
-                                  className="btn border border-secondary rounded-pill px-3 text-primary"
-                                >
-                                  <i class="fa-solid fa-bag-shopping"></i>{" "}
-                                  Add to cart
-                                </button>
+                        <AddToCartButton product={el?.productId} />
 
                       </div>
 

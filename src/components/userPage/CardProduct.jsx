@@ -9,6 +9,7 @@ import { addItem, addwishList, allwishList } from '../server/WishList'
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import { allCategory } from "../server/Category";
+import AddToCartButton from "../common/AddToCartButton";
 import { Colors } from "chart.js";
 
 
@@ -360,29 +361,21 @@ export default function CardProduct() {
                               <p className="flex-grow-1">
                                 {el?.description}
                               </p>
-                              <div className="d-flex justify-content-between flex-lg-wrap mt-auto">
+                              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-auto">
                                 <p className="text-dark fs-5 fw-bold mb-0">
                                   ₹{el?.price}
                                 </p>
-                                {isLogin && (<>
-                                  <button className="btn fs-2" onClick={(e) => {
-                                    e.stopPropagation();
-                                    openModal(el._id)
-                                  }}>
-                                    <i class="fa-regular fa-bookmark"></i>
-                                  </button>
-                                  <button onClick={(e) => {
-                                    e.stopPropagation();
-                                    addToCart(el)
-                                    // dispatch(INC)
-                                  }}
-                                    to="/"
-                                    className="btn border border-secondary rounded-pill px-3 text-primary"
-                                  >
-                                    <i class="fa-solid fa-bag-shopping"></i>{" "}
-                                    Add to cart
-                                  </button>
-                                </>)}
+                                <div className="d-flex align-items-center gap-2">
+                                  {isLogin && (
+                                    <button className="btn fs-4 p-0 text-secondary" onClick={(e) => {
+                                      e.stopPropagation();
+                                      openModal(el._id)
+                                    }}>
+                                      <i className="fa-regular fa-bookmark"></i>
+                                    </button>
+                                  )}
+                                  <AddToCartButton product={el} />
+                                </div>
                               </div>
                             </div>
                           </div>

@@ -132,6 +132,9 @@ function AdminHeader() {
                 <Link to="/admin/manageorder" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
                   Orders
                 </Link>
+                <Link to="/admin/managequeries" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
+                  Queries
+                </Link>
               </div>
               <div className="d-flex m-3 me-0">
             

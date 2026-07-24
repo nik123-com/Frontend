@@ -5,6 +5,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { addCart } from "../server/Cart";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import AddToCartButton from "../common/AddToCartButton";
 
 
 function Home() {
@@ -314,13 +315,7 @@ function Home() {
                                       ₹{el.price}
                                     </p>
 
-                                    <button
-                                      onClick={() => addToCart(el)}
-                                      className="btn border border-secondary rounded-pill px-3 text-primary"
-                                    >
-                                      <i className="fa fa-shopping-bag me-2 text-primary" />
-                                      Add to cart
-                                    </button>
+                                    <AddToCartButton product={el} />
                                   </div>
                                 </div>
                               </div>
@@ -437,13 +432,7 @@ function Home() {
                         ₹{el?.price}
                       </p>
 
-                      <button
-                       onClick={() => addToCart(el)}
-                        className="btn border border-secondary rounded-pill px-3 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary" />
-                        Add to cart
-                      </button>
+                      <AddToCartButton product={el} />
                     </div>
                   </div>
                 </div>
@@ -545,13 +534,7 @@ function Home() {
 
                 <h4 className="mb-3">₹{e.price}</h4>
 
-                <button
-                   onClick={() => addToCart(e)}
-                  className="btn border border-secondary rounded-pill px-3 text-primary"
-                >
-                  <i className="fa fa-shopping-bag me-2 text-primary" />
-                  Add to cart
-                </button>
+                <AddToCartButton product={e} />
               </div>
             </div>
           </div>
