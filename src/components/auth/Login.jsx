@@ -193,45 +193,42 @@ export default function Login() {
                     required
                   />
                      <div
-                      className="card shadow"
+                      className="card shadow-sm p-3 mb-4 mx-auto"
                       style={{
                         borderRadius: 12,
-                        padding: 20,
-                        display:"flex",
-                        textAlign: "center",
-                        width: 300,
-                        margin:"10px"
+                        maxWidth: "100%",
+                        width: "320px",
+                        alignItems: "center"
                       }}> 
                       <canvas
                         id="captchaCanvas"
                         width={200}
                         height={50}
+                        className="rounded border mb-2 mw-100"
                         style={{
-                          border: "1px solid #ccc",
-                          marginBottom: 10,
-                          display:"flex"
+                          display: "block"
                         }}
                       />
 
                       <button
                         type="button"
-                        className="btn btn-secondary btn-sm mb-2"
+                        className="btn btn-secondary btn-sm mb-2 rounded-pill px-3"
                         onClick={generateCaptcha}
                       >
-                        Refresh
+                        Refresh Captcha
                       </button>
 
                       <input
                         type="text"
-                        className="form-control mb-2"
+                        className="form-control text-center"
                         placeholder="Enter Captcha"
                         value={captchaInput}
                         onChange={(e) => setCaptchaInput(e.target.value)}
                       />
                     </div>
-                  <div className="mb-3  d-flex me-2" style={{gap:"30px"}}>
-                    <Link to="/forgot-password" className="text-success">Forgot Password</Link>
-                    <Link to="/customerReg" className="text-success">Register</Link>
+                  <div className="mb-3 d-flex justify-content-between flex-wrap gap-2">
+                    <Link to="/forgot-password" className="text-success small fw-medium">Forgot Password?</Link>
+                    <Link to="/customerReg" className="text-success small fw-medium">New User? Register</Link>
                   </div>
                   
 

@@ -193,56 +193,52 @@ export default function Admindashboard() {
 
   return (
     <>
-
-      <div className="container-fluid py-4">
-        <br />
-        <br />
-        <br />
+      <div className="container-fluid py-3 py-md-4">
         {/* Page Header */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold text-success">Admin Dashboard</h2>
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+          <h2 className="fw-bold text-success mb-0">Admin Dashboard</h2>
           <button
-            className="btn btn-success text-white"
+            className="btn btn-success text-white px-4 py-2 rounded-pill fw-medium align-self-start align-self-sm-auto"
             onClick={() => navigate("/admin/addproduct")}
           >
-            + Add Product
+            <i className="fa-solid fa-plus me-2"></i>Add Product
           </button>
         </div>
 
         {/* Statistics Cards */}
-        <div className="row g-4 mb-4">
-          <div className="col-lg-3 col-md-6">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body">
-                <h6>Total Products</h6>
-                <h2 className="fw-bold text-success">{products.length}</h2>
+        <div className="row g-3 g-md-4 mb-4">
+          <div className="col-12 col-sm-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 rounded-4">
+              <div className="card-body p-4">
+                <h6 className="text-muted fw-semibold mb-2">Total Products</h6>
+                <h2 className="fw-bold text-success mb-0">{products.length}</h2>
               </div>
             </div>
           </div>
 
-          <div className="col-lg-3 col-md-6">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body">
-                <h6>Total Orders</h6>
-                <h2 className="fw-bold text-primary">{orders.length}</h2>
+          <div className="col-12 col-sm-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 rounded-4">
+              <div className="card-body p-4">
+                <h6 className="text-muted fw-semibold mb-2">Total Orders</h6>
+                <h2 className="fw-bold text-primary mb-0">{orders.length}</h2>
               </div>
             </div>
           </div>
 
-          <div className="col-lg-3 col-md-6">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body">
-                <h6>Customers</h6>
-                <h2 className="fw-bold text-warning">{customers.length}</h2>
+          <div className="col-12 col-sm-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 rounded-4">
+              <div className="card-body p-4">
+                <h6 className="text-muted fw-semibold mb-2">Customers</h6>
+                <h2 className="fw-bold text-warning mb-0">{customers.length}</h2>
               </div>
             </div>
           </div>
 
-          <div className="col-lg-3 col-md-6">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body">
-                <h6>Total Revenue</h6>
-                <h2 className="fw-bold text-danger">{formatRevenue(totalRevenue)}</h2>
+          <div className="col-12 col-sm-6 col-lg-3">
+            <div className="card border-0 shadow-sm h-100 rounded-4">
+              <div className="card-body p-4">
+                <h6 className="text-muted fw-semibold mb-2">Total Revenue</h6>
+                <h2 className="fw-bold text-danger mb-0">{formatRevenue(totalRevenue)}</h2>
               </div>
             </div>
           </div>

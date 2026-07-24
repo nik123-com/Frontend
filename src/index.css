@@ -104,3 +104,79 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* ==========================================================================
+   Global Responsive Helpers & Breakpoint Utilities
+   ========================================================================== */
+
+/* Mobile & Tablet Header Responsive Overrides (< 1200px) */
+@media (max-width: 1199.98px) {
+  .navbar-collapse {
+    max-height: 75vh;
+    overflow-y: auto;
+    padding: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    border-radius: 0 0 1rem 1rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Responsive main content offset for fixed header */
+.page-content-offset {
+  padding-top: 140px;
+}
+
+@media (max-width: 1199.98px) {
+  .page-content-offset {
+    padding-top: 90px;
+  }
+}
+
+/* Mobile Headings & Typography scaling */
+@media (max-width: 575.98px) {
+  h1.display-6, .display-6 {
+    font-size: 1.75rem !important;
+  }
+  h1, .h1 {
+    font-size: 1.8rem !important;
+  }
+  h2, .h2 {
+    font-size: 1.5rem !important;
+  }
+  h3, .h3 {
+    font-size: 1.3rem !important;
+  }
+}
+
+/* Responsive Table Adjustments */
+.table-responsive {
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table th,
+.table-responsive table td {
+  vertical-align: middle;
+}
+
+/* Mobile Floating Widgets Scaling (Chatbot & Voice Search) */
+@media (max-width: 575.98px) {
+  .rcb-toggle-button {
+    width: 56px !important;
+    height: 56px !important;
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+  .rcb-toggle-icon {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  .voice-search-btn {
+    width: 48px !important;
+    height: 48px !important;
+    bottom: 16px !important;
+    left: 16px !important;
+  }
+}
+

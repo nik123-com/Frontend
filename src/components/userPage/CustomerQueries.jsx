@@ -134,12 +134,12 @@ export default function CustomerQueries() {
         </ol>
       </div>
 
-      <div className="container-fluid py-5">
-        <div className="container py-5">
-          <div className="row g-5">
+      <div className="container-fluid py-3 py-md-5">
+        <div className="container px-2 px-sm-3 py-3 py-md-4">
+          <div className="row g-4 g-lg-5">
             {/* Left: Submit Query Form */}
-            <div className="col-lg-5">
-              <div className="bg-light p-4 p-md-5 rounded shadow-sm">
+            <div className="col-12 col-lg-5">
+              <div className="bg-light p-3 p-sm-4 p-md-5 rounded-4 shadow-sm">
                 <h3 className="fw-bold mb-4" style={{ color: "#0c831f" }}>
                   <i className="fa-solid fa-headset me-2"></i> Submit a Query / Complaint
                 </h3>
@@ -158,7 +158,7 @@ export default function CustomerQueries() {
 
                   {/* Autofilled Complaint ID & Date/Time */}
                   <div className="row g-2 mb-3">
-                    <div className="col-6">
+                    <div className="col-12 col-sm-6">
                       <label className="form-label fw-bold text-dark">Query ID (Auto)</label>
                       <input
                         type="text"
@@ -167,7 +167,7 @@ export default function CustomerQueries() {
                         disabled
                       />
                     </div>
-                    <div className="col-6">
+                    <div className="col-12 col-sm-6">
                       <label className="form-label fw-bold text-dark">Date & Time</label>
                       <input
                         type="text"
@@ -243,7 +243,7 @@ export default function CustomerQueries() {
             </div>
 
             {/* Right: History & Replies */}
-            <div className="col-lg-7">
+            <div className="col-12 col-lg-7">
               <h3 className="fw-bold mb-4" style={{ color: "#0c831f" }}>
                 <i className="fa-solid fa-list-check me-2"></i> My Submitted Queries
               </h3>
@@ -253,7 +253,7 @@ export default function CustomerQueries() {
                   <div className="spinner-border text-success" role="status"></div>
                 </div>
               ) : queries.length === 0 ? (
-                <div className="card p-5 text-center bg-light border-0 rounded">
+                <div className="card p-4 p-md-5 text-center bg-light border-0 rounded">
                   <i className="fa-regular fa-folder-open fs-1 text-muted mb-3"></i>
                   <p className="text-muted mb-0">No queries submitted yet.</p>
                 </div>
@@ -261,7 +261,7 @@ export default function CustomerQueries() {
                 <div className="d-flex flex-column gap-4">
                   {queries.map((q) => (
                     <div key={q._id} className="card border-0 shadow-sm rounded-4 overflow-hidden">
-                      <div className="card-header bg-light d-flex justify-content-between align-items-center py-3 px-4">
+                      <div className="card-header bg-light d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 py-3 px-3 px-sm-4">
                         <div>
                           <span className="badge bg-success me-2">{q.queryId}</span>
                           <span className="fw-bold text-dark">{q.subject}</span>

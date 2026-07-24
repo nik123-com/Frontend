@@ -120,16 +120,16 @@ export default function CustomerReg() {
       </div>
       {/* Single Page Header End */}
       {/* Contact Start */}
-      <div className="container-fluid contact py-5">
-        <div className="container py-5">
-          <div className="p-5 bg-light rounded">
+      <div className="container-fluid contact py-3 py-md-5">
+        <div className="container py-3 py-md-4">
+          <div className="p-3 p-sm-4 p-md-5 bg-light rounded-4 shadow-sm">
             <div className="row g-4 justify-content-center">
               <div className="col-12">
                 <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
                   <h1 className="text-primary">Customer Registration Form</h1>
                 </div>
               </div>
-              <div className="col-lg-7">
+              <div className="col-12 col-md-10 col-lg-8">
                 <form onSubmit={handleForm}>
                   <input
                     type="text"

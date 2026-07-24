@@ -267,13 +267,13 @@ export default function CardProduct() {
       {/* Single Page Header End */}
       {/* Fruits CardCategory Start*/}
       <div className="container-fluid fruite py-5">
-        <div className="container py-5">
-          <h1 className="mb-4">Products</h1>
+        <div className="container py-3 py-md-5">
+          <h1 className="mb-4 text-center text-md-start">Products</h1>
           <div className="row g-4">
-            <div className="col-lg-12">
-              <div className="row g-4">
-                <div className="col-xl-3">
-                  <div className="input-group w-100 mx-auto d-flex">
+            <div className="col-12">
+              <div className="row g-4 mb-3">
+                <div className="col-12 col-md-6 col-lg-4 ms-auto">
+                  <div className="input-group w-100">
                     <input
                       type="search"
                       className="form-control p-3"
@@ -281,7 +281,7 @@ export default function CardProduct() {
                       onChange={(e) => {
                         setsearch(e.target.value)
                       }}
-                      placeholder="keywords"
+                      placeholder="Search products..."
                       aria-describedby="search-icon-1"
                     />
                     <span id="search-icon-1" className="input-group-text p-3">
@@ -291,20 +291,19 @@ export default function CardProduct() {
                 </div>
               </div>
               <div className="row g-4">
-                <div className="col-lg-3">
+                <div className="col-12 col-lg-3">
                   <div className="row g-4">
-                    <div className="col-lg-12">
-                      <div className="mb-3"><br />
-                        <h4>Categories</h4>
-                        <ul className="list-unstyled fruite-categorie">
-                          <li >
+                    <div className="col-12">
+                      <div className="mb-3 p-3 bg-light rounded-3">
+                        <h4 className="fw-bold mb-3 text-primary">Categories</h4>
+                        <ul className="list-unstyled fruite-categorie mb-0">
+                          <li>
                             <div className="d-flex justify-content-between fruite-name text-success">
                               <button onClick={() => {
                                 fetchproductsbycat("ALL")
-                              }} className="btn hover-btn">
+                              }} className="btn hover-btn text-start p-1 fw-semibold">
                                 All
                               </button>
-                              {/* <span>(3)</span> */}
                             </div>
                           </li>
 
@@ -313,28 +312,24 @@ export default function CardProduct() {
                               <div className="d-flex justify-content-between fruite-name text-success">
                                 <button onClick={() => {
                                   fetchproductsbycat(Element._id)
-                                }} className="btn hover-btn">
+                                }} className="btn hover-btn text-start p-1">
                                   {Element.name}
                                 </button>
-                                {/* <span>(3)</span> */}
                               </div>
                             </li>
                           ))}
                         </ul>
                       </div>
                     </div>
-
-
-
                   </div>
                 </div>
-                <div className="col-lg-9">
-                  <div className="row g-4 justify-content-center">
+                <div className="col-12 col-lg-9">
+                  <div className="row g-4">
 
                     {data?.filter(el => (
                       el.name.toLowerCase().includes(search.toLowerCase())
                     )).map((el, index) => (
-                      <div className="col-md-6 col-lg-6 col-xl-4" key={el._id || index}>
+                      <div className="col-12 col-sm-6 col-md-6 col-lg-4" key={el._id || index}>
                         <div onClick={() => {
                           navotShop(el._id)
                         }} className="h-100">

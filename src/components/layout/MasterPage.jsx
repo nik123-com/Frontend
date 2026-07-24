@@ -5,11 +5,13 @@ import UserFooter from "./UserFooter";
 
 const MasterPage = () => {
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
       <UserHeader />
-      <Outlet />
+      <main className="flex-grow-1 page-content-offset">
+        <Outlet />
+      </main>
       <UserFooter />
-    </>
+    </div>
   );
 };
 

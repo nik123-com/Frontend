@@ -146,8 +146,8 @@ export default function Checkout() {
         </ol>
       </div>
 
-      <div className="container-fluid py-5">
-        <div className="container py-5">
+      <div className="container-fluid py-3 py-md-5">
+        <div className="container py-3 py-md-4">
           {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" role="status"></div>
@@ -162,8 +162,8 @@ export default function Checkout() {
               </Link>
             </div>
           ) : (
-            <div className="row g-5">
-              <div className="col-md-12 col-lg-7">
+            <div className="row g-4 g-lg-5">
+              <div className="col-12 col-lg-7">
                 <h3 className="mb-4">Delivery Address</h3>
                 {addresses.length === 0 ? (
                   <div className="alert alert-warning">
@@ -236,7 +236,7 @@ export default function Checkout() {
                 </div>
               </div>
 
-              <div className="col-md-12 col-lg-5">
+              <div className="col-12 col-lg-5">
                 <div className="bg-light rounded-4 p-4">
                   <h3 className="mb-4">Cart Total</h3>
                   <div className="mb-4">

@@ -75,7 +75,7 @@ function UserHeader() {
         </div>
         <div className="container px-0">
           <nav className="navbar navbar-light bg-white navbar-expand-xl">
-            <Link to="/" className="navbar-brand d-flex align-items-center">
+            <Link to="/" className="navbar-brand d-flex align-items-center" onClick={() => setIsNavCollapsed(true)}>
               <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
               <h1 className="text-primary display-6 mb-0">Aventra</h1>
             </Link>
@@ -83,39 +83,38 @@ function UserHeader() {
               className="navbar-toggler py-2 px-3"
               type="button"
               onClick={handleNavCollapse}
+              aria-label="Toggle navigation"
             >
               <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
             <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
               <div className="navbar-nav mx-auto">
-                <Link to="/" className="nav-item nav-link active" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/" className={`nav-item nav-link ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Home
                 </Link>
-                <Link to="/CardCategory" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/CardCategory" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('cardcategory') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Category
                 </Link>
-                <Link to="/cardProduct" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/cardProduct" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('cardproduct') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Product
                 </Link>
-                <Link to="/cardBrand" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/cardBrand" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('cardbrand') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Brand
                 </Link>
-
-                <Link to="/Contact" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/Contact" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('contact') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Contact
                 </Link>
-                <Link to="/viewWishlist" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
-                  View WishList
+                <Link to="/viewWishlist" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('wishlist') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                  WishList
                 </Link>
-                <Link to="/myorders" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/myorders" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('myorders') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   My Orders
                 </Link>
-                <Link to="/queries" className="nav-item nav-link" onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/queries" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('queries') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Queries
                 </Link>
-
               </div>
-              <div className="d-flex m-3 me-0">
+              <div className="d-flex m-3 me-0 align-items-center">
                 <button
                   className="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
                   data-bs-toggle="modal"
@@ -131,13 +130,10 @@ function UserHeader() {
                       className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
                       style={{ top: "-5px", left: 15, height: 20, minWidth: 20 }}
                     >
-                      {cartCount}</span>
+                      {cartCount}
+                    </span>
                   )}
                 </Link>
-
-                {/* User Profile Icon   */}
-                {/* <a href="#" class="my-auto">
-              <i class="fas fa-user fa-2x"></i> </a> */}
 
                 {isLogin ? (
                   <button

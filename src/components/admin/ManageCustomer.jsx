@@ -95,22 +95,22 @@ export default function ManageCustomer() {
 
   return (
     <>
-      <div className="container-fluid py-5 mt-2">
-        <div className="container py-5">
-          <div className="p-5 rounded bg-light shadow-sm">
+      <div className="container-fluid py-3 py-md-4">
+        <div className="container px-0 px-sm-3">
+          <div className="p-3 p-sm-4 p-md-5 rounded-4 bg-light shadow-sm">
             <div className="row g-4">
               <div className="col-12">
                 <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
                   <h1 className="fw-bold text-primary mb-2">
                     Manage Customers
                   </h1>
-                  <p className="text-muted">
+                  <p className="text-muted small">
                     Monitor customer accounts, inspect government evidence proofs, toggle listing visibility, and restrict login block access.
                   </p>
                 </div>
 
                 {/* Filter / Search section */}
-                <div className="mb-4 col-md-5 mx-auto">
+                <div className="mb-4 col-12 col-md-8 col-lg-6 mx-auto">
                   <div className="input-group">
                     <span className="input-group-text bg-white border-0 shadow-sm">
                       <i className="fas fa-search text-muted"></i>

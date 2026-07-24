@@ -108,16 +108,16 @@ export default function ManageQueries() {
 
   return (
     <>
-      <div className="container-fluid py-5 mt-2">
-        <div className="container py-5">
-          <div className="p-5 rounded bg-light">
+      <div className="container-fluid py-3 py-md-4">
+        <div className="container px-0 px-sm-3">
+          <div className="p-3 p-sm-4 p-md-5 rounded-4 bg-light shadow-sm">
             <div className="row g-4">
               <div className="col-12">
                 <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
                   <h1 className="fw-bold" style={{ color: "#81c408" }}>
                     Manage Customer Queries & Complaints
                   </h1>
-                  <p className="text-muted">Review customer support tickets, send responses, Google Meet links, and documents.</p>
+                  <p className="text-muted small">Review customer support tickets, send responses, Google Meet links, and documents.</p>
                 </div>
 
                 <div className="table-responsive shadow-sm rounded border bg-white mt-4">

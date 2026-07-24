@@ -206,18 +206,18 @@ export default function Cart() {
       </div>
       {/* Single Page Header End */}
       {/* Cart Page Start */}
-      <div className="container-fluid py-5">
-        <div className="container py-5">
-          <div className="table-responsive">
-            <table className="table">
-              <thead>
+      <div className="container-fluid py-3 py-md-5">
+        <div className="container py-3 py-md-4">
+          <div className="table-responsive shadow-sm rounded border bg-white mb-4">
+            <table className="table align-middle mb-0">
+              <thead className="table-light">
                 <tr>
-                  <th scope="col">Products</th>
+                  <th scope="col" className="ps-4">Products</th>
                   <th scope="col">Name</th>
                   <th scope="col">Price</th>
                   <th scope="col">Quantity</th>
                   <th scope="col">Total</th>
-                  <th scope="col">Handle</th>
+                  <th scope="col" className="text-end pe-4">Handle</th>
                 </tr>
               </thead>
               <tbody>

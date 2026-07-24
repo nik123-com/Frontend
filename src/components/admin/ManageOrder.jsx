@@ -85,21 +85,20 @@ export default function ManageOrder() {
   if (viewDetail && selectedOrder) {
     return (
       <>
-        <br />
-        <div className="container-fluid py-5 mt-2">
-          <div className="container py-5">
-            <div className="p-5 rounded bg-light">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="fw-bold" style={{ color: "#81c408" }}>
+        <div className="container-fluid py-3 py-md-4">
+          <div className="container px-0 px-sm-3">
+            <div className="p-3 p-sm-4 p-md-5 rounded-4 bg-light shadow-sm">
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+                <h2 className="fw-bold mb-0" style={{ color: "#81c408" }}>
                   Order #{selectedOrder._id.slice(-8)}
                 </h2>
-                <button className="btn btn-outline-secondary rounded-pill px-4" onClick={() => { setViewDetail(false); setSelectedOrder(null); }}>
+                <button className="btn btn-outline-secondary rounded-pill px-4 align-self-start align-self-sm-auto" onClick={() => { setViewDetail(false); setSelectedOrder(null); }}>
                   Back to List
                 </button>
               </div>
 
               <div className="row g-4">
-                <div className="col-lg-8">
+                <div className="col-12 col-lg-8">
                   <div className="card border-0 shadow-sm rounded-4 mb-4">
                     <div className="card-header bg-white py-3">
                       <h5 className="m-0 fw-bold">Items Ordered</h5>
@@ -146,7 +145,7 @@ export default function ManageOrder() {
                   </div>
                 </div>
 
-                <div className="col-lg-4">
+                <div className="col-12 col-lg-4">
                   <div className="card border-0 shadow-sm rounded-4 mb-4">
                     <div className="card-header bg-white py-3">
                       <h5 className="m-0 fw-bold">Manage Order</h5>
@@ -197,9 +196,9 @@ export default function ManageOrder() {
 
   return (
     <>
-      <div className="container-fluid py-5 mt-2">
-        <div className="container py-5">
-          <div className="p-5 rounded bg-light">
+      <div className="container-fluid py-3 py-md-4">
+        <div className="container px-0 px-sm-3">
+          <div className="p-3 p-sm-4 p-md-5 rounded-4 bg-light shadow-sm">
             <div className="row g-4">
               <div className="col-12">
                 <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
