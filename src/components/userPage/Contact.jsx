@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { HashLoader } from "react-spinners";
 export default function Contact() {
   return (
     <>
