@@ -9,14 +9,26 @@ import { toast } from "react-toastify";
 
 
 const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
+    backdropFilter: 'blur(8px)',
+    zIndex: 1050,
+  },
   content: {
     top: '50%',
     left: '50%',
     right: 'auto',
-    borderRadius: "34px",
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    borderRadius: '24px',
+    border: 'none',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    padding: '0',
+    maxWidth: '480px',
+    width: '92%',
+    overflow: 'visible',
+    background: '#ffffff',
   },
 };
 
@@ -27,6 +39,7 @@ export default function ShowWishList() {
     const [modalIsOpen, setIsOpen] = useState(false);
     const [email, setEmail] = useState("");
     const [WishliastId, setWishliastId] = useState();
+    const [filterType, setFilterType] = useState("all");
   function openModal() {
     setIsOpen(true);
   }
@@ -199,19 +212,29 @@ const ChangeEmail = (e) => {
 };
 
 const AddFriend = () => {
-    console.log(WishliastId);
-    
+  if (!email || !email.trim()) {
+    toast.error("Please enter a valid email address");
+    return;
+  }
+
   const emailData = {
     _id: WishliastId,
-    email: email,
+    email: email.trim(),
   };
 
   inviteFriend(emailData)
     .then((res) => {
-      console.log(res.data);
+      if (res.data?.success || res.status === 200) {
+        toast.success(res.data?.message || "Invitation sent successfully!");
+        setEmail("");
+        closeModal();
+      } else {
+        toast.error(res.data?.message || "Failed to send invitation");
+      }
     })
     .catch((err) => {
       console.log(err.response?.data || err);
+      toast.error(err.response?.data?.message || "Failed to send invitation");
     });
 };
 
@@ -243,217 +266,217 @@ const AddFriend = () => {
                 <div className="container">
 
                     {/* Top Bar */}
-                    <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div className="d-flex flex-wrap justify-content-between align-items-center mb-5 gap-3">
+                        <div>
+                            <h3 className="fw-bold mb-1 text-dark">Your Collections</h3>
+                            <p className="text-muted small mb-0">Organize, manage, and share your favorite product wishlists</p>
+                        </div>
 
-                        <h3 className="fw-bold">
-                            Your Collections
-                        </h3>
-                         <button
-                            onClick={publicWishList}
-                            className="btn btn-success"
-                        >
-                         Public
-                        </button>
-                         <button
-                            onClick={privateWishList}
-                            className="btn btn-success"
-                        >
-                         Private
-                        </button>
-                        <Link
-                            to="/cardProduct"
-                            className="btn btn-success"
-                        >
-                            <i class="fa-solid fa-circle-plus"></i>  Create Wishlist
-                        </Link>
+                        <div className="d-flex align-items-center flex-wrap gap-3">
+                            {/* Segmented Filter Pills */}
+                            <div className="bg-light p-1 rounded-pill d-flex border shadow-sm">
+                                <button
+                                    onClick={() => { setFilterType("all"); fetchWishList(); }}
+                                    className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold transition-all ${
+                                        filterType === "all" ? "bg-white text-success shadow-sm" : "text-muted border-0"
+                                    }`}
+                                >
+                                    All
+                                </button>
+                                <button
+                                    onClick={() => { setFilterType("public"); publicWishList(); }}
+                                    className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold transition-all ${
+                                        filterType === "public" ? "bg-white text-success shadow-sm" : "text-muted border-0"
+                                    }`}
+                                >
+                                    <i className="fa-solid fa-globe me-1"></i> Public
+                                </button>
+                                <button
+                                    onClick={() => { setFilterType("private"); privateWishList(); }}
+                                    className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold transition-all ${
+                                        filterType === "private" ? "bg-white text-success shadow-sm" : "text-muted border-0"
+                                    }`}
+                                >
+                                    <i className="fa-solid fa-lock me-1"></i> Private
+                                </button>
+                            </div>
 
+                            <Link
+                                to="/cardProduct"
+                                className="btn text-white rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm"
+                                style={{
+                                    background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
+                                    border: "none",
+                                    transition: "all 0.25s ease"
+                                }}
+                            >
+                                <i className="fa-solid fa-plus"></i>
+                                <span>Create Wishlist</span>
+                            </Link>
+                        </div>
                     </div>
 
                     <div className="row">
-
-                            {data?.length > 0 ? (
-
-                                data.map((element) => (
-
-                                    <div
-                                        className="col-lg-4 col-md-6 mb-4"
-                                        key={element?._id}
-                                    >
-
-                                        <div className="card border-0 shadow-lg rounded-4 overflow-hidden h-100 wishlist-card">
-
-                                            {/* Banner */}
-                                            <div
-                                                className="position-relative"
+                        {data?.length > 0 ? (
+                            data.map((element) => (
+                                <div
+                                    className="col-lg-4 col-md-6 mb-4"
+                                    key={element?._id}
+                                >
+                                    <div className="card border-0 shadow-sm rounded-4 overflow-hidden h-100 wishlist-card bg-white">
+                                        {/* Banner */}
+                                        <div
+                                            className="position-relative overflow-hidden"
+                                            style={{ height: "200px" }}
+                                        >
+                                            <img
+                                                src={
+                                                    (Array.isArray(element?.items?.[0]?.productId?.image) ? element?.items?.[0]?.productId?.image?.[0] : element?.items?.[0]?.productId?.image) ||
+                                                    "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=600&auto=format&fit=crop"
+                                                }
+                                                alt=""
+                                                className="w-100 h-100"
+                                                style={{ objectFit: "cover" }}
+                                            />
+                                            <div 
+                                                className="position-absolute inset-0"
                                                 style={{
-                                                    height: "220px"
+                                                    background: "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4))",
+                                                    top: 0, bottom: 0, left: 0, right: 0
                                                 }}
-                                            >
+                                            />
 
-                                                <img
-                                                    src={
-                                                        (Array.isArray(element?.items?.[0]?.productId?.image) ? element?.items?.[0]?.productId?.image?.[0] : element?.items?.[0]?.productId?.image) ||
-                                                        "https://via.placeholder.com/500x300"
-                                                    }
-                                                    alt=""
-                                                    className="w-100 h-100"
-                                                    style={{
-                                                        objectFit: "cover"
-                                                    }}
-                                                />
-
-                                                {/* Badge */}
-                                                <div className="position-absolute top-0 end-0 m-3">
-
-                                                    <span
-                                                        className={`badge px-3 py-2 ${element?.isPublic
-                                                            ? "bg-success"
-                                                            : "bg-dark"
-                                                            }`}
-                                                    >
-                                                        {element?.isPublic
-                                                            ? "Public"
-                                                            : "Private"}
-                                                    </span>
-
-                                                </div>
-
+                                            {/* Badge */}
+                                            <div className="position-absolute top-0 end-0 m-3">
+                                                <span
+                                                    className={`badge px-3 py-2 rounded-pill shadow-sm ${
+                                                        element?.isPublic ? "bg-success" : "bg-dark"
+                                                    }`}
+                                                    style={{ backdropFilter: "blur(4px)" }}
+                                                >
+                                                    <i className={`fa-solid ${element?.isPublic ? "fa-globe" : "fa-lock"} me-1`}></i>
+                                                    {element?.isPublic ? "Public" : "Private"}
+                                                </span>
                                             </div>
-
-                                            {/* Body */}
-                                            <div className="card-body">
-
-                                                <div className="d-flex justify-content-between">
-
-                                                    <div>
-
-                                                        <h4 className="fw-bold text-capitalize">
-                                                            {
-                                                                element?.listName ||
-                                                                element?.listname
-                                                            }
-                                                        </h4>
-
-                                                        <small className="text-muted">
-                                                            {
-                                                                element?.items?.length || 0
-                                                            } Products
-                                                        </small>
-
-                                                    </div>
-
-                                                </div>
-
-                                                <hr />
-
-                                                {/* Product Preview */}
-                                                <div>
-
-                                                    {
-                                                        element?.items?.slice(0, 3).map((item) => (
-
-                                                            <div
-                                                                key={item?._id}
-                                                                className="d-flex align-items-center mb-3"
-                                                            >
-
-                                                                <img
-                                                                    src={Array.isArray(item?.productId?.image) ? item?.productId?.image?.[0] : item?.productId?.image}
-                                                                    alt=""
-                                                                    width="55"
-                                                                    height="55"
-                                                                    className="rounded"
-                                                                    style={{
-                                                                        objectFit: "cover"
-                                                                    }}
-                                                                />
-
-                                                                <div className="ms-3">
-
-                                                                    <h6 className="mb-0">
-                                                                        {item?.productId?.name}
-                                                                    </h6>
-
-                                                                    <small className="text-muted">
-                                                                        ₹ {item?.productId?.price}
-                                                                    </small>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        ))
-                                                    }
-
-                                                </div>
-
-                                                {/* Footer */}
-                                                <div className="d-flex justify-content-between align-items-center mt-4">
-
-                                                    <div>
-
-                                                        <small className="text-muted">
-                                                            👥 {
-                                                                element?.sharedWith?.length || 0
-                                                            } Friends
-                                                        </small>
-
-                                                    </div>
-
-                                                    <div className="d-flex gap-2">
-
-                                                        {/* View */}
-                                                        <button
-                                                            className="btn btn-success btn-sm  px-1"
-                                                            onClick={() =>
-                                                                togglePublic(element)
-                                                            }
-                                                        >
-                                                            {element?.isPublic
-                                                            ? "Private"
-                                                            : "Public"}
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-primary btn-sm  px-1"
-                                                        onClick={() =>
-                                                            navigate(`/wishlist/${element?._id}`)
-                                                        }
-                                                        >
-                                                            View
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-info btn-sm  px-1"
-                                                            onClick={(e)=>{
-                                                             e.stopPropagation();
-                                                             setWishliastId(element._id)
-                                                             openModal()
-                                                            }}  
-                                                        >
-                                                            Invite Friends
-                                                        </button>
-
-                                                        {/* Delete */}
-                                                        <button
-                                                            className="btn btn-danger btn-sm  px-1"
-                                                            onClick={() =>
-                                                                handleDeleteWishlist(element?._id)
-                                                            }
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-
                                         </div>
 
+                                        {/* Body */}
+                                        <div className="card-body p-4 d-flex flex-column justify-content-between">
+                                            <div>
+                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                    <h4 className="fw-bold text-capitalize mb-0 text-dark">
+                                                        {element?.listName || element?.listname}
+                                                    </h4>
+                                                    <span className="badge bg-light text-secondary rounded-pill border px-2 py-1">
+                                                        {element?.items?.length || 0} Products
+                                                    </span>
+                                                </div>
+
+                                                <hr className="my-3 text-muted opacity-25" />
+
+                                                {/* Product Preview */}
+                                                <div className="mb-3">
+                                                    {element?.items?.slice(0, 3).map((item) => (
+                                                        <div
+                                                            key={item?._id}
+                                                            className="d-flex align-items-center p-2 mb-2 rounded bg-light border-0"
+                                                        >
+                                                            <img
+                                                                src={Array.isArray(item?.productId?.image) ? item?.productId?.image?.[0] : item?.productId?.image}
+                                                                alt=""
+                                                                width="46"
+                                                                height="46"
+                                                                className="rounded-3 me-3"
+                                                                style={{ objectFit: "cover" }}
+                                                            />
+                                                            <div className="flex-grow-1 overflow-hidden">
+                                                                <h6 className="mb-0 text-truncate text-dark fw-semibold" style={{ fontSize: "0.9rem" }}>
+                                                                    {item?.productId?.name}
+                                                                </h6>
+                                                                <small className="text-success fw-bold">
+                                                                    ₹ {item?.productId?.price}
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Footer */}
+                                            <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                                <div>
+                                                    <small className="text-muted fw-medium">
+                                                        <i className="fa-solid fa-users text-primary me-1"></i>
+                                                        {element?.sharedWith?.length || 0} Friends
+                                                    </small>
+                                                </div>
+
+                                                <div className="d-flex align-items-center gap-1">
+                                                    {(() => {
+                                                        const currentUserId = sessionStorage.getItem("userId");
+                                                        const ownerId = (element?.addedById?._id || element?.addedById)?.toString();
+                                                        const isOwner = currentUserId && ownerId && currentUserId.toString() === ownerId;
+
+                                                        return (
+                                                            <>
+                                                                {isOwner && (
+                                                                    <button
+                                                                        className={`btn btn-sm rounded-circle d-flex align-items-center justify-content-center ${
+                                                                            element?.isPublic ? "btn-outline-secondary" : "btn-outline-success"
+                                                                        }`}
+                                                                        style={{ width: "34px", height: "34px" }}
+                                                                        title={element?.isPublic ? "Make Private" : "Make Public"}
+                                                                        onClick={() => togglePublic(element)}
+                                                                    >
+                                                                        <i className={`fa-solid ${element?.isPublic ? "fa-lock" : "fa-globe"}`}></i>
+                                                                    </button>
+                                                                )}
+                                                                
+                                                                {isOwner && (
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-info rounded-pill px-2 py-1 fw-semibold d-flex align-items-center gap-1"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setWishliastId(element._id);
+                                                                            openModal();
+                                                                        }}
+                                                                    >
+                                                                        <i className="fa-solid fa-user-plus fs-7"></i>
+                                                                        <span>Invite</span>
+                                                                    </button>
+                                                                )}
+
+                                                                <button
+                                                                    className="btn btn-sm text-white rounded-pill px-3 py-1 fw-semibold shadow-sm"
+                                                                    style={{
+                                                                        background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
+                                                                        border: "none"
+                                                                    }}
+                                                                    onClick={() => navigate(`/wishlist/${element?._id}`)}
+                                                                >
+                                                                    View
+                                                                </button>
+
+                                                                {isOwner && (
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center ms-1"
+                                                                        style={{ width: "34px", height: "34px" }}
+                                                                        title="Delete Wishlist"
+                                                                        onClick={() => handleDeleteWishlist(element?._id)}
+                                                                    >
+                                                                        <i className="fa-solid fa-trash-can"></i>
+                                                                    </button>
+                                                                )}
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                ))
-
-                            ) : (
+                                </div>
+                            ))
+                        ) : (
 
                                 <div className="col-12 text-center py-5">
 
@@ -488,15 +511,60 @@ const AddFriend = () => {
         {/* <button onClick={() => openModal(element?._id)}>Open Modal</button> */}
         <Modal
           isOpen={modalIsOpen}
-          // onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
           ariaHideApp={false}
           style={customStyles}
-          contentLabel="Example Modal"
+          contentLabel="Invite Friend Modal"
         >
-         <input type="email" placeholder="Enter your Email" style={{borderRadius:"34px"}} onChange={ChangeEmail} value={email}/>
-         <button onClick={() => AddFriend()}>Invite Friend</button>
+          <div className="invite-modal-card p-4 position-relative">
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="btn-close-modal position-absolute top-0 end-0 m-3"
+              aria-label="Close"
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
 
+            {/* Header with Icon */}
+            <div className="text-center mb-4 pt-2">
+              <div 
+                className="mx-auto mb-3 d-flex align-items-center justify-content-center text-white shadow-sm"
+                style={{
+                  width: "58px",
+                  height: "58px",
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
+                  fontSize: "1.4rem"
+                }}
+              >
+                <i className="fa-solid fa-paper-plane"></i>
+              </div>
+              <h4 className="fw-bold mb-1 text-dark">Invite a Friend</h4>
+              <p className="text-muted small mb-0 px-2">
+                Share this wishlist with your friends and family so they can explore your collections.
+              </p>
+            </div>
+
+            {/* Modern Pill Input Group */}
+            <div className="invite-pill-container">
+              <i className="fa-regular fa-envelope text-muted fs-6"></i>
+              <input
+                type="email"
+                className="invite-input"
+                placeholder="Enter your Email"
+                onChange={ChangeEmail}
+                value={email}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') AddFriend();
+                }}
+              />
+              <button className="invite-btn" onClick={AddFriend}>
+                <span>Invite Friend</span>
+                <i className="fa-solid fa-arrow-right fs-7"></i>
+              </button>
+            </div>
+          </div>
         </Modal>
       </div>
 

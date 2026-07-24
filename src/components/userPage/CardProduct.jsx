@@ -14,14 +14,26 @@ import { Colors } from "chart.js";
 
 
 const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
+    backdropFilter: 'blur(8px)',
+    zIndex: 1050,
+  },
   content: {
     top: '50%',
     left: '50%',
     right: 'auto',
-    borderRadius: "34px",
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    borderRadius: '24px',
+    border: 'none',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    padding: '0',
+    maxWidth: '460px',
+    width: '92%',
+    overflow: 'visible',
+    background: '#ffffff',
   },
 };
 
@@ -397,52 +409,95 @@ export default function CardProduct() {
         {/* <button onClick={() => openModal(element?._id)}>Open Modal</button> */}
         <Modal
           isOpen={modalIsOpen}
-          // onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
           style={customStyles}
           ariaHideApp={false}
-          contentLabel="Example Modal"
+          contentLabel="Wishlist Selection Modal"
         >
-          <button className="btn" onClick={closeModal}><i class="fa-solid fa-xmark"></i></button>
-          {
-            isAdd ?
-              <div className="d-flex justify-content-end">
-                <input type="text" value={addwishlistname} onChange={(e) => {
-                  setaddwishlistname(e.target.value)
-                }} />
-                {/* <div onClick={()=>{
-              setisAdd(false)
-            }}><i class="fa-solid fa-plus fs-4 m-2"></i></div> */}
-                <button onClick={AddWISHLIST} className="btn">Add</button>
+          <div className="invite-modal-card p-4 position-relative">
+            <button
+              onClick={closeModal}
+              className="btn-close-modal position-absolute top-0 end-0 m-3"
+              aria-label="Close"
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+
+            <div className="text-center mb-4 pt-2">
+              <div 
+                className="mx-auto mb-3 d-flex align-items-center justify-content-center text-white shadow-sm"
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
+                  fontSize: "1.4rem"
+                }}
+              >
+                <i className="fa-solid fa-heart"></i>
               </div>
-              :
-              <div className="d-flex justify-content-end">
-                <select
-                  className="form-control"
-                  style={{ width: "200px", cursor: "pointer" }}
-                  value={wishlist}
-                  onChange={(e) => setWishList(e.target.value)}
+              <h4 className="fw-bold mb-1 text-dark">
+                {isAdd ? "Create New Wishlist" : "Add to Wishlist"}
+              </h4>
+              <p className="text-muted small mb-0 px-2">
+                {isAdd ? "Enter a name for your new wishlist collection." : "Select an existing wishlist to save this product."}
+              </p>
+            </div>
+
+            {isAdd ? (
+              <div className="invite-pill-container">
+                <i className="fa-solid fa-folder-plus text-muted fs-6"></i>
+                <input
+                  type="text"
+                  className="invite-input"
+                  placeholder="Wishlist Name (e.g., Favorites)"
+                  value={addwishlistname}
+                  onChange={(e) => setaddwishlistname(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') AddWISHLIST();
+                  }}
+                />
+                <button className="invite-btn" onClick={AddWISHLIST}>
+                  <span>Create</span>
+                  <i className="fa-solid fa-check fs-7"></i>
+                </button>
+              </div>
+            ) : (
+              <div className="d-flex flex-column gap-3">
+                <div className="d-flex align-items-center gap-2">
+                  <select
+                    className="form-select rounded-pill py-2 px-3 border shadow-sm"
+                    style={{ cursor: "pointer", fontSize: "0.95rem" }}
+                    value={wishlist}
+                    onChange={(e) => setWishList(e.target.value)}
+                  >
+                    <option value="">Select Wishlist</option>
+                    {WishListData?.map((ele) => (
+                      <option key={ele?._id} value={ele?._id}>
+                        {ele?.listName}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="btn btn-outline-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                    style={{ width: "42px", height: "42px" }}
+                    title="Create New Wishlist"
+                    onClick={() => setisAdd(true)}
+                  >
+                    <i className="fa-solid fa-plus fs-6"></i>
+                  </button>
+                </div>
+                <button
+                  className="invite-btn w-100 justify-content-center mt-1"
+                  onClick={AddITEM}
                 >
-                  <option value="">Choose</option>
-
-                  {WishListData?.map((ele) => (
-                    <option key={ele?._id} value={ele?._id}>
-                      {ele?.listName}
-                    </option>
-                  ))}
-                </select>
-                <div onClick={() => {
-                  setisAdd(true)
-                }}><i class="fa-solid fa-plus fs-4 m-2"></i></div>
-                <button className="btn" onClick={() => {
-                  AddITEM()
-
-                }}>Select</button>
+                  <span>Add to Selected Wishlist</span>
+                  <i className="fa-solid fa-arrow-right fs-7"></i>
+                </button>
               </div>
-
-          }
-
-
+            )}
+          </div>
         </Modal>
       </div>
 

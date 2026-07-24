@@ -42,14 +42,14 @@ export default function CardBrand() {
                     <h1 className="mb-4 text-center text-md-start">Brands</h1>
                     <div className="row g-4 justify-content-center">
                         {data?.map((el, index) => (
-                            <div className="col-12 col-sm-6 col-lg-4" key={el._id || index}>
-                                <div className="rounded position-relative fruite-item h-100 d-flex flex-column shadow-sm">
-                                    <div className="fruite-img" style={{ height: "240px", overflow: "hidden" }}>
+                            <div className="col-12 col-sm-6 col-md-6 col-lg-4" key={el._id || index}>
+                                <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
+                                    <div className="fruite-img" style={{ height: "300px" }}>
                                         <img
-                                            src={el?.logo}
+                                            src={Array.isArray(el?.logo) ? el?.logo?.[0] : el?.logo}
                                             className="img-fluid w-100 rounded-top"
-                                            style={{ height: "240px", objectFit: "cover" }}
-                                            alt={el?.name || "Logo"}
+                                            style={{ height: "300px" }}
+                                            alt={el?.name || "Brand"}
                                         />
                                     </div>
                                     <div
@@ -58,16 +58,21 @@ export default function CardBrand() {
                                     >
                                         {el?.name}
                                     </div>
-                                    <div className="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column flex-grow-1 bg-white">
+                                    <div className="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column flex-grow-1">
                                         <h4>{el?.name}</h4>
-                                        <p className="flex-grow-1 text-muted small">{el?.description}</p>
-                                        <button
-                                            onClick={() => navigate(`/products/brand/${el._id}`)}
-                                            type="button"
-                                            className="btn btn-success mt-auto align-self-start rounded-pill px-4"
-                                        >
-                                            View Products
-                                        </button>
+                                        <p className="flex-grow-1">
+                                            {el?.description}
+                                        </p>
+                                        <div className="d-flex justify-content-start align-items-center mt-auto">
+                                            <button
+                                                onClick={() => navigate(`/products/brand/${el._id}`)}
+                                                type="button"
+                                                className="btn border border-secondary rounded-pill px-4 py-2 text-primary d-flex align-items-center gap-2"
+                                            >
+                                                <i className="fa fa-shopping-bag text-primary"></i>
+                                                <span className="fw-semibold">View Products</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

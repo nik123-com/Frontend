@@ -1,15 +1,53 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
+import { fetchNotifications, respondInviteApi, markNotificationsRead } from "../server/Notification";
+import { toast } from "react-toastify";
 
 function UserHeader() {
   const location = useLocation();
   const isLogin = sessionStorage.getItem("isLogin") === "true";
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
-
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
   const [cartCount, setCartCount] = useState(0);
+
+  // Notification state
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+
+  const loadNotifications = () => {
+    if (!isLogin) return;
+    fetchNotifications()
+      .then((res) => {
+        if (res.data?.success) {
+          const list = res.data.data || [];
+          setNotifications(list);
+          const count = list.filter((n) => n.status === "pending").length;
+          setUnreadCount(count);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching notifications:", err);
+      });
+  };
+
+  const handleRespond = (notificationId, action) => {
+    respondInviteApi({ notificationId, action })
+      .then((res) => {
+        if (res.data?.success) {
+          toast.success(res.data.message);
+          window.dispatchEvent(new Event("wishlistUpdated"));
+          loadNotifications();
+        } else {
+          toast.error(res.data?.message || "Action failed");
+        }
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || "Failed to process request");
+      });
+  };
 
   const fetchCartCount = () => {
     const userId = sessionStorage.getItem("userId");
@@ -34,11 +72,19 @@ function UserHeader() {
 
   useEffect(() => {
     fetchCartCount();
+    loadNotifications();
+
+    const interval = setInterval(loadNotifications, 10000);
+
     window.addEventListener("cartUpdated", fetchCartCount);
+    window.addEventListener("notificationUpdated", loadNotifications);
+
     return () => {
+      clearInterval(interval);
       window.removeEventListener("cartUpdated", fetchCartCount);
+      window.removeEventListener("notificationUpdated", loadNotifications);
     };
-  }, [location]);
+  }, [location, isLogin]);
 
   return (
     <>
@@ -114,7 +160,7 @@ function UserHeader() {
                   Queries
                 </Link>
               </div>
-              <div className="d-flex m-3 me-0 align-items-center">
+              <div className="d-flex m-3 me-0 align-items-center position-relative">
                 <button
                   className="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
                   data-bs-toggle="modal"
@@ -123,6 +169,140 @@ function UserHeader() {
                 >
                   <i className="fas fa-search text-primary" />
                 </button>
+
+                {/* Notifications Bell */}
+                {isLogin && (
+                  <div className="position-relative me-4 my-auto">
+                    <button
+                      className="btn p-0 border-0 bg-transparent position-relative"
+                      onClick={() => {
+                        setShowNotifDropdown(!showNotifDropdown);
+                        if (!showNotifDropdown && unreadCount > 0) {
+                          markNotificationsRead().catch(() => {});
+                        }
+                      }}
+                      title="Notifications"
+                    >
+                      <i className="fa-solid fa-bell fa-2x text-primary"></i>
+                      {unreadCount > 0 && (
+                        <span
+                          className="position-absolute bg-danger rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                          style={{ top: "-6px", right: "-8px", height: 20, width: 20, fontSize: "0.75rem" }}
+                        >
+                          {unreadCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Dropdown Popup */}
+                    {showNotifDropdown && (
+                      <div
+                        className="position-absolute bg-white rounded-4 shadow-lg border p-3 mt-2"
+                        style={{
+                          right: 0,
+                          top: "100%",
+                          width: "340px",
+                          maxHeight: "420px",
+                          overflowY: "auto",
+                          zIndex: 1100
+                        }}
+                      >
+                        <div className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                          <h6 className="fw-bold mb-0 text-dark">Notifications</h6>
+                          <span className="badge bg-light text-muted">{notifications.length} total</span>
+                        </div>
+
+                        {notifications.length > 0 ? (
+                          notifications.map((notif) => (
+                            <div
+                              key={notif._id}
+                              className={`p-2 mb-2 rounded-3 border ${
+                                notif.status === "pending" ? "bg-light" : "bg-white"
+                              }`}
+                            >
+                              <div className="d-flex align-items-start gap-2">
+                                <div
+                                  className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 mt-1"
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    background:
+                                      notif.type === "wishlist_invite"
+                                        ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
+                                        : notif.type === "invite_accepted"
+                                        ? "#10b981"
+                                        : "#ef4444",
+                                    fontSize: "0.8rem"
+                                  }}
+                                >
+                                  <i
+                                    className={`fa-solid ${
+                                      notif.type === "wishlist_invite"
+                                        ? "fa-user-plus"
+                                        : notif.type === "invite_accepted"
+                                        ? "fa-circle-check"
+                                        : "fa-circle-xmark"
+                                    }`}
+                                  ></i>
+                                </div>
+                                <div className="flex-grow-1">
+                                  <p className="small mb-1 text-dark fw-medium" style={{ lineHeight: "1.3" }}>
+                                    {notif.message}
+                                  </p>
+                                  <small className="text-muted d-block mb-2" style={{ fontSize: "0.75rem" }}>
+                                    {new Date(notif.createdAt).toLocaleDateString()}{" "}
+                                    {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </small>
+
+                                  {/* Actions for Wishlist Invites */}
+                                  {notif.type === "wishlist_invite" && notif.status === "pending" && (
+                                    <div className="d-flex gap-2 mt-1">
+                                      <button
+                                        className="btn btn-sm text-white rounded-pill px-3 py-1 fw-semibold shadow-sm"
+                                        style={{ 
+                                          background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
+                                          fontSize: "0.8rem",
+                                          border: "none"
+                                        }}
+                                        onClick={() => handleRespond(notif._id, "accept")}
+                                      >
+                                        Accept
+                                      </button>
+                                      <button
+                                        className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold"
+                                        style={{ fontSize: "0.8rem" }}
+                                        onClick={() => handleRespond(notif._id, "reject")}
+                                      >
+                                        Reject
+                                      </button>
+                                    </div>
+                                  )}
+
+                                  {notif.status !== "pending" && (
+                                    <span
+                                      className={`badge ${
+                                        notif.status === "accepted" ? "bg-success" : "bg-secondary"
+                                      } rounded-pill px-2 py-1`}
+                                      style={{ fontSize: "0.7rem" }}
+                                    >
+                                      {notif.status.toUpperCase()}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-4 text-muted">
+                            <i className="fa-regular fa-bell-slash fs-4 mb-2 d-block"></i>
+                            <p className="small mb-0">No notifications found</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <Link to="/cart" className="position-relative me-4 my-auto" onClick={() => setIsNavCollapsed(true)}>
                   <i className="fa fa-shopping-bag fa-2x text-primary" />
                   {isLogin && (

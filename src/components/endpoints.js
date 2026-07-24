@@ -1,5 +1,5 @@
-// export const baseUrl = "http://localhost:3000"; // Link from Local Machine
-export const baseUrl = "https://backend-99kd.onrender.com"; // Link from render
+export const baseUrl = "http://localhost:3000"; // Link from Local Machine
+// export const baseUrl = "https://backend-99kd.onrender.com"; // Link from render
 export const login_api = "/api/login";
 
 //Category
@@ -86,4 +86,10 @@ export const customer_all_query = "/customer/query/all";
 export const submit_feedback_query = "/customer/query/feedback";
 export const admin_all_query = "/api/query/all";
 export const admin_reply_query = "/api/query/reply";
+
+//Notification
+export const all_notification = "/customer/notification/all";
+export const respond_notification = "/customer/notification/respond";
+export const mark_read_notification = "/customer/notification/markRead";
+
 

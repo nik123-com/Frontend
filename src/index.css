@@ -180,3 +180,420 @@ button:focus-visible {
   }
 }
 
+}
+
+/* ==========================================================================
+   Modern Modal & Invite Friend Custom Styles
+   ========================================================================== */
+
+/* React Modal Backdrop Overlay */
+.ReactModal__Overlay {
+  background-color: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  z-index: 1050 !important;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.ReactModal__Content {
+  animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none !important;
+  outline: none !important;
+}
+
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Invite Modal Box */
+.invite-modal-card {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+  min-width: 320px;
+}
+
+.btn-close-modal {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-close-modal:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: rotate(90deg);
+}
+
+/* Beautiful Pill Input Container for Invite / Email Forms */
+.invite-pill-container {
+  display: flex;
+  align-items: center;
+  width: 100% !important;
+  flex: 1 1 auto;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 50px;
+  padding: 6px 6px 6px 18px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.invite-pill-container:focus-within {
+  border-color: #81c408;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(129, 196, 8, 0.15), 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.invite-pill-container .invite-input {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-size: 0.95rem;
+  color: #1e293b;
+  width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 0% !important;
+  padding-left: 8px;
+  font-family: inherit;
+}
+
+.invite-pill-container .invite-input::placeholder {
+  color: #94a3b8;
+}
+
+.invite-pill-container .invite-btn {
+  background: linear-gradient(135deg, #81c408 0%, #6fa606 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 40px;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 0.925rem;
+  white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(111, 166, 6, 0.3);
+  transition: all 0.25s ease;
+}
+
+.invite-pill-container .invite-btn:hover {
+  background: linear-gradient(135deg, #8cd309 0%, #7ab607 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(111, 166, 6, 0.4);
+}
+
+.invite-pill-container .invite-btn:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Clean & Modern Category / Brand Card Custom Styles
+   ========================================================================== */
+.elegant-category-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.elegant-category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.09);
+  border-color: #e2e8f0;
+}
+
+.elegant-category-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 5px 14px;
+  border-radius: 50px;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.elegant-category-img-wrapper {
+  height: 250px;
+  overflow: hidden;
+  position: relative;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.elegant-category-img-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 0.4s ease;
+}
+
+.elegant-category-card:hover .elegant-category-img-wrapper img {
+  transform: scale(1.04);
+}
+
+.elegant-btn-outline {
+  background: linear-gradient(135deg, #81c408 0%, #6fa606 100%);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 24px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 14px rgba(111, 166, 6, 0.25);
+  transition: all 0.25s ease;
+}
+
+.elegant-btn-outline:hover {
+  background: linear-gradient(135deg, #8cd309 0%, #7ab607 100%);
+  box-shadow: 0 6px 18px rgba(111, 166, 6, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   WhatsApp Mobile Chat Custom Styling (Exact 100% Match to User Screenshot)
+   ========================================================================== */
+.whatsapp-mobile-container {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  border: 1px solid #d1d5db;
+  background: #eef7f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.whatsapp-mobile-header {
+  background: #075e54;
+  color: #ffffff;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.whatsapp-mobile-body {
+  background-color: #e6f3f8;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px;
+  height: 480px;
+  overflow-y: auto;
+  padding: 16px 14px;
+}
+
+.whatsapp-mobile-bubble-incoming {
+  background: #ffffff;
+  color: #111b21;
+  border-radius: 0px 16px 16px 16px;
+  padding: 10px 14px;
+  max-width: 80%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  border-left: 3px solid #00a884;
+}
+
+.whatsapp-mobile-bubble-outgoing {
+  background: #c8f7c5;
+  color: #111b21;
+  border-radius: 16px 0px 16px 16px;
+  padding: 10px 14px;
+  max-width: 80%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.whatsapp-mobile-time {
+  font-size: 0.68rem;
+  color: #667781;
+  float: right;
+  margin-left: 12px;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.whatsapp-mobile-input-bar {
+  background: #e6f3f8;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.whatsapp-mobile-pill-input {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.whatsapp-mobile-input-field {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  flex-grow: 1;
+  color: #111b21;
+}
+
+.whatsapp-mobile-input-field::placeholder {
+  color: #94a3b8;
+}
+
+.whatsapp-mobile-action-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #00796b;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 121, 107, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.whatsapp-mobile-action-btn:hover {
+  background: #004d40;
+  transform: scale(1.05);
+}
+
+
+/* WhatsApp Web Sidebar & Document Attachment Template Styling */
+.whatsapp-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e9edef;
+  display: flex;
+  flex-direction: column;
+}
+
+.whatsapp-sidebar-header {
+  background: #f0f2f5;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e9edef;
+}
+
+.whatsapp-search-bar {
+  background: #f0f2f5;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e9edef;
+}
+
+.whatsapp-search-input {
+  background: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px 6px 34px;
+  font-size: 0.875rem;
+  width: 100%;
+  outline: none;
+}
+
+.whatsapp-chat-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: 480px;
+}
+
+.whatsapp-chat-item {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #f0f2f5;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.whatsapp-chat-item:hover, .whatsapp-chat-item.active {
+  background: #f0f2f5;
+}
+
+/* WhatsApp Document / Product Attachment Card (Exact Match) */
+.whatsapp-doc-card {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.whatsapp-doc-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.whatsapp-doc-action-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 8px;
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #00a884;
+}
+
+.whatsapp-doc-action-row span:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+
+
+
+
