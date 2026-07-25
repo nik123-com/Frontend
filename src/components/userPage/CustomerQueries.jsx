@@ -159,7 +159,7 @@ export default function CustomerQueries() {
                   {/* Autofilled Complaint ID & Date/Time */}
                   <div className="row g-2 mb-3">
                     <div className="col-12 col-sm-6">
-                      <label className="form-label fw-bold text-dark">Query ID (Auto)</label>
+                      <label className="form-label fw-bold text-dark">Query ID</label>
                       <input
                         type="text"
                         className="form-control bg-white text-success fw-bold"
