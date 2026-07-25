@@ -3,10 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,12 +11,12 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #81c408;
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #535bf2;
+  color: #6fa606;
 }
 
 /* Custom Chatbot Styling */
@@ -47,7 +43,6 @@ a:hover {
 .rcb-chat-tooltip-tail {
   border-color: transparent transparent transparent #81c408 !important;
   bottom: 13px !important;
-  /* Adjust tail position if needed, otherwise let default handle it */
 }
 
 .rcb-toggle-icon {
@@ -68,47 +63,6 @@ a:hover {
 body {
   margin: 0;
   min-width: 320px;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
 }
 
 /* ==========================================================================
@@ -140,7 +94,6 @@ button:focus-visible {
 
 /* Mobile Headings & Typography scaling */
 @media (max-width: 575.98px) {
-
   h1.display-6,
   .display-6 {
     font-size: 1.75rem !important;
@@ -196,8 +149,6 @@ button:focus-visible {
   }
 }
 
-}
-
 /* ==========================================================================
    Modern Modal & Invite Friend Custom Styles
    ========================================================================== */
@@ -215,6 +166,8 @@ button:focus-visible {
   animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: none !important;
   outline: none !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  background: transparent !important;
 }
 
 @keyframes modalPopIn {
@@ -229,52 +182,62 @@ button:focus-visible {
   }
 }
 
-/* Invite Modal Box */
+/* Invite / Wishlist Modal Box */
 .invite-modal-card {
   background: #ffffff;
   border-radius: 24px;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
   min-width: 320px;
 }
 
 .btn-close-modal {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  border: none !important;
+  outline: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
 
 .btn-close-modal:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-  transform: rotate(90deg);
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  transform: rotate(90deg) scale(1.08) !important;
 }
 
-/* Beautiful Pill Input Container for Invite / Email Forms */
+.btn-close-modal:focus,
+.btn-close-modal:active {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(129, 196, 8, 0.2) !important;
+}
+
+/* Beautiful Pill Input Container for Invite / Wishlist Forms */
 .invite-pill-container {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
   width: 100% !important;
   flex: 1 1 auto;
   background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 50px;
-  padding: 6px 6px 6px 18px;
-  transition: all 0.25s ease;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 50px !important;
+  padding: 5px 5px 5px 16px !important;
+  transition: all 0.25s ease !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .invite-pill-container:focus-within {
-  border-color: #81c408;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(129, 196, 8, 0.15), 0 6px 16px rgba(0, 0, 0, 0.05);
+  border-color: #81c408 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(129, 196, 8, 0.18), 0 6px 16px rgba(0, 0, 0, 0.05) !important;
 }
 
 .invite-pill-container .invite-input {
@@ -282,44 +245,79 @@ button:focus-visible {
   outline: none !important;
   box-shadow: none !important;
   background: transparent !important;
-  font-size: 0.95rem;
-  color: #1e293b;
+  font-size: 0.95rem !important;
+  color: #1e293b !important;
   width: 100% !important;
   min-width: 0 !important;
   flex: 1 1 0% !important;
-  padding-left: 8px;
-  font-family: inherit;
+  padding: 8px 10px !important;
+  font-family: inherit !important;
+  height: auto !important;
 }
 
 .invite-pill-container .invite-input::placeholder {
-  color: #94a3b8;
+  color: #94a3b8 !important;
+  opacity: 1 !important;
 }
 
-.invite-pill-container .invite-btn {
-  background: linear-gradient(135deg, #81c408 0%, #6fa606 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 40px;
-  padding: 10px 24px;
-  font-weight: 600;
-  font-size: 0.925rem;
-  white-space: nowrap;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(111, 166, 6, 0.3);
-  transition: all 0.25s ease;
+/* Header Icon Badge Styling & Animations */
+.modal-icon-badge {
+  width: 62px !important;
+  height: 62px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #81c408 0%, #6fa606 100%) !important;
+  font-size: 1.5rem !important;
+  box-shadow: 0 10px 25px -3px rgba(129, 196, 8, 0.4), 0 0 0 6px rgba(129, 196, 8, 0.12) !important;
+  transition: all 0.3s ease !important;
+  animation: badgePulse 3s infinite ease-in-out;
 }
 
-.invite-pill-container .invite-btn:hover {
-  background: linear-gradient(135deg, #8cd309 0%, #7ab607 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(111, 166, 6, 0.4);
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 10px 25px -3px rgba(129, 196, 8, 0.4), 0 0 0 6px rgba(129, 196, 8, 0.12);
+  }
+  50% {
+    box-shadow: 0 14px 30px -3px rgba(129, 196, 8, 0.5), 0 0 0 10px rgba(129, 196, 8, 0.08);
+  }
 }
 
-.invite-pill-container .invite-btn:active {
-  transform: translateY(0);
+.modal-icon-badge i {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  transition: transform 0.3s ease;
+}
+
+.invite-modal-card:hover .modal-icon-badge i {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.modal-input-icon {
+  color: #81c408 !important;
+  font-size: 1.1rem !important;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.invite-pill-container:focus-within .modal-input-icon {
+  color: #6fa606 !important;
+  transform: scale(1.15);
+}
+
+.invite-btn i {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.invite-btn:hover i {
+  transform: translateX(4px) scale(1.1) !important;
+}
+
+.icon-hover-bounce {
+  transition: all 0.25s ease !important;
+}
+
+.icon-hover-bounce:hover {
+  transform: scale(1.1) rotate(90deg) !important;
+  background-color: #81c408 !important;
+  color: #ffffff !important;
+  border-color: #81c408 !important;
 }
 
 /* ==========================================================================

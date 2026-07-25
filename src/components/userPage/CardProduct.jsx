@@ -18,6 +18,7 @@ const customStyles = {
   overlay: {
     backgroundColor: 'rgba(15, 23, 42, 0.65)',
     backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
     zIndex: 1050,
   },
   content: {
@@ -433,6 +434,7 @@ export default function CardProduct() {
         >
           <div className="invite-modal-card p-4 position-relative">
             <button
+              type="button"
               onClick={closeModal}
               className="btn-close-modal position-absolute top-0 end-0 m-3"
               aria-label="Close"
@@ -441,17 +443,8 @@ export default function CardProduct() {
             </button>
 
             <div className="text-center mb-4 pt-2">
-              <div 
-                className="mx-auto mb-3 d-flex align-items-center justify-content-center text-white shadow-sm"
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
-                  fontSize: "1.4rem"
-                }}
-              >
-                <i className="fa-solid fa-heart"></i>
+              <div className="modal-icon-badge mx-auto mb-3 d-flex align-items-center justify-content-center text-white">
+                <i className={isAdd ? "fa-solid fa-heart-circle-plus" : "fa-solid fa-heart"}></i>
               </div>
               <h4 className="fw-bold mb-1 text-dark">
                 {isAdd ? "Create New Wishlist" : "Add to Wishlist"}
@@ -463,7 +456,7 @@ export default function CardProduct() {
 
             {isAdd ? (
               <div className="invite-pill-container">
-                <i className="fa-solid fa-folder-plus text-muted fs-6"></i>
+                <i className="fa-solid fa-folder-plus modal-input-icon ms-1"></i>
                 <input
                   type="text"
                   className="invite-input"
@@ -474,9 +467,9 @@ export default function CardProduct() {
                     if (e.key === 'Enter') AddWISHLIST();
                   }}
                 />
-                <button className="invite-btn" onClick={AddWISHLIST}>
+                <button type="button" className="invite-btn" onClick={AddWISHLIST}>
                   <span>Create</span>
-                  <i className="fa-solid fa-check fs-7"></i>
+                  <i className="fa-solid fa-wand-magic-sparkles"></i>
                 </button>
               </div>
             ) : (
@@ -497,7 +490,7 @@ export default function CardProduct() {
                   </select>
                   <button
                     type="button"
-                    className="btn btn-outline-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                    className="btn btn-outline-success rounded-circle icon-hover-bounce d-flex align-items-center justify-content-center flex-shrink-0"
                     style={{ width: "42px", height: "42px" }}
                     title="Create New Wishlist"
                     onClick={() => setisAdd(true)}
@@ -506,11 +499,12 @@ export default function CardProduct() {
                   </button>
                 </div>
                 <button
+                  type="button"
                   className="invite-btn w-100 justify-content-center mt-1"
                   onClick={AddITEM}
                 >
                   <span>Add to Selected Wishlist</span>
-                  <i className="fa-solid fa-arrow-right fs-7"></i>
+                  <i className="fa-solid fa-circle-check"></i>
                 </button>
               </div>
             )}

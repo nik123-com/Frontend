@@ -12,6 +12,7 @@ const customStyles = {
   overlay: {
     backgroundColor: 'rgba(15, 23, 42, 0.65)',
     backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
     zIndex: 1050,
   },
   content: {
@@ -526,6 +527,7 @@ const AddFriend = () => {
           <div className="invite-modal-card p-4 position-relative">
             {/* Close Button */}
             <button
+              type="button"
               onClick={closeModal}
               className="btn-close-modal position-absolute top-0 end-0 m-3"
               aria-label="Close"
@@ -535,17 +537,8 @@ const AddFriend = () => {
 
             {/* Header with Icon */}
             <div className="text-center mb-4 pt-2">
-              <div 
-                className="mx-auto mb-3 d-flex align-items-center justify-content-center text-white shadow-sm"
-                style={{
-                  width: "58px",
-                  height: "58px",
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
-                  fontSize: "1.4rem"
-                }}
-              >
-                <i className="fa-solid fa-paper-plane"></i>
+              <div className="modal-icon-badge mx-auto mb-3 d-flex align-items-center justify-content-center text-white">
+                <i className="fa-solid fa-user-plus"></i>
               </div>
               <h4 className="fw-bold mb-1 text-dark">Invite a Friend</h4>
               <p className="text-muted small mb-0 px-2">
@@ -555,7 +548,7 @@ const AddFriend = () => {
 
             {/* Modern Pill Input Group */}
             <div className="invite-pill-container">
-              <i className="fa-regular fa-envelope text-muted fs-6"></i>
+              <i className="fa-solid fa-envelope-open-text modal-input-icon ms-1"></i>
               <input
                 type="email"
                 className="invite-input"
@@ -566,9 +559,9 @@ const AddFriend = () => {
                   if (e.key === 'Enter') AddFriend();
                 }}
               />
-              <button className="invite-btn" onClick={AddFriend}>
+              <button type="button" className="invite-btn" onClick={AddFriend}>
                 <span>Invite Friend</span>
-                <i className="fa-solid fa-arrow-right fs-7"></i>
+                <i className="fa-solid fa-paper-plane"></i>
               </button>
             </div>
           </div>
