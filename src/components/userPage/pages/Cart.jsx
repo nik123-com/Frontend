@@ -221,7 +221,7 @@ export default function Cart() {
                   <th scope="col" className="text-center">Price</th>
                   <th scope="col" className="text-center">Quantity</th>
                   <th scope="col" className="text-center">Total</th>
-                  <th scope="col" className="text-center pe-4">Handle</th>
+                  <th scope="col" className="text-center pe-4 text-uppercase small fw-bold text-muted" style={{ letterSpacing: "0.5px" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -237,51 +237,83 @@ export default function Cart() {
                 ) : data?.length > 0 ? (
                   data?.map((Element) => (
                     <tr key={Element?._id}>
-                      <td className="text-center ps-4">
+                      <td className="text-center ps-4 py-3">
                         <div className="d-flex align-items-center justify-content-center">
                           <img
                             src={Array.isArray(Element?.product_id?.image) ? Element?.product_id?.image?.[0] : Element?.product_id?.image}
-                            className="img-fluid rounded-circle"
-                            style={{ width: 70, height: 70, objectFit: "cover" }}
+                            className="img-fluid rounded-3 border shadow-sm"
+                            style={{ width: 64, height: 64, objectFit: "cover" }}
                             alt={Element?.product_id?.name || ""}
                           />
                         </div>
                       </td>
-                      <td className="text-start">
+                      <td className="text-start py-3">
                         <p className="mb-0 fw-semibold text-dark">{Element?.product_id?.name}</p>
                       </td>
-                      <td className="text-center">
+                      <td className="text-center py-3">
                         <p className="mb-0 fw-medium">₹ {Element?.price}</p>
                       </td>
-                      <td className="text-center">
+                      <td className="text-center py-3">
                         <div
-                          className="input-group quantity mx-auto"
-                          style={{ width: 110 }}
+                          className="input-group quantity mx-auto align-items-center justify-content-center"
+                          style={{ width: 115 }}
                         >
-                          <div className="input-group-btn">
-                            <button onClick={() => { Decrement(Element._id) }} className="btn btn-sm btn-minus rounded-circle bg-light border">
-                              <i className="fa fa-minus" />
-                            </button>
-                          </div>
-                          <input style={{ backgroundColor: "white" }}
+                          <button
+                            onClick={() => Decrement(Element._id)}
+                            className="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
+                            style={{ width: "28px", height: "28px", fontSize: "0.75rem" }}
+                            title="Decrease Quantity"
+                          >
+                            <i className="fa fa-minus" />
+                          </button>
+                          <input
                             type="text"
-                            className="form-control form-control-sm text-center border-0"
+                            className="form-control form-control-sm text-center border-0 fw-semibold bg-transparent px-1"
                             value={Element?.qty}
                             disabled
+                            style={{ color: "#1e293b", fontSize: "0.95rem", maxWidth: "40px" }}
                           />
-                          <div className="input-group-btn">
-                            <button onClick={() => { Increment(Element._id)}} className="btn btn-sm btn-plus rounded-circle bg-light border">
-                              <i className="fa fa-plus" />
-                            </button>
-                          </div>
+                          <button
+                            onClick={() => Increment(Element._id)}
+                            className="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
+                            style={{ width: "28px", height: "28px", fontSize: "0.75rem" }}
+                            title="Increase Quantity"
+                          >
+                            <i className="fa fa-plus" />
+                          </button>
                         </div>
                       </td>
-                      <td className="text-center">
+                      <td className="text-center py-3">
                         <p className="mb-0 fw-semibold text-success">₹ {Element.price * Element.qty}</p>
                       </td>
-                      <td className="text-center pe-4">
-                        <button onClick={() => { deleteCart(Element?._id) }} className="btn btn-md rounded-circle bg-light border" title="Remove Item">
-                          <i className="fa fa-times text-danger" />
+                      <td className="text-center pe-4 py-3">
+                        <button
+                          onClick={() => deleteCart(Element?._id)}
+                          className="btn btn-sm text-danger border-0 rounded-circle d-inline-flex align-items-center justify-content-center"
+                          style={{
+                            width: "38px",
+                            height: "38px",
+                            backgroundColor: "#fee2e2",
+                            color: "#ef4444",
+                            transition: "all 0.2s ease-in-out",
+                            boxShadow: "0 2px 4px rgba(239, 68, 68, 0.15)",
+                            cursor: "pointer"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "#ef4444";
+                            e.currentTarget.style.color = "#ffffff";
+                            e.currentTarget.style.transform = "scale(1.08)";
+                            e.currentTarget.style.boxShadow = "0 4px 8px rgba(239, 68, 68, 0.3)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "#fee2e2";
+                            e.currentTarget.style.color = "#ef4444";
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.boxShadow = "0 2px 4px rgba(239, 68, 68, 0.15)";
+                          }}
+                          title="Remove Item"
+                        >
+                          <i className="fa-solid fa-trash-can" style={{ fontSize: "0.9rem" }} />
                         </button>
                       </td>
                     </tr>
