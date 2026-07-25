@@ -225,18 +225,26 @@ export default function Login() {
                         onChange={(e) => setCaptchaInput(e.target.value)}
                       />
                     </div>
-                  <div className="mb-3 d-flex justify-content-center flex-wrap gap-2">
-                    <Link to="/forgot-password" className="text-success small fw-medium">Forgot Password</Link>
-                    <Link to="/customerReg" className="text-success small fw-medium">Register</Link>
+                  <div className="d-flex justify-content-end mb-3">
+                    <Link to="/forgot-password" className="text-primary small fw-semibold text-decoration-none">
+                      Forgot Password?
+                    </Link>
                   </div>
-                  
 
                   <button
-                    className="w-100 btn form-control border-primary py-3 bg-primary mt-1 text-light"
+                    className="w-100 btn form-control border-primary py-3 bg-primary text-light fw-bold shadow-sm"
                     type="submit"
+                    disabled={loading}
                   >
-                    Login
+                    {loading ? "Logging in..." : "Login"}
                   </button>
+
+                  <div className="text-center mt-4 pt-3 border-top">
+                    <span className="text-muted small">Don't have an account? </span>
+                    <Link to="/customerReg" className="text-primary fw-bold text-decoration-none ms-1">
+                      Register
+                    </Link>
+                  </div>
                 </form>
               </div>
             </div>
