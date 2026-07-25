@@ -18,23 +18,25 @@ export default function Cart() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [address,setAddress] = useState();
   const [placingOrder, setPlacingOrder] = useState(false);
-  const  userId = sessionStorage.getItem("userId")
+  const [loading, setLoading] = useState(true);
+  const userId = sessionStorage.getItem("userId")
 
   
   // const navigate = useNavigate();
   useEffect(() => {
-    fetch();
+    fetch(true);
     fetchAddress();
   }, []);
 
 
-  const fetch = () => {
+  const fetch = (isInitial = false) => {
+    if (isInitial) setLoading(true);
 
     allCart({data, userId}).then((res) => {
-      setData(res.data.data);
+      setData(res.data.data || []);
 
       //For Calculating Total(We use Reduce Function because map() is not execute at the end of React)
-      let t = res.data.data.reduce((acc, CurrentValue) => {
+      let t = (res.data.data || []).reduce((acc, CurrentValue) => {
         return acc + (CurrentValue.price * CurrentValue.qty)
         //  console.log(acc + Element.price );
       }, 0)
@@ -43,6 +45,8 @@ export default function Cart() {
     }).catch((err) => {
       console.log(err);
 
+    }).finally(() => {
+      setLoading(false);
     });
   }
   const deliveryCharge = total > 0 ? 70 : 0;
@@ -212,67 +216,87 @@ export default function Cart() {
             <table className="table align-middle mb-0">
               <thead className="table-light">
                 <tr>
-                  <th scope="col" className="ps-4">Products</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Total</th>
-                  <th scope="col" className="text-end pe-4">Handle</th>
+                  <th scope="col" className="text-center ps-4" style={{ width: "120px" }}>Products</th>
+                  <th scope="col" className="text-start">Name</th>
+                  <th scope="col" className="text-center">Price</th>
+                  <th scope="col" className="text-center">Quantity</th>
+                  <th scope="col" className="text-center">Total</th>
+                  <th scope="col" className="text-center pe-4">Handle</th>
                 </tr>
               </thead>
               <tbody>
-                {data?.map((Element) => (
-                  <tr key={Element?._id}>
-                    <th scope="row">
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={Array.isArray(Element?.product_id?.image) ? Element?.product_id?.image?.[0] : Element?.product_id?.image}
-                          className="img-fluid me-5 rounded-circle"
-                          style={{ width: 80, height: 80 }}
-                          alt=""
-                        />
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="text-center py-5">
+                      <div className="spinner-border text-primary" role="status" style={{ width: "2.5rem", height: "2.5rem" }}>
+                        <span className="visually-hidden">Loading...</span>
                       </div>
-                    </th>
-                    <td>
-                      <p className="mb-0 mt-4">{Element?.product_id?.name}</p>
-                    </td>
-                    <td>
-                      <p className="mb-0 mt-4">₹ {Element?.price}</p>
-                    </td>
-                    <td>
-                      <div
-                        className="input-group quantity mt-4"
-                        style={{ width: 100 }}
-                      >
-                        <div className="input-group-btn">
-                          <button onClick={() => { Decrement(Element._id) }} className="btn btn-sm btn-minus rounded-circle bg-light border">
-                            <i className="fa fa-minus" />
-                          </button>
-                        </div>
-                        <input style={{ backgroundColor: "white" }}
-                          type="text"
-                          className="form-control form-control-sm text-center border-0"
-                          // defaultValue={Element?.qty}
-                          value={Element?.qty}
-                          disabled
-                        />
-                        <div className="input-group-btn">
-                          <button onClick={() => { Increment(Element._id)}} className="btn btn-sm btn-plus rounded-circle bg-light border">
-                            <i className="fa fa-plus" />
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <p className="mb-0 mt-4">₹ {Element.price * Element.qty}</p>
-                    </td>
-                    <td>
-                      <button onClick={() => { deleteCart(Element?._id) }} className="btn btn-md rounded-circle bg-light border mt-4">
-                        <i className="fa fa-times text-danger" />
-                      </button>
+                      <p className="mt-2 text-muted fw-semibold mb-0">Loading cart items...</p>
                     </td>
                   </tr>
-                ))}
+                ) : data?.length > 0 ? (
+                  data?.map((Element) => (
+                    <tr key={Element?._id}>
+                      <td className="text-center ps-4">
+                        <div className="d-flex align-items-center justify-content-center">
+                          <img
+                            src={Array.isArray(Element?.product_id?.image) ? Element?.product_id?.image?.[0] : Element?.product_id?.image}
+                            className="img-fluid rounded-circle"
+                            style={{ width: 70, height: 70, objectFit: "cover" }}
+                            alt={Element?.product_id?.name || ""}
+                          />
+                        </div>
+                      </td>
+                      <td className="text-start">
+                        <p className="mb-0 fw-semibold text-dark">{Element?.product_id?.name}</p>
+                      </td>
+                      <td className="text-center">
+                        <p className="mb-0 fw-medium">₹ {Element?.price}</p>
+                      </td>
+                      <td className="text-center">
+                        <div
+                          className="input-group quantity mx-auto"
+                          style={{ width: 110 }}
+                        >
+                          <div className="input-group-btn">
+                            <button onClick={() => { Decrement(Element._id) }} className="btn btn-sm btn-minus rounded-circle bg-light border">
+                              <i className="fa fa-minus" />
+                            </button>
+                          </div>
+                          <input style={{ backgroundColor: "white" }}
+                            type="text"
+                            className="form-control form-control-sm text-center border-0"
+                            value={Element?.qty}
+                            disabled
+                          />
+                          <div className="input-group-btn">
+                            <button onClick={() => { Increment(Element._id)}} className="btn btn-sm btn-plus rounded-circle bg-light border">
+                              <i className="fa fa-plus" />
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="text-center">
+                        <p className="mb-0 fw-semibold text-success">₹ {Element.price * Element.qty}</p>
+                      </td>
+                      <td className="text-center pe-4">
+                        <button onClick={() => { deleteCart(Element?._id) }} className="btn btn-md rounded-circle bg-light border" title="Remove Item">
+                          <i className="fa fa-times text-danger" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-5 text-muted">
+                      <i className="fa fa-shopping-cart fs-1 mb-3 text-secondary d-block"></i>
+                      <h5 className="fw-normal">Your cart is empty</h5>
+                      <Link to="/cardproduct" className="btn btn-sm btn-outline-primary rounded-pill px-4 mt-2">
+                        Browse Products
+                      </Link>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

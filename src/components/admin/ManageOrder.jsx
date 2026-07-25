@@ -221,7 +221,16 @@ export default function ManageOrder() {
                         </tr>
                       </thead>
                       <tbody>
-                        {orders?.length > 0 ? (
+                        {loading ? (
+                          <tr>
+                            <td colSpan="8" className="text-center py-5">
+                              <div className="spinner-border text-primary" role="status" style={{ width: "2.5rem", height: "2.5rem" }}>
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                              <p className="mt-2 text-muted fw-semibold mb-0">Loading orders...</p>
+                            </td>
+                          </tr>
+                        ) : orders?.length > 0 ? (
                           orders.map((order, index) => (
                             <tr key={order._id}>
                               <td className="ps-4 fw-semibold text-muted">{index + 1}</td>

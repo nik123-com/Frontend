@@ -317,7 +317,14 @@ const AddFriend = () => {
                     </div>
 
                     <div className="row">
-                        {data?.length > 0 ? (
+                        {loading ? (
+                            <div className="col-12 text-center py-5">
+                                <div className="spinner-border text-success" role="status" style={{ width: "2.5rem", height: "2.5rem" }}>
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
+                                <p className="mt-2 text-muted fw-semibold">Loading wishlists...</p>
+                            </div>
+                        ) : data?.length > 0 ? (
                             data.map((element) => (
                                 <div
                                     className="col-lg-4 col-md-6 mb-4"
