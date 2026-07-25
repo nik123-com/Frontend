@@ -96,7 +96,7 @@ export default function Login() {
   }
 
   useEffect(() => {
-  generateCaptcha();
+    generateCaptcha();
   }, []);
 
   //Form Submition
@@ -191,40 +191,40 @@ export default function Login() {
                     value={password}
                     required
                   />
-                     <div
-                      className="card shadow-sm p-3 mb-4 mx-auto"
+                  <div
+                    className="card shadow-sm p-3 mb-4 mx-auto"
+                    style={{
+                      borderRadius: 12,
+                      maxWidth: "100%",
+                      width: "320px",
+                      alignItems: "center"
+                    }}>
+                    <canvas
+                      id="captchaCanvas"
+                      width={200}
+                      height={50}
+                      className="rounded border mb-2 mw-100"
                       style={{
-                        borderRadius: 12,
-                        maxWidth: "100%",
-                        width: "320px",
-                        alignItems: "center"
-                      }}> 
-                      <canvas
-                        id="captchaCanvas"
-                        width={200}
-                        height={50}
-                        className="rounded border mb-2 mw-100"
-                        style={{
-                          display: "block"
-                        }}
-                      />
+                        display: "block"
+                      }}
+                    />
 
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm mb-2 rounded-pill px-3"
-                        onClick={generateCaptcha}
-                      >
-                        Refresh Captcha
-                      </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm mb-2 rounded-pill px-3"
+                      onClick={generateCaptcha}
+                    >
+                      Refresh Captcha
+                    </button>
 
-                      <input
-                        type="text"
-                        className="form-control text-center"
-                        placeholder="Enter Captcha"
-                        value={captchaInput}
-                        onChange={(e) => setCaptchaInput(e.target.value)}
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      className="form-control text-center"
+                      placeholder="Enter Captcha"
+                      value={captchaInput}
+                      onChange={(e) => setCaptchaInput(e.target.value)}
+                    />
+                  </div>
                   <div className="d-flex justify-content-end mb-3">
                     <Link to="/forgot-password" className="text-primary small fw-semibold text-decoration-none">
                       Forgot Password?

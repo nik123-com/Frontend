@@ -18,49 +18,51 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
 /* Custom Chatbot Styling */
 .rcb-toggle-button {
-    display: flex !important;
-    flex-direction: row !important;
-    position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
-    z-index: 9999 !important;
-    width: 75px !important;
-    height: 75px !important;
-    border-radius: 50% !important;
-    border: none !important;
-    cursor: pointer !important;
-    box-shadow: 0 2px 4px #0003 !important;
-    background: linear-gradient(to right, #81c408, #6fa606) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 9999 !important;
+  width: 75px !important;
+  height: 75px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 4px #0003 !important;
+  background: linear-gradient(to right, #81c408, #6fa606) !important;
 }
 
 .rcb-chat-tooltip {
-    display: none !important;
+  display: none !important;
 }
 
 .rcb-chat-tooltip-tail {
-    border-color: transparent transparent transparent #81c408 !important;
-    bottom: 13px !important; /* Adjust tail position if needed, otherwise let default handle it */
+  border-color: transparent transparent transparent #81c408 !important;
+  bottom: 13px !important;
+  /* Adjust tail position if needed, otherwise let default handle it */
 }
 
 .rcb-toggle-icon {
-    background-image: url("/assets/img/custom-chat-icon.svg") !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    width: 75px !important;
-    height: 75px !important;
-    display: inline-block !important;
+  background-image: url("/assets/img/custom-chat-icon.svg") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 75px !important;
+  height: 75px !important;
+  display: inline-block !important;
 }
 
 .rcb-toggle-icon svg,
 .rcb-toggle-icon img {
-    display: none !important;
+  display: none !important;
 }
 
 body {
@@ -84,9 +86,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -97,9 +101,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
@@ -134,16 +140,24 @@ button:focus-visible {
 
 /* Mobile Headings & Typography scaling */
 @media (max-width: 575.98px) {
-  h1.display-6, .display-6 {
+
+  h1.display-6,
+  .display-6 {
     font-size: 1.75rem !important;
   }
-  h1, .h1 {
+
+  h1,
+  .h1 {
     font-size: 1.8rem !important;
   }
-  h2, .h2 {
+
+  h2,
+  .h2 {
     font-size: 1.5rem !important;
   }
-  h3, .h3 {
+
+  h3,
+  .h3 {
     font-size: 1.3rem !important;
   }
 }
@@ -168,10 +182,12 @@ button:focus-visible {
     bottom: 16px !important;
     right: 16px !important;
   }
+
   .rcb-toggle-icon {
     width: 56px !important;
     height: 56px !important;
   }
+
   .voice-search-btn {
     width: 48px !important;
     height: 48px !important;
@@ -206,6 +222,7 @@ button:focus-visible {
     opacity: 0;
     transform: translate(-50%, -46%) scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
@@ -336,7 +353,7 @@ button:focus-visible {
   padding: 5px 14px;
   border-radius: 50px;
   z-index: 2;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .elegant-category-img-wrapper {
@@ -550,7 +567,8 @@ button:focus-visible {
   transition: background 0.15s ease;
 }
 
-.whatsapp-chat-item:hover, .whatsapp-chat-item.active {
+.whatsapp-chat-item:hover,
+.whatsapp-chat-item.active {
   background: #f0f2f5;
 }
 
@@ -592,8 +610,3 @@ button:focus-visible {
   text-decoration: underline;
   cursor: pointer;
 }
-
-
-
-
-
