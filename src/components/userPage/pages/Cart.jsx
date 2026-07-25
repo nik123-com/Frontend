@@ -321,11 +321,13 @@ export default function Cart() {
                 ) : (
                   <tr>
                     <td colSpan="6" className="text-center py-5 text-muted">
-                      <i className="fa fa-shopping-cart fs-1 mb-3 text-secondary d-block"></i>
-                      <h5 className="fw-normal">Your cart is empty</h5>
-                      <Link to="/cardproduct" className="btn btn-sm btn-outline-primary rounded-pill px-4 mt-2">
-                        Browse Products
-                      </Link>
+                      <div className="d-flex flex-column align-items-center justify-content-center text-center w-100">
+                        <i className="fa fa-shopping-cart fs-1 mb-3 text-secondary mx-auto" style={{ display: "inline-block", float: "none" }}></i>
+                        <h5 className="fw-normal">Your cart is empty</h5>
+                        <Link to="/cardproduct" className="btn btn-sm btn-outline-primary rounded-pill px-4 mt-2">
+                          Browse Products
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 )}
