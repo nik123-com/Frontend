@@ -131,6 +131,7 @@ export default function MyChatBot() {
 
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isReversed, setIsReversed] = useState(false);
 
   const messagesEndRef = useRef(null);
 
@@ -623,6 +624,17 @@ export default function MyChatBot() {
             <div className="sana-chat-header-actions">
               <button
                 className="sana-chat-action-btn"
+                onClick={() => setIsReversed(!isReversed)}
+                title={isReversed ? "Standard Order (Oldest First)" : "Reverse Order (Newest First)"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={isReversed ? "#ffd700" : "currentColor"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="7 16 3 12 7 8"></polyline>
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <polyline points="17 8 21 12 17 16"></polyline>
+                </svg>
+              </button>
+              <button
+                className="sana-chat-action-btn"
                 onClick={handleReset}
                 title="Reset Chat"
               >
@@ -645,7 +657,7 @@ export default function MyChatBot() {
 
           {/* Messages List */}
           <div className="sana-chat-messages">
-            {messages.map((msg) => (
+            {(isReversed ? [...messages].reverse() : messages).map((msg) => (
               <div key={msg.id} className={`sana-message-wrapper ${msg.sender}`}>
                 <div className="sana-message-bubble">
                   {msg.text}
