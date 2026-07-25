@@ -225,8 +225,8 @@ export default function Login() {
                         onChange={(e) => setCaptchaInput(e.target.value)}
                       />
                     </div>
-                  <div className="mb-3 d-flex justify-content-between flex-wrap gap-2">
-                    <Link to="/forgot-password" className="text-success small fw-medium">Forgot Password?</Link>
+                  <div className="mb-3 d-flex justify-content-center flex-wrap gap-2">
+                    <Link to="/forgot-password" className="text-success small fw-medium">Forgot Password</Link>
                     <Link to="/customerReg" className="text-success small fw-medium">Register</Link>
                   </div>
                   
