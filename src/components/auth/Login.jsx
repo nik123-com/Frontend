@@ -159,11 +159,9 @@ export default function Login() {
   // ================= UI =================
 
   return (
-    <>
-      <br />
-      <div className="container-fluid contact py-5 mt-2">
-        <div className="container py-5">
-          <div className="p-5 bg-light rounded">
+    <div className="container-fluid contact page-content-offset py-3">
+      <div className="container py-2">
+        <div className="p-4 p-md-5 bg-light rounded">
             <div className="row g-4">
               <div className="col-12">
                 <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
@@ -249,8 +247,7 @@ export default function Login() {
               </div>
             </div>
           </div>
-        </div>
       </div>
-    </>
+    </div>
   );
 }
