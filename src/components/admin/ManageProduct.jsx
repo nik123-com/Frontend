@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
 import { allProduct, DeleteOne, softDelete } from "../server/Product";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
@@ -18,6 +19,7 @@ export default function ManageProduct() {
     fetch()
   }, []);
   const fetch = () => {
+    setLoading(true);
     allProduct()
       .then((res) => {
         console.log(res);
@@ -27,6 +29,9 @@ export default function ManageProduct() {
       })
       .catch((error) => {
         toast.error(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -43,12 +48,12 @@ export default function ManageProduct() {
     }
     softDelete(data1).then((res) => {
       if (res.data.success) {
-        toast.warning(res.data.message);
-      } else {
         toast.success(res.data.message);
+      } else {
+        toast.warning(res.data.message);
       }
     }).catch((err) => {
-      toast.error(err);
+      toast.error(err?.message || "Error updating status");
     })
   }
   const deleteProduct = (id) => {
@@ -68,7 +73,7 @@ export default function ManageProduct() {
     })
       .catch((err) => {
         console.log(err);
-        toast.error(err)
+        toast.error(err?.message || "Error deleting product")
       });
   }
 
@@ -105,58 +110,74 @@ export default function ManageProduct() {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentdata.map((element, index) => (
-                        <tr key={element?._id}>
-                          <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
-                          <td className="fw-bold text-dark">{element?.name}</td>
-                          <td className="text-muted text-truncate" style={{ maxWidth: "180px" }} title={element?.description}>
-                            {element?.description}
-                          </td>
-                          <td>
-                            <img
-                              src={Array.isArray(element?.image) ? element?.image?.[0] : element?.image}
-                              width={60}
-                              height={60}
-                              alt="Image"
-                              className="rounded border"
-                              style={{ objectFit: "cover" }}
-                            />
-                          </td>
-                          <td className="fw-bold">₹{(element.price || 0).toLocaleString("en-IN")}</td>
-                          <td>{element?.category_id?.name || "N/A"}</td>
-                          <td>{element?.brand_id?.name || "N/A"}</td>
-                          <td>
-                            <Switch
-                              onChange={() => { SoftDelete(element?._id) }}
-                              checked={element.status}
-                              onColor="#81c408"
-                              height={20}
-                              width={40}
-                              handleDiameter={16}
-                              checkedIcon={false}
-                              uncheckedIcon={false}
-                            />
-                          </td>
-                          <td>
-                            <button
-                              onClick={() => { deleteProduct(element?._id); }}
-                              className="btn btn-link text-danger p-0"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i className="fa-solid fa-trash-can fa-xl"></i>
-                            </button>
-                          </td>
-                          <td>
-                            <button
-                              onClick={() => navigate(`/admin/updateProduct/${element?._id}`)}
-                              className="btn btn-link text-primary p-0"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i className="fa-solid fa-pen fa-xl"></i>
-                            </button>
+                      {loading ? (
+                        <tr>
+                          <td colSpan="10" className="text-center py-5">
+                            <div className="d-flex justify-content-center py-4">
+                              <HashLoader size={60} color={"#81c408"} />
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : currentdata.length > 0 ? (
+                        currentdata.map((element, index) => (
+                          <tr key={element?._id}>
+                            <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
+                            <td className="fw-bold text-dark">{element?.name}</td>
+                            <td className="text-muted text-truncate" style={{ maxWidth: "180px" }} title={element?.description}>
+                              {element?.description}
+                            </td>
+                            <td>
+                              <img
+                                src={Array.isArray(element?.image) ? element?.image?.[0] : element?.image}
+                                width={60}
+                                height={60}
+                                alt="Image"
+                                className="rounded border"
+                                style={{ objectFit: "cover" }}
+                              />
+                            </td>
+                            <td className="fw-bold">₹{(element.price || 0).toLocaleString("en-IN")}</td>
+                            <td>{element?.category_id?.name || "N/A"}</td>
+                            <td>{element?.brand_id?.name || "N/A"}</td>
+                            <td>
+                              <Switch
+                                onChange={() => { SoftDelete(element?._id) }}
+                                checked={element.status}
+                                onColor="#81c408"
+                                height={20}
+                                width={40}
+                                handleDiameter={16}
+                                checkedIcon={false}
+                                uncheckedIcon={false}
+                              />
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => { deleteProduct(element?._id); }}
+                                className="btn btn-link text-danger p-0"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fa-solid fa-trash-can fa-xl"></i>
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => navigate(`/admin/updateProduct/${element?._id}`)}
+                                className="btn btn-link text-primary p-0"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fa-solid fa-pen fa-xl"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="10" className="text-center py-5 text-muted">
+                            No products found.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

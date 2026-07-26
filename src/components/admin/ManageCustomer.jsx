@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
+import { HashLoader } from "react-spinners";
 import { allCustomer, toggleBlockCustomer } from "../server/Customer";
 import ResponsivePagination from "react-responsive-pagination";
 
@@ -139,7 +140,15 @@ export default function ManageCustomer() {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentdata.length > 0 ? (
+                      {loading ? (
+                        <tr>
+                          <td colSpan="6" className="text-center py-5">
+                            <div className="d-flex justify-content-center py-4">
+                              <HashLoader size={60} color={"#81c408"} />
+                            </div>
+                          </td>
+                        </tr>
+                      ) : currentdata.length > 0 ? (
                         currentdata.map((element, index) => (
                           <tr key={element._id}>
                             <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>

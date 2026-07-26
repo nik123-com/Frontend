@@ -5,6 +5,7 @@ import Switch from "react-switch";
 import { useNavigate } from "react-router-dom";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
+import { HashLoader } from "react-spinners";
 import { allCategory, DeleteOne, softDelete } from "../server/Category";
 
 export default function ManageCategory() {
@@ -23,17 +24,19 @@ export default function ManageCategory() {
   }, []);
 
   const fetch = () => {
-    // setLoading(true);
+    setLoading(true);
 
-    allCategory(data).then((res) => {
+    allCategory({}).then((res) => {
       console.log(res.data.data);
-      setdata(res.data.data);
-      settotalpages(Math.ceil(res.data.data.length / limit));
-
+      const list = res.data.data || [];
+      setdata(list);
+      settotalpages(Math.ceil(list.length / limit));
     })
       .catch((err) => {
         console.log(err);
-
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -51,12 +54,12 @@ export default function ManageCategory() {
     }
     softDelete(data1).then((res) => {
       if (res.data.success) {
-        toast.warning(res.data.message);
-      } else {
         toast.success(res.data.message);
+      } else {
+        toast.warning(res.data.message);
       }
     }).catch((err) => {
-      toast.error(err);
+      toast.error(err?.message || "Error updating status");
     })
   }
   //For Deleting
@@ -77,7 +80,7 @@ export default function ManageCategory() {
     })
       .catch((err) => {
         console.log(err);
-        toast.error(err)
+        toast.error(err?.message || "Error deleting category")
       })
   }
 
@@ -112,53 +115,69 @@ export default function ManageCategory() {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentdata.map((element, index) => (
-                        <tr key={element._id}>
-                          <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
-                          <td className="fw-bold text-dark">{element.name}</td>
-                          <td className="text-muted">{element.description}</td>
-                          <td>
-                            <img
-                              src={element.image}
-                              width={50}
-                              height={50}
-                              alt="Image"
-                              className="rounded border"
-                              style={{ objectFit: "cover" }}
-                            />
-                          </td>
-                          <td>
-                            <Switch
-                              onChange={() => { SoftDelete(element._id) }}
-                              checked={element.status}
-                              onColor="#81c408"
-                              height={20}
-                              width={40}
-                              handleDiameter={16}
-                              checkedIcon={false}
-                              uncheckedIcon={false}
-                            />
-                          </td>
-                          <td>
-                            <button
-                              onClick={() => { deleteCategory(element._id); }}
-                              className="btn btn-link text-danger p-0"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i className="fa-solid fa-trash-can fa-xl"></i>
-                            </button>
-                          </td>
-                          <td>
-                            <button
-                              onClick={() => navigate(`/admin/updateCategory/${element._id}`)}
-                              className="btn btn-link text-primary p-0"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i className="fa-solid fa-pen fa-xl"></i>
-                            </button>
+                      {loading ? (
+                        <tr>
+                          <td colSpan="7" className="text-center py-5">
+                            <div className="d-flex justify-content-center py-4">
+                              <HashLoader size={60} color={"#81c408"} />
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : currentdata.length > 0 ? (
+                        currentdata.map((element, index) => (
+                          <tr key={element._id}>
+                            <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
+                            <td className="fw-bold text-dark">{element.name}</td>
+                            <td className="text-muted">{element.description}</td>
+                            <td>
+                              <img
+                                src={element.image}
+                                width={50}
+                                height={50}
+                                alt="Image"
+                                className="rounded border"
+                                style={{ objectFit: "cover" }}
+                              />
+                            </td>
+                            <td>
+                              <Switch
+                                onChange={() => { SoftDelete(element._id) }}
+                                checked={element.status}
+                                onColor="#81c408"
+                                height={20}
+                                width={40}
+                                handleDiameter={16}
+                                checkedIcon={false}
+                                uncheckedIcon={false}
+                              />
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => { deleteCategory(element._id); }}
+                                className="btn btn-link text-danger p-0"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fa-solid fa-trash-can fa-xl"></i>
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => navigate(`/admin/updateCategory/${element._id}`)}
+                                className="btn btn-link text-primary p-0"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fa-solid fa-pen fa-xl"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" className="text-center py-5 text-muted">
+                            No categories found.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

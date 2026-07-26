@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
 import ReactStars from "react-stars";
+import { HashLoader } from "react-spinners";
 import { adminAllQueries, adminReplyQuery } from "../server/Query";
 
 const modalCustomStyles = {
@@ -140,7 +141,9 @@ export default function ManageQueries() {
                       {loading ? (
                         <tr>
                           <td colSpan="10" className="text-center py-5">
-                            <div className="spinner-border text-success" role="status"></div>
+                            <div className="d-flex justify-content-center py-4">
+                              <HashLoader size={60} color={"#81c408"} />
+                            </div>
                           </td>
                         </tr>
                       ) : queries.length > 0 ? (

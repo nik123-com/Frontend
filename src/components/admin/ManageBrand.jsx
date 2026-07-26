@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { Navigate, useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
 import { allBrand, HardDelete, softDelete } from "../server/Brand";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
@@ -17,13 +18,17 @@ export default function ManageBrand() {
   const limit = 10;
 
   const fetch = () => {
-    allBrand(data).then((res) => {
+    setLoading(true);
+    allBrand({}).then((res) => {
       console.log(res);
       const brandsList = res.data.data || [];
       setdata(brandsList);
       settotalpages(Math.ceil(brandsList.length / limit));
     }).catch((err) => {
       console.error(err);
+      toast.error(err?.message || "Error fetching brands");
+    }).finally(() => {
+      setLoading(false);
     });
   };
 
@@ -46,7 +51,7 @@ export default function ManageBrand() {
         toast.warning(res.data.message);
       }
     }).catch((err) => {
-      toast.error(err);
+      toast.error(err?.message || "Error updating status");
     })
   }
   useEffect(() => {
@@ -70,7 +75,8 @@ export default function ManageBrand() {
         }
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
+        toast.error(err?.message || "Error deleting brand");
       });
   };
 
@@ -104,54 +110,70 @@ export default function ManageBrand() {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentdata.map((element, index) => (
-                        <tr key={element._id}>
-                          <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
-                          <td className="fw-bold text-dark">{element.name}</td>
-                          <td>
-                            <img
-                              src={element.logo}
-                              width={50}
-                              height={50}
-                              alt="logo"
-                              className="rounded border"
-                              style={{ objectFit: "cover" }}
-                            />
-                          </td>
-                          {/* For Soft Delete */}
-                          <td>
-                            <Switch
-                              onChange={() => { SoftDelete(element._id) }}
-                              checked={element.status}
-                              onColor="#81c408"
-                              height={20}
-                              width={40}
-                              handleDiameter={16}
-                              checkedIcon={false}
-                              uncheckedIcon={false}
-                            />
-                          </td>
-                          {/* For Hard Delete */}
-                          <td>
-                            <button
-                              onClick={() => { deleteBrand(element._id) }}
-                              className="btn btn-link text-danger p-0"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i className="fa-solid fa-trash-can fa-xl"></i>
-                            </button>
-                          </td>
-                          <td>
-                            <button
-                              onClick={() => navigate(`/admin/updateBrand/${element._id}`)}
-                              className="btn btn-link text-primary p-0"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i className="fa-solid fa-pen fa-xl"></i>
-                            </button>
+                      {loading ? (
+                        <tr>
+                          <td colSpan="6" className="text-center py-5">
+                            <div className="d-flex justify-content-center py-4">
+                              <HashLoader size={60} color={"#81c408"} />
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : currentdata.length > 0 ? (
+                        currentdata.map((element, index) => (
+                          <tr key={element._id}>
+                            <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
+                            <td className="fw-bold text-dark">{element.name}</td>
+                            <td>
+                              <img
+                                src={element.logo}
+                                width={50}
+                                height={50}
+                                alt="logo"
+                                className="rounded border"
+                                style={{ objectFit: "cover" }}
+                              />
+                            </td>
+                            {/* For Soft Delete */}
+                            <td>
+                              <Switch
+                                onChange={() => { SoftDelete(element._id) }}
+                                checked={element.status}
+                                onColor="#81c408"
+                                height={20}
+                                width={40}
+                                handleDiameter={16}
+                                checkedIcon={false}
+                                uncheckedIcon={false}
+                              />
+                            </td>
+                            {/* For Hard Delete */}
+                            <td>
+                              <button
+                                onClick={() => { deleteBrand(element._id) }}
+                                className="btn btn-link text-danger p-0"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fa-solid fa-trash-can fa-xl"></i>
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => navigate(`/admin/updateBrand/${element._id}`)}
+                                className="btn btn-link text-primary p-0"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fa-solid fa-pen fa-xl"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="6" className="text-center py-5 text-muted">
+                            No brands found.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
