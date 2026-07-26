@@ -503,38 +503,42 @@ function Home() {
     <div className="row g-4">
       {productData?.map((e) => (
         <div
-          className="col-lg-6 col-xl-4"
+          className="col-12 col-md-6 col-xl-4"
           key={e._id}
         >
-          <div className="p-4 rounded bg-light h-100">
-            <div className="row align-items-center">
-              <div className="col-6">
-                <img
-                  src={Array.isArray(e.image) ? e.image?.[0] : e.image}
-                  className="img-fluid rounded-circle w-100"
-                  alt={e.name}
-                />
+          <div className="bestseller-card p-4 h-100 d-flex align-items-center">
+            <div className="row align-items-center w-100 g-3 m-0">
+              <div className="col-5 col-sm-5 d-flex justify-content-center p-0">
+                <div className="bestseller-img-circle">
+                  <img
+                    src={Array.isArray(e.image) ? e.image?.[0] : e.image}
+                    alt={e.name}
+                  />
+                </div>
               </div>
 
-              <div className="col-6">
-                <a href="#" className="h5 text-decoration-none">
+              <div className="col-7 col-sm-7 d-flex flex-column justify-content-between h-100 ps-3 pe-0">
+                <h5 className="bestseller-title" title={e.name}>
                   {e.name}
-                </a>
+                </h5>
 
-                <div className="d-flex my-3">
+                <div className="d-flex align-items-center mb-2 bestseller-stars">
                   {[...Array(5)].map((_, i) => (
                     <i
                       key={i}
                       className={`fas fa-star ${
-                        i < Math.round(e.rating || 0) ? "text-primary" : ""
+                        i < Math.round(e.rating || 5) ? "text-primary" : "text-secondary opacity-25"
                       }`}
+                      style={{ fontSize: "0.85rem", marginRight: "2px" }}
                     />
                   ))}
                 </div>
 
-                <h4 className="mb-3">₹{e.price}</h4>
+                <h4 className="bestseller-price">₹{e.price}</h4>
 
-                <AddToCartButton product={e} />
+                <div>
+                  <AddToCartButton product={e} />
+                </div>
               </div>
             </div>
           </div>

@@ -277,7 +277,6 @@ export default function CardProduct() {
 
   return (
     <>
-
       {/* Single Page Header start */}
       <div className="container-fluid page-header py-5">
         <h1 className="text-center text-white display-6">View Products</h1>
@@ -364,15 +363,11 @@ export default function CardProduct() {
                           navotShop(el._id)
                         }} className="h-100">
                           <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
-                            <div className="fruite-img" style={
-                              {
-                                height: "300px"
-                              }
-                            }>
+                            <div className="fruite-img">
                               <img
                                 src={Array.isArray(el?.image) ? el?.image?.[0] : el?.image}
-                                className="img-fluid w-100 rounded-top"
-                                style={{ height: "300px" }} alt="Image"
+                                className="img-fluid rounded-top"
+                                alt={el?.name || "Image"}
                               />
                             </div>
                             <div

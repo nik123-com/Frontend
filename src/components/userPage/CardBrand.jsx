@@ -59,11 +59,10 @@ export default function CardBrand() {
                                          style={{ cursor: "pointer" }}
                                          onClick={() => navigate(`/products/brand/${el._id}`)}
                                      >
-                                         <div className="fruite-img" style={{ height: "300px" }}>
+                                         <div className="fruite-img">
                                              <img
                                                  src={Array.isArray(el?.logo) ? el?.logo?.[0] : el?.logo}
-                                                 className="img-fluid w-100 rounded-top"
-                                                 style={{ height: "300px" }}
+                                                 className="img-fluid rounded-top"
                                                  alt={el?.name || "Brand"}
                                              />
                                          </div>

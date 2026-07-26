@@ -70,12 +70,11 @@ export default function CardCategory() {
                     style={{ cursor: "pointer" }}
                     onClick={() => navigate(`/products/${el._id}`)}
                   >
-                    <div className="fruite-img" style={{ height: "300px" }}>
+                    <div className="fruite-img">
                       <img
                         src={Array.isArray(el?.image) ? el?.image?.[0] : el?.image}
-                        className="img-fluid w-100 rounded-top"
-                        style={{ height: "300px" }}
-                        alt="Image"
+                        className="img-fluid rounded-top"
+                        alt={el?.name || "Image"}
                       />
                     </div>
                     <div
