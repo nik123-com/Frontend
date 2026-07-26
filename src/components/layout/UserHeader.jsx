@@ -151,7 +151,7 @@ function UserHeader() {
                   Contact
                 </Link>
                 <Link to="/viewWishlist" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('wishlist') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
-                  WishList
+                  View WishList
                 </Link>
                 <Link to="/myorders" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('myorders') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   My Orders

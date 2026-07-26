@@ -36,25 +36,33 @@ export default function Login() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#f2f2f2";
+    // Light background matching design
+    ctx.fillStyle = "#eef2f5";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // noise lines
-    for (let i = 0; i < 6; i++) {
-      ctx.strokeStyle = randomColor();
+    // Noise lines
+    const lineColors = ["#e53e3e", "#dd6b20", "#319795", "#3182ce", "#805ad5", "#d53f8c", "#38a169"];
+    for (let i = 0; i < 7; i++) {
+      ctx.strokeStyle = lineColors[Math.floor(Math.random() * lineColors.length)];
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(Math.random() * 180, Math.random() * 60);
-      ctx.lineTo(Math.random() * 180, Math.random() * 60);
+      ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
       ctx.stroke();
     }
 
-    ctx.font = "28px Arial";
+    // Text styling
+    ctx.font = "bold 26px Arial, sans-serif";
     ctx.textBaseline = "middle";
 
+    const totalWidth = canvas.width;
+    const startX = 20;
+    const spacing = (totalWidth - 40) / text.length;
+
     for (let i = 0; i < text.length; i++) {
-      let x = 20 + i * 25;
-      let y = 30 + (Math.random() * 10 - 5);
-      let angle = Math.random() * 0.5 - 0.25;
+      let x = startX + i * spacing;
+      let y = canvas.height / 2 + (Math.random() * 6 - 3);
+      let angle = Math.random() * 0.4 - 0.2;
 
       ctx.save();
       ctx.translate(x, y);
@@ -64,11 +72,11 @@ export default function Login() {
       ctx.restore();
     }
 
-    // dots
-    for (let i = 0; i < 40; i++) {
+    // Noise dots
+    for (let i = 0; i < 35; i++) {
       ctx.fillStyle = randomColor();
       ctx.beginPath();
-      ctx.arc(Math.random() * 180, Math.random() * 60, 1, 0, Math.PI * 2);
+      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1.2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
@@ -88,7 +96,8 @@ export default function Login() {
   function generateCaptcha() {
     const newCaptcha = randomText();
     setCaptchaText(newCaptcha);
-    drawCaptcha(newCaptcha);
+    // Timeout ensures canvas node is rendered before drawing
+    setTimeout(() => drawCaptcha(newCaptcha), 10);
   }
 
   function validateCaptcha() {
@@ -99,8 +108,7 @@ export default function Login() {
     generateCaptcha();
   }, []);
 
-  //Form Submition
-
+  // Form Submission
   const handleForm = (e) => {
     e.preventDefault();
 
@@ -120,6 +128,7 @@ export default function Login() {
       toast.error("Wrong Captcha");
       generateCaptcha();
       setPassword("");
+      setCaptchaInput("");
       return;
     }
 
@@ -159,94 +168,180 @@ export default function Login() {
   // ================= UI =================
 
   return (
-    <div className="container-fluid contact page-content-offset py-3">
-      <div className="container py-2">
-        <div className="p-4 p-md-5 bg-light rounded">
-            <div className="row g-4">
-              <div className="col-12">
-                <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
-                  <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "80px", marginBottom: "15px" }} />
-                  <h1 className="text-primary">Login</h1>
-                </div>
+    <div
+      className="container-fluid py-2 py-md-3"
+      style={{ backgroundColor: "#f8f9fa" }}
+    >
+      <div className="container" style={{ maxWidth: "1000px" }}>
+        <div
+          className="p-4 p-md-5 shadow-sm"
+          style={{ backgroundColor: "#f4f6f8", borderRadius: "18px" }}
+        >
+          <div className="mx-auto" style={{ maxWidth: "750px" }}>
+            {/* Logo */}
+            <div className="text-center mb-3">
+              <img
+                src="/assets/img/Logo.png"
+                alt="Aventra Logo"
+                style={{ height: "50px", objectFit: "contain" }}
+              />
+            </div>
+
+            {/* Title */}
+            <h1
+              className="text-center fw-bold mb-4"
+              style={{ color: "#78c214", fontSize: "38px", letterSpacing: "-0.5px" }}
+            >
+              Login
+            </h1>
+
+            <form onSubmit={handleForm}>
+              {/* Email Input */}
+              <div className="position-relative mb-3">
+                <input
+                  type="email"
+                  className="form-control shadow-sm border-0 py-3 px-4 w-100"
+                  placeholder="Enter Your Email"
+                  onChange={ChangeEmail}
+                  value={email}
+                  required
+                  style={{
+                    borderRadius: "10px",
+                    fontSize: "15px",
+                    paddingRight: "50px",
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.03)"
+                  }}
+                />
+                <span
+                  className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  <i className="fa-solid fa-envelope" style={{ color: "#00a884", fontSize: "16px" }}></i>
+                </span>
               </div>
 
-              <div className="col-lg-7 mx-auto">
-                <form onSubmit={handleForm}>
-                  <input
-                    type="email"
-                    className="w-100 p-3 form-control border-0 py-3 mb-4"
-                    placeholder="Enter Your Email"
-                    onChange={ChangeEmail}
-                    value={email}
-                    required
-                  />
+              {/* Password Input */}
+              <div className="mb-4">
+                <input
+                  type="password"
+                  className="form-control shadow-sm border-0 py-3 px-4 w-100"
+                  placeholder="Enter Your Password"
+                  onChange={ChangePassword}
+                  value={password}
+                  required
+                  style={{
+                    borderRadius: "10px",
+                    fontSize: "15px",
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.03)"
+                  }}
+                />
+              </div>
 
-                  <input
-                    type="password"
-                    className="w-100 form-control border-0 py-3 mb-4"
-                    placeholder="Enter Your Password"
-                    onChange={ChangePassword}
-                    value={password}
-                    required
-                  />
-                  <div
-                    className="card shadow-sm p-3 mb-4 mx-auto"
-                    style={{
-                      borderRadius: 12,
-                      maxWidth: "100%",
-                      width: "320px",
-                      alignItems: "center"
-                    }}>
+              {/* Captcha Box */}
+              <div className="d-flex justify-content-center mb-4">
+                <div
+                  className="card shadow-sm p-4 text-center"
+                  style={{
+                    borderRadius: "16px",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e5e7eb",
+                    width: "320px",
+                    maxWidth: "100%"
+                  }}
+                >
+                  <div className="d-flex justify-content-center mb-3">
                     <canvas
                       id="captchaCanvas"
-                      width={200}
-                      height={50}
-                      className="rounded border mb-2 mw-100"
+                      width={210}
+                      height={55}
                       style={{
+                        borderRadius: "10px",
                         display: "block"
                       }}
                     />
+                  </div>
 
+                  <div className="mb-3">
                     <button
                       type="button"
-                      className="btn btn-secondary btn-sm mb-2 rounded-pill px-3"
+                      className="btn fw-bold px-4 py-2"
+                      style={{
+                        backgroundColor: "#ffaa00",
+                        color: "#000000",
+                        borderRadius: "50px",
+                        border: "none",
+                        fontSize: "14px",
+                        boxShadow: "0 2px 4px rgba(255, 170, 0, 0.2)"
+                      }}
                       onClick={generateCaptcha}
                     >
                       Refresh Captcha
                     </button>
+                  </div>
 
+                  <div>
                     <input
                       type="text"
-                      className="form-control text-center"
+                      className="form-control text-center py-2"
                       placeholder="Enter Captcha"
                       value={captchaInput}
                       onChange={(e) => setCaptchaInput(e.target.value)}
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid #d1d5db",
+                        fontSize: "14px"
+                      }}
                     />
                   </div>
-                  <div className="d-flex justify-content-end mb-3">
-                    <Link to="/forgot-password" className="text-primary small fw-semibold text-decoration-none">
-                      Forgot Password?
-                    </Link>
-                  </div>
-
-                  <button
-                    className="w-100 btn form-control border-primary py-3 bg-primary text-light fw-bold shadow-sm"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? "Logging in..." : "Login"}
-                  </button>
-
-                  <div className="text-center mt-4 pt-3 border-top">
-                    <span className="text-muted small">Don't have an account? </span>
-                    <Link to="/customerReg" className="text-primary fw-bold text-decoration-none ms-1">
-                      Register
-                    </Link>
-                  </div>
-                </form>
+                </div>
               </div>
+
+              {/* Forgot Password Link */}
+              <div className="d-flex justify-content-end mb-3">
+                <Link
+                  to="/forgot-password"
+                  className="fw-semibold text-decoration-none"
+                  style={{ color: "#78c214", fontSize: "15px" }}
+                >
+                  Forgot Password
+                </Link>
+              </div>
+
+              {/* Login Button */}
+              <button
+                className="w-100 btn py-3 text-white fw-bold shadow-sm mb-3"
+                type="submit"
+                disabled={loading}
+                style={{
+                  backgroundColor: "#78c214",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontSize: "18px",
+                  cursor: loading ? "not-allowed" : "pointer"
+                }}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <hr style={{ borderColor: "#e5e7eb", margin: "25px 0 20px 0" }} />
+
+            {/* Footer Link */}
+            <div className="text-center" style={{ fontSize: "15px", color: "#6b7280" }}>
+              Don't have an account ?{" "}
+              <Link
+                to="/customerReg"
+                className="fw-bold text-decoration-none"
+                style={{ color: "#78c214" }}
+              >
+                Register
+              </Link>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

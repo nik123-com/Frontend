@@ -33,7 +33,7 @@ export const softDelete_product = "/api/product/softDelete";
 export const HardDelete_product = "/api/product/DeleteOne";
 export const filterproduct = "/customer/product/filtercategory";
 export const filterbrand = "/customer/product/filterbrand";
-// export const all_Product = "/api/product/all";
+
 
 
 
