@@ -95,15 +95,15 @@ function UserHeader() {
             <div className="top-info ps-2">
               <small className="me-3">
                 <i className="fas fa-map-marker-alt me-2 text-secondary" />{" "}
-                <a href="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" className="text-white">
+                <Link to ="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" className="text-white">
                   123 Model Town,Jalandhar
                 </a>
               </small>
               <small className="me-3">
                 <i className="fas fa-envelope me-2 text-secondary" />
-                <a href="#" className="text-white">
+                <Link to="https://mail.google.com/mail/u/0/#inbox?compose=SxfkdhjZRgnwdBcsvDBxswDtmtmbnXwwPlsBkBqwXJqZbwVhrPtPMGjvgTndqkrMPPQXfXnWDXnLNfxFLZqMRZxNrncnmQWcXmTLTDdSZXmlMVQDlFg" className="text-white">
                   admin@gmail.com
-                </a>
+                </Link>
               </small>
             </div>
             <div className="top-link pe-2">
