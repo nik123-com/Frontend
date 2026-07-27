@@ -11,6 +11,7 @@ import MasterPage from "./components/layout/MasterPage";
 import AdminMaster from "./components/admin/adminlayout/AdminMaster";
 import MyChatBot from "./components/layout/Chat";
 import VoiceSearch from "./components/layout/VoiceSearch";
+import ScrollToTop from "./components/layout/ScrollToTop";
 import Home from "./components/userPage/Home";
 
 // Page components (imported directly for instant loading)
@@ -54,6 +55,7 @@ function App() {
     <LoadingProvider>
       <CartProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<MasterPage />} >
               <Route index element={<Home />} ></Route>
