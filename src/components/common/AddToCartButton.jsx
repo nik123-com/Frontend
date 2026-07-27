@@ -1,12 +1,76 @@
-import React from "react";
+import React, { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { requestStockNotificationApi } from "../server/Notification";
 
 export default function AddToCartButton({ product, variant = "default", className = "", style = {} }) {
   const { getCartItem, handleAddToCart, handleIncrement, handleDecrement } = useCart();
   const navigate = useNavigate();
+  const [subscribing, setSubscribing] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
   if (!product || !product._id) return null;
+
+  // When Admin turns status off for product
+  if (product.status === false) {
+    const handleNotifyClick = async (e) => {
+      e.stopPropagation();
+      const user = sessionStorage.getItem("userId");
+      if (!user) {
+        toast.info("Please login to set a stock notification.");
+        navigate("/login");
+        return;
+      }
+
+      try {
+        setSubscribing(true);
+        const res = await requestStockNotificationApi(product._id);
+        if (res.data.success) {
+          toast.success(res.data.message || "We will notify you when stock is available!");
+          setIsSubscribed(true);
+        } else {
+          toast.error(res.data.message || "Failed to subscribe for notification");
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Error setting stock notification");
+      } finally {
+        setSubscribing(false);
+      }
+    };
+
+    return (
+      <button
+        type="button"
+        className={`btn fw-bold rounded-3 ${className}`}
+        disabled={subscribing}
+        style={{
+          backgroundColor: isSubscribed ? "#e8f5e9" : "#fff8e1",
+          border: isSubscribed ? "1.5px solid #2e7d32" : "1.5px solid #ffa000",
+          color: isSubscribed ? "#2e7d32" : "#e65100",
+          fontSize: "13px",
+          height: "36px",
+          minWidth: variant === "full" ? "140px" : "80px",
+          padding: "0 14px",
+          letterSpacing: "0.5px",
+          transition: "all 0.2s ease-in-out",
+          boxShadow: "0 1px 3px rgba(230,81,0,0.12)",
+          ...style,
+        }}
+        onClick={handleNotifyClick}
+      >
+        {isSubscribed ? (
+          <>
+            <i className="fa-solid fa-circle-check me-1" /> Notified
+          </>
+        ) : (
+          <>
+            <i className="fa-regular fa-bell me-1" /> Notify
+          </>
+        )}
+      </button>
+    );
+  }
 
   const cartItem = getCartItem(product._id);
   const qty = cartItem ? cartItem.qty : 0;

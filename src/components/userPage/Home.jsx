@@ -290,12 +290,34 @@ function Home() {
                               className="col-md-6 col-lg-4 col-xl-3"
                             >
                               <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
-                                <div className="fruite-img">
+                                <div className="fruite-img position-relative" style={{ position: "relative" }}>
                                   <img
                                     src={Array.isArray(el.image) ? el.image?.[0] : el.image}
                                     className="img-fluid w-100 rounded-top"
                                     alt={el.name}
                                   />
+                                  {el?.status === false && (
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        bottom: "12px",
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        backgroundColor: "#424242",
+                                        color: "#ffffff",
+                                        padding: "6px 20px",
+                                        borderRadius: "10px",
+                                        fontWeight: "700",
+                                        fontSize: "14px",
+                                        whiteSpace: "nowrap",
+                                        zIndex: 10,
+                                        pointerEvents: "none",
+                                        boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
+                                      }}
+                                    >
+                                      Stock not available
+                                    </div>
+                                  )}
                                 </div>
 
                                 <div

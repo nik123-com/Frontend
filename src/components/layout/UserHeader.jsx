@@ -231,6 +231,8 @@ function UserHeader() {
                                         ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
                                         : notif.type === "invite_accepted"
                                         ? "#10b981"
+                                        : notif.type === "stock_available"
+                                        ? "#0c831f"
                                         : "#ef4444",
                                     fontSize: "0.8rem"
                                   }}
@@ -241,6 +243,8 @@ function UserHeader() {
                                         ? "fa-user-plus"
                                         : notif.type === "invite_accepted"
                                         ? "fa-circle-check"
+                                        : notif.type === "stock_available"
+                                        ? "fa-box-open"
                                         : "fa-circle-xmark"
                                     }`}
                                   ></i>

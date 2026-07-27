@@ -193,7 +193,7 @@ export default function ShopDetail() {
             <div className="col-lg-12 col-xl-12">
               <div className="row g-4">
                 <div className="col-lg-6">
-                  <div className="border rounded">
+                  <div className="border rounded position-relative" style={{ position: "relative" }}>
                     <a href="#">
                       <img
                         src={Array.isArray(data?.image) ? data?.image?.[0] : data?.image}
@@ -201,6 +201,28 @@ export default function ShopDetail() {
                         alt="Image"
                       />
                     </a>
+                    {data?.status === false && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "16px",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          backgroundColor: "#424242",
+                          color: "#ffffff",
+                          padding: "8px 24px",
+                          borderRadius: "10px",
+                          fontWeight: "700",
+                          fontSize: "16px",
+                          whiteSpace: "nowrap",
+                          zIndex: 10,
+                          pointerEvents: "none",
+                          boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
+                        }}
+                      >
+                        Stock not available
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="col-lg-6">

@@ -241,8 +241,8 @@ export default function ViewWishList() {
 
                     {/* Product Image Container */}
                     <div
-                      className="d-flex align-items-center justify-content-center p-3 mt-3"
-                      style={{ height: "190px", backgroundColor: "#ffffff" }}
+                      className="position-relative d-flex align-items-center justify-content-center p-3 mt-3"
+                      style={{ height: "190px", backgroundColor: "#ffffff", position: "relative" }}
                     >
                       <img
                         src={imgUrl || "https://via.placeholder.com/200"}
@@ -253,6 +253,28 @@ export default function ViewWishList() {
                           objectFit: "contain"
                         }}
                       />
+                      {product?.status === false && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "12px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            backgroundColor: "#424242",
+                            color: "#ffffff",
+                            padding: "6px 20px",
+                            borderRadius: "10px",
+                            fontWeight: "700",
+                            fontSize: "14px",
+                            whiteSpace: "nowrap",
+                            zIndex: 10,
+                            pointerEvents: "none",
+                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
+                          }}
+                        >
+                          Stock not available
+                        </div>
+                      )}
                     </div>
 
                     {/* Card Content */}
@@ -281,23 +303,11 @@ export default function ViewWishList() {
                         </p>
                       </div>
 
-                      <div>
-                        <div className="fw-bold fs-5 mb-2" style={{ color: "#2b3e50" }}>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div className="fw-bold fs-5 mb-0" style={{ color: "#2b3e50" }}>
                           ₹ {product?.price}
                         </div>
-                        <button
-                          className="btn btn-sm fw-bold px-3 py-1"
-                          style={{
-                            border: "1px solid #10b981",
-                            color: "#10b981",
-                            borderRadius: "4px",
-                            fontSize: "0.8rem",
-                            letterSpacing: "0.5px"
-                          }}
-                          onClick={() => addToCart(el)}
-                        >
-                          ADD
-                        </button>
+                        <AddToCartButton product={product} />
                       </div>
                     </div>
                   </div>

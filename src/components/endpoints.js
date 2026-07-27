@@ -91,5 +91,8 @@ export const admin_reply_query = "/api/query/reply";
 export const all_notification = "/customer/notification/all";
 export const respond_notification = "/customer/notification/respond";
 export const mark_read_notification = "/customer/notification/markRead";
+export const stock_notify_api = "/customer/notification/stock-notify";
+export const stock_subscriptions_api = "/customer/notification/stock-subscriptions";
+
 
 
