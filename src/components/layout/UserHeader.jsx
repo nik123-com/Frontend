@@ -95,25 +95,25 @@ function UserHeader() {
             <div className="top-info ps-2">
               <small className="me-3">
                 <i className="fas fa-map-marker-alt me-2 text-secondary" />{" "}
-                <Link to ="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" className="text-white">
+                <a href ="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" className="text-white">
                   123 Model Town,Jalandhar
                 </a>
               </small>
               <small className="me-3">
                 <i className="fas fa-envelope me-2 text-secondary" />
-                <Link to="https://mail.google.com/mail/u/0/#inbox?compose=SxfkdhjZRgnwdBcsvDBxswDtmtmbnXwwPlsBkBqwXJqZbwVhrPtPMGjvgTndqkrMPPQXfXnWDXnLNfxFLZqMRZxNrncnmQWcXmTLTDdSZXmlMVQDlFg" className="text-white">
+                <a to="https://mail.google.com/mail/u/0/#inbox?compose=SxfkdhjZRgnwdBcsvDBxswDtmtmbnXwwPlsBkBqwXJqZbwVhrPtPMGjvgTndqkrMPPQXfXnWDXnLNfxFLZqMRZxNrncnmQWcXmTLTDdSZXmlMVQDlFg" className="text-white">
                   admin@gmail.com
-                </Link>
+                </a>
               </small>
             </div>
             <div className="top-link pe-2">
               <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" className="text-white">
                 <small className="text-white mx-2">Privacy Policy</small>/
               </a>
-              <a href="#" className="text-white">
+              <a href="/assets/Terms of use/Terms of Use.pdf" className="text-white">
                 <small className="text-white mx-2">Terms of Use</small>/
               </a>
-              <a href="#" className="text-white">
+              <a href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf" className="text-white">
                 <small className="text-white ms-2">Sales and Refunds</small>
               </a>
             </div>
