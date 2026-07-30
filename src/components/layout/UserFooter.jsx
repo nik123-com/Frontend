@@ -123,7 +123,7 @@ function UserFooter(){
         <div className="col-lg-3 col-md-6">
           <div className="footer-item">
             <h4 className="text-light mb-3">Contact</h4>
-            <p>Address: 123 Model town Rd, NY 48247</p>
+            <p>Address: 123 Model town</p>
             <p>Email: admin@gmail.com</p>
             <p>Phone: +0123 4567 8910</p>
             <p>Payment Accepted</p>
