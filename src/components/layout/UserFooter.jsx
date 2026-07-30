@@ -83,19 +83,19 @@ function UserFooter(){
             <a className="btn-link" href="">
               About Us
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/Contact">
               Contact Us
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/assets/privacyPolicy/Privacy.pdf">
               Privacy Policy
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/assets/Terms of use/Terms of Use.pdf">
               Terms &amp; Condition
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf">
               Return Policy
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/queries">
               FAQs &amp; Help
             </a>
           </div>
@@ -106,10 +106,10 @@ function UserFooter(){
             <a className="btn-link" href="">
               My Account
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/shopDetails">
               Shop details
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/cart">
               Shopping Cart
             </a>
             <a className="btn-link" href="">
