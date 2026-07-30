@@ -106,7 +106,7 @@ function UserFooter(){
             <a className="btn-link" href="">
               My Account
             </a>
-            <a className="btn-link" href="/ShopDetail">
+            <a className="btn-link" href="/shopDetail/:_id">
               Shop details
             </a>
             <a className="btn-link" href="/cart">
