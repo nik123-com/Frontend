@@ -112,22 +112,19 @@ function UserFooter(){
             <a className="btn-link" href="/cart">
               Shopping Cart
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/viewWishlist">
               Wishlist
             </a>
-            <a className="btn-link" href="">
+            <a className="btn-link" href="/myorders">
               Order History
-            </a>
-            <a className="btn-link" href="">
-              International Orders
             </a>
           </div>
         </div>
         <div className="col-lg-3 col-md-6">
           <div className="footer-item">
             <h4 className="text-light mb-3">Contact</h4>
-            <p>Address: 1429 Netus Rd, NY 48247</p>
-            <p>Email: Example@gmail.com</p>
+            <p>Address: 123 Model town Rd, NY 48247</p>
+            <p>Email: admin@gmail.com</p>
             <p>Phone: +0123 4567 8910</p>
             <p>Payment Accepted</p>
             <img src="/assets/img/payment.png" className="img-fluid" alt="" />
