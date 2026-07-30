@@ -69,12 +69,12 @@ function UserFooter(){
             <p className="mb-4">
               We provide high-quality products at competitive prices, backed by secure payment options, fast delivery, hassle-free returns, and dedicated customer support. Our commitment to customer satisfaction, reliable service, and a seamless shopping experience makes us a trusted choice for thousands of happy shoppers.
             </p>
-            <a
+            {/* <a
               href=""
               className="btn border-secondary py-2 px-4 rounded-pill text-primary"
             >
               Read More
-            </a>
+            </a> */}
           </div>
         </div>
         <div className="col-lg-3 col-md-6">
