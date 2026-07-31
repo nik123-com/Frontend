@@ -90,13 +90,50 @@ export const submit_feedback_query = "/customer/query/feedback";
 export const admin_all_query = "/api/query/all";
 export const admin_reply_query = "/api/query/reply";
 
-//Notification
+// Notification
 export const all_notification = "/customer/notification/all";
 export const respond_notification = "/customer/notification/respond";
 export const mark_read_notification = "/customer/notification/markRead";
 export const stock_notify_api = "/customer/notification/stock-notify";
 export const stock_subscriptions_api = "/customer/notification/stock-subscriptions";
 export const delete_notification_api = "/customer/notification/delete";
+
+// Vendor APIs
+export const vendor_register = "/vendor/register";
+export const vendor_profile = "/vendor/profile";
+export const vendor_update_profile = "/vendor/update-profile";
+export const vendor_dashboard = "/vendor/dashboard";
+export const vendor_wallet = "/vendor/wallet";
+export const vendor_request_payout = "/vendor/request-payout";
+
+export const vendor_add_product = "/vendor/product/add";
+export const vendor_all_products = "/vendor/product/all";
+export const vendor_update_product = "/vendor/product/update";
+export const vendor_delete_product = "/vendor/product/delete";
+export const vendor_update_stock = "/vendor/product/update-stock";
+
+export const vendor_all_orders = "/vendor/order/all";
+export const vendor_update_order_status = "/vendor/order/update-status";
+export const vendor_invoice = "/vendor/order/invoice";
+
+export const vendor_add_coupon = "/vendor/coupon/add";
+export const vendor_all_coupons = "/vendor/coupon/all";
+export const vendor_delete_coupon = "/vendor/coupon/delete";
+
+export const vendor_all_reviews = "/vendor/review/all";
+export const vendor_reply_review = "/vendor/review/reply";
+
+export const vendor_ai_description = "/vendor/ai/description";
+export const vendor_ai_seo = "/vendor/ai/seo";
+export const vendor_ai_caption = "/vendor/ai/caption";
+export const vendor_ai_price_suggest = "/vendor/ai/price-suggest";
+
+// Admin Vendor Management
+export const admin_all_vendors = "/api/vendor/all";
+export const admin_approve_vendor = "/api/vendor/approve";
+export const admin_reject_vendor = "/api/vendor/reject";
+export const admin_toggle_block_vendor = "/api/vendor/toggleBlock";
+
 
 
 

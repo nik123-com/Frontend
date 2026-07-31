@@ -150,6 +150,8 @@ export default function Login() {
 
           if (res.data.data.userType == 1) {
             nav("/admin");
+          } else if (res.data.data.userType == 3) {
+            nav("/vendor");
           } else {
             nav("/");
           }
@@ -330,15 +332,27 @@ export default function Login() {
             <hr style={{ borderColor: "#e5e7eb", margin: "25px 0 20px 0" }} />
 
             {/* Footer Link */}
-            <div className="text-center" style={{ fontSize: "15px", color: "#6b7280" }}>
-              Don't have an account ?{" "}
-              <Link
-                to="/customerReg"
-                className="fw-bold text-decoration-none"
-                style={{ color: "#78c214" }}
-              >
-                Register
-              </Link>
+            <div className="text-center d-flex flex-column gap-2" style={{ fontSize: "15px", color: "#6b7280" }}>
+              <div>
+                Don't have an account?{" "}
+                <Link
+                  to="/customerReg"
+                  className="fw-bold text-decoration-none"
+                  style={{ color: "#78c214" }}
+                >
+                  Register as Customer
+                </Link>
+              </div>
+              <div>
+                Want to sell with us?{" "}
+                <Link
+                  to="/vendor/register"
+                  className="fw-bold text-decoration-none"
+                  style={{ color: "#0d6efd" }}
+                >
+                  Become a Vendor
+                </Link>
+              </div>
             </div>
           </div>
         </div>

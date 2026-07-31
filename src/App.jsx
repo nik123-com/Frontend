@@ -50,6 +50,19 @@ import ResetPassword from "./components/auth/ResetPassword";
 import CustomerQueries from "./components/userPage/CustomerQueries";
 import ManageQueries from "./components/admin/ManageQueries";
 
+import VendorRegister from "./components/auth/VendorRegister";
+import VendorMaster from "./components/vendor/vendorlayout/VendorMaster";
+import VendorDashboard from "./components/vendor/VendorDashboard";
+import VendorProducts from "./components/vendor/VendorProducts";
+import VendorAddProduct from "./components/vendor/VendorAddProduct";
+import VendorOrders from "./components/vendor/VendorOrders";
+import VendorInventory from "./components/vendor/VendorInventory";
+import VendorCoupons from "./components/vendor/VendorCoupons";
+import VendorReviews from "./components/vendor/VendorReviews";
+import VendorWallet from "./components/vendor/VendorWallet";
+import VendorSettings from "./components/vendor/VendorSettings";
+import ManageVendors from "./components/admin/ManageVendors";
+
 function App() {
   return (
     <LoadingProvider>
@@ -86,11 +99,27 @@ function App() {
               <Route path="/login" element={<Login />} ></Route>
               {/* Signup  */}
               <Route path="/customerReg" element={<CustomerReg />}></Route>
+              <Route path="/vendor/register" element={<VendorRegister />}></Route>
               <Route path="/changepass" element={<ChangePassword />}></Route>
               <Route path="/forgot-password" element={<ForgotPassword />}></Route>
               <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
               <Route path="/queries" element={<CustomerQueries />}></Route>
             </Route>
+
+            {/* Vendor Panel */}
+            <Route path="/vendor" element={<VendorMaster />}>
+              <Route index element={<VendorDashboard />} />
+              <Route path="products" element={<VendorProducts />} />
+              <Route path="products/add" element={<VendorAddProduct />} />
+              <Route path="products/edit/:id" element={<VendorAddProduct />} />
+              <Route path="orders" element={<VendorOrders />} />
+              <Route path="inventory" element={<VendorInventory />} />
+              <Route path="coupons" element={<VendorCoupons />} />
+              <Route path="reviews" element={<VendorReviews />} />
+              <Route path="wallet" element={<VendorWallet />} />
+              <Route path="settings" element={<VendorSettings />} />
+            </Route>
+
             {/* Admin Items */}
             <Route path="/admin" element={<AdminMaster />}>
               <Route index element={<Admindashboard />} />
@@ -103,6 +132,7 @@ function App() {
               <Route path="/admin/addCoupon" element={<Coupon />} />
               <Route path="/admin/manageCoupon" element={<ManageCoupon />} />
               <Route path="/admin/customermanage" element={<ManageCustomer />}></Route>
+              <Route path="/admin/managevendors" element={<ManageVendors />}></Route>
               <Route path='/admin/updateCategory/:_id' element={<UpdateCategory />} />
               <Route path='/admin/updateProduct/:_id' element={<UpdateProduct />} />
               <Route path='/admin/updateBrand/:_id' element={<UpdateBrand />} />
@@ -119,4 +149,4 @@ function App() {
     </LoadingProvider>
   );
 }
-export default App;
+export default App;

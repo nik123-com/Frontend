@@ -66,8 +66,8 @@ function AdminHeader() {
               <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
             <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
-              <div className="navbar-nav mx-auto py-2 py-xl-0">
-                <Link to="/admin" className={`nav-item nav-link ${location.pathname === '/admin' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
+              <div className="navbar-nav ms-auto py-2 py-xl-0 align-items-center text-nowrap gap-1 gap-xl-2">
+                <Link to="/admin" className={`nav-item nav-link px-2 ${location.pathname === '/admin' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
                   Dashboard
                 </Link>
                 
@@ -75,7 +75,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'category' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className="nav-link dropdown-toggle"
+                    className="nav-link dropdown-toggle px-2"
                     onClick={(e) => toggleDropdown('category', e)}
                   >
                     Category
@@ -94,7 +94,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'product' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className="nav-link dropdown-toggle"
+                    className="nav-link dropdown-toggle px-2"
                     onClick={(e) => toggleDropdown('product', e)}
                   >
                     Product
@@ -113,7 +113,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'brand' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className="nav-link dropdown-toggle"
+                    className="nav-link dropdown-toggle px-2"
                     onClick={(e) => toggleDropdown('brand', e)}
                   >
                     Brand
@@ -128,15 +128,19 @@ function AdminHeader() {
                   </div>
                 </div>
 
-                <Link to="/admin/customermanage" className={`nav-item nav-link ${location.pathname === '/admin/customermanage' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
-                  Customer Manage
+                <Link to="/admin/customermanage" className={`nav-item nav-link px-2 ${location.pathname === '/admin/customermanage' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
+                  Customers
+                </Link>
+
+                <Link to="/admin/managevendors" className={`nav-item nav-link px-2 ${location.pathname === '/admin/managevendors' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
+                  Vendors
                 </Link>
 
                 {/* Coupon Dropdown */}
                 <div className={`nav-item dropdown ${openDropdown === 'coupon' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className="nav-link dropdown-toggle"
+                    className="nav-link dropdown-toggle px-2"
                     onClick={(e) => toggleDropdown('coupon', e)}
                   >
                     Coupon
@@ -151,17 +155,17 @@ function AdminHeader() {
                   </div>
                 </div>
 
-                <Link to="/admin/manageorder" className={`nav-item nav-link ${location.pathname === '/admin/manageorder' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
+                <Link to="/admin/manageorder" className={`nav-item nav-link px-2 ${location.pathname === '/admin/manageorder' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
                   Orders
                 </Link>
-                <Link to="/admin/managequeries" className={`nav-item nav-link ${location.pathname === '/admin/managequeries' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
+                <Link to="/admin/managequeries" className={`nav-item nav-link px-2 ${location.pathname === '/admin/managequeries' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
                   Queries
                 </Link>
               </div>
 
               <div className="d-flex align-items-center ms-xl-3 my-2 my-xl-0">
                 <button
-                  className="btn btn-primary text-light px-3 py-2 rounded-pill w-100 w-xl-auto fw-medium"
+                  className="btn btn-primary text-light px-3 py-2 rounded-pill w-100 w-xl-auto fw-medium text-nowrap"
                   onClick={() => {
                     sessionStorage.clear();
                     closeNav();
