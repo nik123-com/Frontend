@@ -1,14 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { requestStockNotificationApi } from "../server/Notification";
+import { requestStockNotificationApi, getUserStockNotificationsApi } from "../server/Notification";
 
 export default function AddToCartButton({ product, variant = "default", className = "", style = {} }) {
   const { getCartItem, handleAddToCart, handleIncrement, handleDecrement } = useCart();
   const navigate = useNavigate();
   const [subscribing, setSubscribing] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkSubscription = async () => {
+      const user = sessionStorage.getItem("userId");
+      const token = sessionStorage.getItem("token");
+      if (!user || !token || !product || product.status !== false) return;
+      try {
+        const res = await getUserStockNotificationsApi();
+        if (res.data?.success && Array.isArray(res.data.data)) {
+          if (isMounted && res.data.data.includes(product._id)) {
+            setIsSubscribed(true);
+          }
+        }
+      } catch (err) {
+        // Silent catch for initial check
+      }
+    };
+    checkSubscription();
+    return () => { isMounted = false; };
+  }, [product?._id, product?.status]);
 
   if (!product || !product._id) return null;
 
@@ -17,7 +38,8 @@ export default function AddToCartButton({ product, variant = "default", classNam
     const handleNotifyClick = async (e) => {
       e.stopPropagation();
       const user = sessionStorage.getItem("userId");
-      if (!user) {
+      const token = sessionStorage.getItem("token");
+      if (!user || !token) {
         toast.info("Please login to set a stock notification.");
         navigate("/login");
         return;
@@ -26,14 +48,15 @@ export default function AddToCartButton({ product, variant = "default", classNam
       try {
         setSubscribing(true);
         const res = await requestStockNotificationApi(product._id);
-        if (res.data.success) {
+        if (res.data && res.data.success) {
           toast.success(res.data.message || "We will notify you when stock is available!");
           setIsSubscribed(true);
         } else {
-          toast.error(res.data.message || "Failed to subscribe for notification");
+          toast.error(res.data?.message || "Failed to subscribe for notification");
         }
       } catch (err) {
-        toast.error(err.response?.data?.message || "Error setting stock notification");
+        const message = err.response?.data?.message || err.message || "Error setting stock notification";
+        toast.error(message);
       } finally {
         setSubscribing(false);
       }

@@ -18,7 +18,11 @@ function UserHeader() {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
   const loadNotifications = () => {
-    if (!isLogin) return;
+    if (!isLogin) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
     fetchNotifications()
       .then((res) => {
         if (res.data?.success) {
@@ -26,6 +30,9 @@ function UserHeader() {
           setNotifications(list);
           const count = list.filter((n) => n.status === "pending").length;
           setUnreadCount(count);
+        } else {
+          setNotifications([]);
+          setUnreadCount(0);
         }
       })
       .catch((err) => {
@@ -324,6 +331,10 @@ function UserHeader() {
                     className="btn btn-primary text-light m-1"
                     onClick={() => {
                       sessionStorage.clear();
+                      setNotifications([]);
+                      setUnreadCount(0);
+                      setCartCount(0);
+                      setShowNotifDropdown(false);
                       window.location.reload();
                     }}
                   >
