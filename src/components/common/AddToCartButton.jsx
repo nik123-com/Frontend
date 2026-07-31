@@ -55,8 +55,8 @@ export default function AddToCartButton({ product, variant = "default", classNam
           toast.error(res.data?.message || "Failed to subscribe for notification");
         }
       } catch (err) {
-        const message = err.response?.data?.message || err.message || "Error setting stock notification";
-        toast.error(message);
+        const msg = err.response?.data?.message || err.message || "Failed to set stock notification";
+        toast.error(msg);
       } finally {
         setSubscribing(false);
       }

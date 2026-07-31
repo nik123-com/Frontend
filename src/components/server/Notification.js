@@ -1,5 +1,5 @@
 import axios from "axios";
-import { baseUrl, all_notification, respond_notification, mark_read_notification, stock_notify_api, stock_subscriptions_api } from "../endpoints";
+import { baseUrl, all_notification, respond_notification, mark_read_notification, stock_notify_api, stock_subscriptions_api, delete_notification_api } from "../endpoints";
 
 function getToken() {
   const token = sessionStorage.getItem("token");
@@ -24,5 +24,9 @@ export function requestStockNotificationApi(productId) {
 
 export function getUserStockNotificationsApi() {
   return axios.post(baseUrl + stock_subscriptions_api, {}, getToken());
+}
+
+export function deleteNotificationApi(notificationId) {
+  return axios.post(baseUrl + delete_notification_api, { notificationId }, getToken());
 }
 

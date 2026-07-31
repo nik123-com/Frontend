@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
-import { fetchNotifications, respondInviteApi, markNotificationsRead } from "../server/Notification";
+import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNotificationApi } from "../server/Notification";
 import { toast } from "react-toastify";
 
 function UserHeader() {
@@ -18,11 +18,7 @@ function UserHeader() {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
   const loadNotifications = () => {
-    if (!isLogin) {
-      setNotifications([]);
-      setUnreadCount(0);
-      return;
-    }
+    if (!isLogin) return;
     fetchNotifications()
       .then((res) => {
         if (res.data?.success) {
@@ -30,14 +26,21 @@ function UserHeader() {
           setNotifications(list);
           const count = list.filter((n) => n.status === "pending").length;
           setUnreadCount(count);
-        } else {
-          setNotifications([]);
-          setUnreadCount(0);
         }
       })
       .catch((err) => {
         console.error("Error fetching notifications:", err);
       });
+  };
+
+  const handleClearNotification = (notificationId) => {
+    deleteNotificationApi(notificationId)
+      .then((res) => {
+        if (res.data?.success) {
+          loadNotifications();
+        }
+      })
+      .catch((err) => console.error("Error clearing notification:", err));
   };
 
   const handleRespond = (notificationId, action) => {
@@ -183,9 +186,12 @@ function UserHeader() {
                     <button
                       className="btn p-0 border-0 bg-transparent position-relative"
                       onClick={() => {
-                        setShowNotifDropdown(!showNotifDropdown);
-                        if (!showNotifDropdown && unreadCount > 0) {
-                          markNotificationsRead().catch(() => {});
+                        const nextState = !showNotifDropdown;
+                        setShowNotifDropdown(nextState);
+                        if (nextState && unreadCount > 0) {
+                          markNotificationsRead()
+                            .then(() => loadNotifications())
+                            .catch(() => {});
                         }
                       }}
                       title="Notifications"
@@ -216,18 +222,37 @@ function UserHeader() {
                       >
                         <div className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                           <h6 className="fw-bold mb-0 text-dark">Notifications</h6>
-                          <span className="badge bg-light text-muted">{notifications.length} total</span>
+                          {notifications.length > 0 && (
+                            <button
+                              type="button"
+                              className="btn btn-link btn-sm p-0 text-danger text-decoration-none fw-semibold"
+                              style={{ fontSize: "0.8rem" }}
+                              onClick={() => handleClearNotification(null)}
+                            >
+                              Clear All
+                            </button>
+                          )}
                         </div>
 
                         {notifications.length > 0 ? (
                           notifications.map((notif) => (
                             <div
                               key={notif._id}
-                              className={`p-2 mb-2 rounded-3 border ${
+                              className={`p-2 mb-2 rounded-3 border position-relative ${
                                 notif.status === "pending" ? "bg-light" : "bg-white"
                               }`}
                             >
-                              <div className="d-flex align-items-start gap-2">
+                              <button
+                                type="button"
+                                className="btn-close position-absolute"
+                                style={{ top: "8px", right: "8px", fontSize: "0.65rem" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleClearNotification(notif._id);
+                                }}
+                                title="Clear notification"
+                              />
+                              <div className="d-flex align-items-start gap-2 pe-3">
                                 <div
                                   className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 mt-1"
                                   style={{
@@ -304,9 +329,9 @@ function UserHeader() {
                             </div>
                           ))
                         ) : (
-                          <div className="text-center py-4 text-muted">
-                            <i className="fa-regular fa-bell-slash fs-4 mb-2 d-block"></i>
-                            <p className="small mb-0">No notifications found</p>
+                          <div className="d-flex flex-column align-items-center justify-content-center py-4 text-muted text-center w-100">
+                            <i className="fa-regular fa-bell-slash fs-2 mb-2 d-block text-secondary"></i>
+                            <p className="small mb-0 text-muted fw-medium">No notifications found</p>
                           </div>
                         )}
                       </div>
@@ -331,10 +356,6 @@ function UserHeader() {
                     className="btn btn-primary text-light m-1"
                     onClick={() => {
                       sessionStorage.clear();
-                      setNotifications([]);
-                      setUnreadCount(0);
-                      setCartCount(0);
-                      setShowNotifDropdown(false);
                       window.location.reload();
                     }}
                   >
