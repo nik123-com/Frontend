@@ -348,7 +348,7 @@ export default function Login() {
                 <Link
                   to="/vendor/register"
                   className="fw-bold text-decoration-none"
-                  style={{ color: "#0d6efd" }}
+                  style={{ color: "#78c214" }}
                 >
                   Become a Vendor
                 </Link>
