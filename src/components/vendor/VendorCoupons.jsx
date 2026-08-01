@@ -91,7 +91,7 @@ export default function VendorCoupons() {
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
           <h3 className="fw-bold mb-0">Vendor Store Coupons</h3>
-          <p className="text-muted mb-0">Create promotional discount coupons valid exclusively on your store's products.</p>
+          <p className="text-muted mb-0">View coupons created by Admin and manage promotional discount coupons for your store.</p>
         </div>
         <button onClick={() => setShowModal(true)} className="btn btn-primary fw-bold shadow-sm">
           <i className="fa-solid fa-plus me-2"></i> Create Store Coupon
@@ -104,7 +104,7 @@ export default function VendorCoupons() {
           {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" role="status"></div>
-              <p className="mt-2 text-muted">Loading vendor coupons...</p>
+              <p className="mt-2 text-muted">Loading coupons...</p>
             </div>
           ) : coupons.length > 0 ? (
             <div className="table-responsive">
@@ -115,41 +115,58 @@ export default function VendorCoupons() {
                     <th>Discount</th>
                     <th>Min Spend (₹)</th>
                     <th>Expiry Date</th>
-                    <th>Scope</th>
+                    <th>Added By</th>
                     <th className="text-end pe-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {coupons.map((c) => (
-                    <tr key={c._id}>
-                      <td className="ps-4">
-                        <span className="badge bg-primary-subtle text-primary border border-primary px-3 py-2 fs-6 fw-bold font-monospace">
-                          {c.code}
-                        </span>
-                      </td>
-                      <td className="fw-bold text-dark">
-                        {c.discount}{c.discountType === "Percentage" ? "% OFF" : " ₹ OFF"}
-                      </td>
-                      <td>₹{c.minAmoutSpend || 0}</td>
-                      <td>{c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : "No Expiry"}</td>
-                      <td>
-                        <span className="badge bg-info-subtle text-info border border-info">Vendor Scoped</span>
-                      </td>
-                      <td className="text-end pe-4">
-                        <button onClick={() => handleDelete(c._id)} className="btn btn-sm btn-outline-danger">
-                          <i className="fa-solid fa-trash"></i> Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {coupons.map((c) => {
+                    const isAdmin = !c.vendorId;
+                    return (
+                      <tr key={c._id}>
+                        <td className="ps-4">
+                          <span className="badge bg-primary-subtle text-primary border border-primary px-3 py-2 fs-6 fw-bold font-monospace">
+                            {c.code}
+                          </span>
+                        </td>
+                        <td className="fw-bold text-dark">
+                          {c.discount}{c.discountType === "Percentage" || c.discountType === "2" ? "% OFF" : " ₹ OFF"}
+                        </td>
+                        <td>₹{c.minAmoutSpend || 0}</td>
+                        <td>{c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : "No Expiry"}</td>
+                        <td>
+                          {isAdmin ? (
+                            <span className="badge bg-warning-subtle text-warning border border-warning px-2 py-1">
+                              <i className="fa-solid fa-user-shield me-1"></i> Admin
+                            </span>
+                          ) : (
+                            <span className="badge bg-success-subtle text-success border border-success px-2 py-1">
+                              <i className="fa-solid fa-store me-1"></i> Vendor (You)
+                            </span>
+                          )}
+                        </td>
+                        <td className="text-end pe-4">
+                          {!isAdmin ? (
+                            <button onClick={() => handleDelete(c._id)} className="btn btn-sm btn-outline-danger">
+                              <i className="fa-solid fa-trash me-1"></i> Delete
+                            </button>
+                          ) : (
+                            <span className="badge bg-light text-muted border px-2 py-1">
+                              <i className="fa-solid fa-lock me-1"></i> Read Only
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           ) : (
             <div className="text-center py-5 text-muted">
               <i className="fa-solid fa-ticket fs-1 mb-2 text-secondary"></i>
-              <h5>No Vendor Coupons Active</h5>
-              <p>Create custom discount codes for your customers.</p>
+              <h5>No Coupons Active</h5>
+              <p>No active coupons found. Create custom discount codes for your customers.</p>
             </div>
           )}
         </div>
