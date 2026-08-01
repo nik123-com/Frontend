@@ -61,6 +61,7 @@ import VendorCoupons from "./components/vendor/VendorCoupons";
 import VendorReviews from "./components/vendor/VendorReviews";
 import VendorWallet from "./components/vendor/VendorWallet";
 import VendorSettings from "./components/vendor/VendorSettings";
+import VendorQueries from "./components/vendor/VendorQueries";
 import ManageVendors from "./components/admin/ManageVendors";
 
 function App() {
@@ -117,6 +118,7 @@ function App() {
               <Route path="coupons" element={<VendorCoupons />} />
               <Route path="reviews" element={<VendorReviews />} />
               <Route path="wallet" element={<VendorWallet />} />
+              <Route path="queries" element={<VendorQueries />} />
               <Route path="settings" element={<VendorSettings />} />
             </Route>
 

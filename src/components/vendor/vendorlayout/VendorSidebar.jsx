@@ -13,6 +13,7 @@ export default function VendorSidebar({ vendor }) {
     { label: "Coupons", path: "/vendor/coupons", icon: "fa-ticket" },
     { label: "Reviews", path: "/vendor/reviews", icon: "fa-star" },
     { label: "Wallet & Settlements", path: "/vendor/wallet", icon: "fa-wallet" },
+    { label: "Support & Queries", path: "/vendor/queries", icon: "fa-headset" },
     { label: "Store Settings", path: "/vendor/settings", icon: "fa-sliders" },
   ];
 

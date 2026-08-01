@@ -116,9 +116,9 @@ export default function ManageQueries() {
               <div className="col-12">
                 <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
                   <h1 className="fw-bold" style={{ color: "#81c408" }}>
-                    Manage Customer Queries & Complaints
+                    Manage Queries & Support Tickets
                   </h1>
-                  <p className="text-muted small">Review customer support tickets, send responses, Google Meet links, and documents.</p>
+                  <p className="text-muted small">Review support tickets from Customers & Vendors, send responses, Google Meet links, and documents.</p>
                 </div>
 
                 <div className="table-responsive shadow-sm rounded border bg-white mt-4">
@@ -126,8 +126,9 @@ export default function ManageQueries() {
                     <thead className="table-light text-secondary">
                       <tr>
                         <th scope="col" className="ps-4">#</th>
-                        <th scope="col">Complaint ID</th>
-                        <th scope="col">Customer</th>
+                        <th scope="col">Ticket ID</th>
+                        <th scope="col">User / Sender</th>
+                        <th scope="col">Type</th>
                         <th scope="col">Date & Time</th>
                         <th scope="col">Subject</th>
                         <th scope="col">Description</th>
@@ -140,7 +141,7 @@ export default function ManageQueries() {
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan="10" className="text-center py-5">
+                          <td colSpan="11" className="text-center py-5">
                             <div className="d-flex justify-content-center py-4">
                               <HashLoader size={60} color={"#81c408"} />
                             </div>
@@ -152,8 +153,19 @@ export default function ManageQueries() {
                             <td className="ps-4 fw-semibold text-muted">{index + 1}</td>
                             <td className="fw-bold text-success">{item.queryId}</td>
                             <td>
-                              <div className="fw-bold text-dark">{item.name || "Customer"}</div>
+                              <div className="fw-bold text-dark">{item.name || "User"}</div>
                               <div className="text-muted small">{item.email || "N/A"}</div>
+                            </td>
+                            <td>
+                              <span
+                                className={`badge ${
+                                  item.userType === "Vendor"
+                                    ? "bg-purple-subtle text-purple border border-purple bg-info text-dark"
+                                    : "bg-secondary"
+                                }`}
+                              >
+                                {item.userType || "Customer"}
+                              </span>
                             </td>
                             <td className="small text-muted">
                               {new Date(item.createdAt).toLocaleString()}
