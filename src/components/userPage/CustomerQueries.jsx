@@ -26,7 +26,7 @@ export default function CustomerQueries() {
 
   const currentDate = new Date().toLocaleDateString();
   const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const previewQueryId = `QRY-${1001 + queries.length}`;
+  const previewQueryId = "Auto-Generated";
 
   useEffect(() => {
     if (!userId) {
