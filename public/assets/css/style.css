@@ -582,3 +582,20 @@
     --pagination-focus-color: #6a9f06;
     --pagination-focus-box-shadow: 0 0 0 0.25rem rgba(129, 196, 8, 0.25);
 }
+
+/* Green Modal & White Text Utility Classes */
+.placeholder-white::placeholder {
+  color: rgba(255, 255, 255, 0.75) !important;
+  opacity: 1 !important;
+}
+.modal-green-input {
+  background-color: #1b5e20 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+.modal-green-input:focus {
+  background-color: #144718 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+}

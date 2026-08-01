@@ -267,26 +267,27 @@ export default function ManageQueries() {
         >
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h4 className="fw-bold m-0 text-white fs-4">
-              <i className="fa-solid fa-reply me-2"></i>Reply to Ticket {selectedQuery.queryId}
+              <i className="fa-solid fa-reply me-2 text-white"></i>Reply to Ticket {selectedQuery.queryId}
             </h4>
             <button className="btn-close btn-close-white" onClick={closeModal}></button>
           </div>
 
-          <div className="p-3 rounded-3 mb-3 bg-white text-dark shadow-sm">
+          {/* Customer / Sender Query Summary Box */}
+          <div className="p-3 rounded-3 mb-3 text-white shadow-sm" style={{ backgroundColor: "#144718", border: "2px solid #ffffff" }}>
             <div className="d-flex justify-content-between align-items-center mb-2">
-              <strong className="fs-6 text-success">
-                <i className="fa-solid fa-user me-2"></i>Sender: {selectedQuery.name}
+              <strong className="fs-6 text-white">
+                <i className="fa-solid fa-user me-2 text-white"></i>Sender: {selectedQuery.name}
               </strong>
               <span className="badge bg-warning text-dark px-3 py-2 fw-bold rounded-pill">
                 {selectedQuery.subject}
               </span>
             </div>
-            <p className="small mb-1 text-secondary">
-              <strong className="text-dark">Query Details:</strong> {selectedQuery.description}
+            <p className="small mb-1 text-white opacity-90">
+              <strong className="text-white">Query Details:</strong> {selectedQuery.description}
             </p>
             {selectedQuery.evidenceFile && (
-              <a href={selectedQuery.evidenceFile} target="_blank" rel="noreferrer" className="small fw-bold text-success text-decoration-none">
-                <i className="fa-solid fa-paperclip me-1"></i> View Attached File
+              <a href={selectedQuery.evidenceFile} target="_blank" rel="noreferrer" className="small fw-bold text-white text-decoration-underline">
+                <i className="fa-solid fa-paperclip me-1 text-white"></i> View Attached File
               </a>
             )}
           </div>
@@ -297,12 +298,12 @@ export default function ManageQueries() {
                 Admin Description / Reply <span className="text-warning">*</span>
               </label>
               <textarea
-                className="form-control bg-white text-dark border-0 shadow-sm"
+                className="form-control modal-green-input placeholder-white rounded-3 p-3"
                 rows="4"
                 placeholder="Write your response to the customer or vendor..."
                 value={replyDescription}
                 onChange={(e) => setReplyDescription(e.target.value)}
-                style={{ color: "#212529", backgroundColor: "#ffffff" }}
+                style={{ backgroundColor: "#1b5e20", color: "#ffffff", border: "2px solid #ffffff" }}
                 required
               />
             </div>
@@ -313,11 +314,11 @@ export default function ManageQueries() {
               </label>
               <input
                 type="text"
-                className="form-control bg-white text-dark border-0 shadow-sm"
+                className="form-control modal-green-input placeholder-white rounded-3 p-2"
                 placeholder="https://meet.google.com/xyz-abc-def"
                 value={meetLink}
                 onChange={(e) => setMeetLink(e.target.value)}
-                style={{ color: "#212529", backgroundColor: "#ffffff" }}
+                style={{ backgroundColor: "#1b5e20", color: "#ffffff", border: "2px solid #ffffff" }}
               />
             </div>
 
@@ -327,9 +328,9 @@ export default function ManageQueries() {
               </label>
               <input
                 type="file"
-                className="form-control bg-white text-dark border-0 shadow-sm"
+                className="form-control modal-green-input placeholder-white rounded-3 p-2"
                 onChange={(e) => setAdminDocument(e.target.files[0])}
-                style={{ color: "#212529", backgroundColor: "#ffffff" }}
+                style={{ backgroundColor: "#1b5e20", color: "#ffffff", border: "2px solid #ffffff" }}
               />
               {selectedQuery.adminAttachment && !adminDocument && (
                 <small className="text-white-50 d-block mt-1">
@@ -344,7 +345,7 @@ export default function ManageQueries() {
               </button>
               <button
                 type="submit"
-                className="btn btn-light text-dark fw-bold rounded-pill px-4 shadow"
+                className="btn btn-light text-success fw-bold rounded-pill px-4 shadow fs-6"
                 disabled={submittingReply}
               >
                 {submittingReply ? (
