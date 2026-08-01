@@ -40,7 +40,7 @@ export default function VendorQueries() {
 
   const fetchQueries = () => {
     setLoading(true);
-    vendorGetQueries({ userId })
+    vendorGetQueries({ userId, email: vendorEmail })
       .then((res) => {
         if (res.data.success) {
           setQueries(res.data.data || []);
@@ -65,10 +65,8 @@ export default function VendorQueries() {
 
     setSubmitting(true);
     const formData = new FormData();
-    formData.append("userId", userId);
     formData.append("name", vendorName);
     formData.append("email", vendorEmail);
-    formData.append("userType", "Vendor");
     formData.append("subject", subject);
     formData.append("description", description);
     if (evidenceFile) {
