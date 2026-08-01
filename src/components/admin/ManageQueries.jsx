@@ -262,6 +262,7 @@ export default function ManageQueries() {
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
           style={modalCustomStyles}
+          className="green-modal-box"
           ariaHideApp={false}
           contentLabel="Reply to Customer Query"
         >
