@@ -123,6 +123,10 @@ export const vendor_delete_coupon = "/vendor/coupon/delete";
 export const vendor_all_reviews = "/vendor/review/all";
 export const vendor_reply_review = "/vendor/review/reply";
 
+export const vendor_add_query = "/vendor/query/add";
+export const vendor_all_query = "/vendor/query/all";
+export const vendor_feedback_query = "/vendor/query/feedback";
+
 export const vendor_ai_description = "/vendor/ai/description";
 export const vendor_ai_seo = "/vendor/ai/seo";
 export const vendor_ai_caption = "/vendor/ai/caption";

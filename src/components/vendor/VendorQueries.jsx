@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactStars from "react-stars";
-import { addQuery, getCustomerQueries, submitQueryFeedback } from "../server/Query";
+import { vendorAddQuery, vendorGetQueries, vendorSubmitFeedback } from "../server/Query";
 
 export default function VendorQueries() {
   const context = useOutletContext();
@@ -40,7 +40,7 @@ export default function VendorQueries() {
 
   const fetchQueries = () => {
     setLoading(true);
-    getCustomerQueries({ userId })
+    vendorGetQueries({ userId })
       .then((res) => {
         if (res.data.success) {
           setQueries(res.data.data || []);
@@ -75,7 +75,7 @@ export default function VendorQueries() {
       formData.append("evidenceFile", evidenceFile);
     }
 
-    addQuery(formData)
+    vendorAddQuery(formData)
       .then((res) => {
         if (res.data.success) {
           toast.success("Vendor query submitted to Admin successfully!");
@@ -103,7 +103,7 @@ export default function VendorQueries() {
     }
 
     setSubmittingFeedbackId(queryId);
-    submitQueryFeedback({
+    vendorSubmitFeedback({
       _id: queryId,
       rating: starRating,
       ratingFeedback: note,

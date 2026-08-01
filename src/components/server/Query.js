@@ -6,6 +6,9 @@ import {
   submit_feedback_query,
   admin_all_query,
   admin_reply_query,
+  vendor_add_query,
+  vendor_all_query,
+  vendor_feedback_query,
 } from "../endpoints";
 
 function getToken() {
@@ -26,6 +29,18 @@ export function getCustomerQueries(data) {
 
 export function submitQueryFeedback(data) {
   return axios.post(baseUrl + submit_feedback_query, data, getToken());
+}
+
+export function vendorAddQuery(formData) {
+  return axios.post(baseUrl + vendor_add_query, formData, getToken());
+}
+
+export function vendorGetQueries(data) {
+  return axios.post(baseUrl + vendor_all_query, data, getToken());
+}
+
+export function vendorSubmitFeedback(data) {
+  return axios.post(baseUrl + vendor_feedback_query, data, getToken());
 }
 
 export function adminAllQueries(data) {
