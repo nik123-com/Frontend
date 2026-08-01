@@ -589,15 +589,15 @@
   opacity: 1 !important;
 }
 .modal-green-input {
-  background-color: #1b5e20 !important;
+  background-color: #619504 !important;
   color: #ffffff !important;
   border: 2px solid #ffffff !important;
 }
 .modal-green-input:focus {
-  background-color: #144718 !important;
+  background-color: #538103 !important;
   color: #ffffff !important;
   border-color: #ffffff !important;
-  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Force ReactModal outer card box to Green */
