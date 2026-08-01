@@ -116,6 +116,40 @@
     color: var(--bs-primary) !important;
 }
 
+.topbar-reversed {
+    padding: 20px;
+    border-radius: 100px 230px;
+}
+
+.topbar-reversed .top-info {
+    font-size: 15px;
+    line-height: 0;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+}
+
+.topbar-reversed .top-link {
+    font-size: 15px;
+    line-height: 0;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+}
+
+.topbar-reversed .top-link a {
+    letter-spacing: 1px;
+}
+
+.topbar-reversed .top-link a small:hover {
+    color: var(--bs-secondary) !important;
+    transition: 0.5s;
+}
+
+.topbar-reversed .top-link a small:hover i {
+    color: var(--bs-primary) !important;
+}
+
 /*** Topbar End ***/
 
 /*** Navbar Start ***/
