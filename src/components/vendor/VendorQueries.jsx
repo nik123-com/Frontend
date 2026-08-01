@@ -77,18 +77,19 @@ export default function VendorQueries() {
 
     vendorAddQuery(formData)
       .then((res) => {
-        if (res.data.success) {
+        if (res.data && res.data.success) {
           toast.success("Vendor query submitted to Admin successfully!");
           setDescription("");
           setEvidenceFile(null);
           fetchQueries();
         } else {
-          toast.error(res.data.message || "Failed to submit query");
+          toast.error(res.data?.message || "Failed to submit query");
         }
       })
       .catch((err) => {
-        console.error(err);
-        toast.error("Error submitting query");
+        console.error("Error submitting query:", err);
+        const serverMsg = err.response?.data?.message || err.message || "Error submitting query";
+        toast.error(serverMsg);
       })
       .finally(() => setSubmitting(false));
   };
