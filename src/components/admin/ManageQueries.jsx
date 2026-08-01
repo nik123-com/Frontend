@@ -14,16 +14,16 @@ const modalCustomStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
     width: "90%",
-    maxWidth: "600px",
-    borderRadius: "16px",
+    maxWidth: "620px",
+    borderRadius: "20px",
     padding: "30px",
-    boxShadow: "0 12px 35px rgba(0,0,0,0.35)",
-    backgroundColor: "#ffffff",
-    color: "#212529",
-    border: "2px solid #81c408",
+    boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+    backgroundColor: "#81c408",
+    color: "#ffffff",
+    border: "3px solid #ffffff",
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     zIndex: 1050,
   },
 };
@@ -266,22 +266,22 @@ export default function ManageQueries() {
           contentLabel="Reply to Customer Query"
         >
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4 className="fw-bold m-0" style={{ color: "#81c408" }}>
+            <h4 className="fw-bold m-0 text-white fs-4">
               <i className="fa-solid fa-reply me-2"></i>Reply to Ticket {selectedQuery.queryId}
             </h4>
-            <button className="btn btn-sm btn-close" onClick={closeModal}></button>
+            <button className="btn-close btn-close-white" onClick={closeModal}></button>
           </div>
 
-          <div className="p-3 rounded-3 mb-3 border border-success border-opacity-25" style={{ backgroundColor: "#f8f9fa", color: "#212529" }}>
+          <div className="p-3 rounded-3 mb-3 bg-white text-dark shadow-sm">
             <div className="d-flex justify-content-between align-items-center mb-2">
-              <strong className="fs-6" style={{ color: "#198754" }}>
+              <strong className="fs-6 text-success">
                 <i className="fa-solid fa-user me-2"></i>Sender: {selectedQuery.name}
               </strong>
               <span className="badge bg-warning text-dark px-3 py-2 fw-bold rounded-pill">
                 {selectedQuery.subject}
               </span>
             </div>
-            <p className="small mb-1" style={{ color: "#495057" }}>
+            <p className="small mb-1 text-secondary">
               <strong className="text-dark">Query Details:</strong> {selectedQuery.description}
             </p>
             {selectedQuery.evidenceFile && (
@@ -293,11 +293,11 @@ export default function ManageQueries() {
 
           <form onSubmit={handleSendReply}>
             <div className="mb-3">
-              <label className="form-label fw-bold" style={{ color: "#198754" }}>
-                Admin Description / Reply <span className="text-danger">*</span>
+              <label className="form-label fw-bold text-white fs-6">
+                Admin Description / Reply <span className="text-warning">*</span>
               </label>
               <textarea
-                className="form-control bg-white text-dark border-secondary border-opacity-50 shadow-sm"
+                className="form-control bg-white text-dark border-0 shadow-sm"
                 rows="4"
                 placeholder="Write your response to the customer or vendor..."
                 value={replyDescription}
@@ -308,12 +308,12 @@ export default function ManageQueries() {
             </div>
 
             <div className="mb-3">
-              <label className="form-label fw-bold" style={{ color: "#198754" }}>
-                Google Meet Link <small className="text-muted fw-normal">(Optional)</small>
+              <label className="form-label fw-bold text-white fs-6">
+                Google Meet Link <small className="text-white-50 fw-normal">(Optional)</small>
               </label>
               <input
                 type="text"
-                className="form-control bg-white text-dark border-secondary border-opacity-50 shadow-sm"
+                className="form-control bg-white text-dark border-0 shadow-sm"
                 placeholder="https://meet.google.com/xyz-abc-def"
                 value={meetLink}
                 onChange={(e) => setMeetLink(e.target.value)}
@@ -322,39 +322,38 @@ export default function ManageQueries() {
             </div>
 
             <div className="mb-4">
-              <label className="form-label fw-bold" style={{ color: "#198754" }}>
-                Upload Document from Admin <small className="text-muted fw-normal">(Optional)</small>
+              <label className="form-label fw-bold text-white fs-6">
+                Upload Document from Admin <small className="text-white-50 fw-normal">(Optional)</small>
               </label>
               <input
                 type="file"
-                className="form-control bg-white text-dark border-secondary border-opacity-50 shadow-sm"
+                className="form-control bg-white text-dark border-0 shadow-sm"
                 onChange={(e) => setAdminDocument(e.target.files[0])}
                 style={{ color: "#212529", backgroundColor: "#ffffff" }}
               />
               {selectedQuery.adminAttachment && !adminDocument && (
-                <small className="text-muted d-block mt-1">
-                  Existing Attachment: <a href={selectedQuery.adminAttachment} target="_blank" rel="noreferrer" className="text-success fw-bold">View File</a>
+                <small className="text-white-50 d-block mt-1">
+                  Existing Attachment: <a href={selectedQuery.adminAttachment} target="_blank" rel="noreferrer" className="text-white text-decoration-underline fw-bold">View File</a>
                 </small>
               )}
             </div>
 
             <div className="d-flex justify-content-end gap-2 pt-2">
-              <button type="button" className="btn btn-outline-secondary rounded-pill px-4 fw-bold" onClick={closeModal}>
+              <button type="button" className="btn btn-outline-light rounded-pill px-4 fw-bold shadow-sm" onClick={closeModal}>
                 Cancel
               </button>
               <button
                 type="submit"
-                className="btn btn-success text-white fw-bold rounded-pill px-4 shadow-sm"
-                style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
+                className="btn btn-light text-dark fw-bold rounded-pill px-4 shadow"
                 disabled={submittingReply}
               >
                 {submittingReply ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2"></span> Sending...
+                    <span className="spinner-border spinner-border-sm me-2 text-success"></span> Sending...
                   </>
                 ) : (
                   <>
-                    <i className="fa-solid fa-paper-plane me-2"></i>Send Reply
+                    <i className="fa-solid fa-paper-plane me-2 text-success"></i>Send Reply
                   </>
                 )}
               </button>
