@@ -70,8 +70,12 @@ export default function VendorProducts() {
   // Filtered products logic
   const filtered = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    if (filterType === "published") return matchesSearch && !p.isDraft;
-    if (filterType === "draft") return matchesSearch && p.isDraft;
+    const isDraft = p.isDraft === true || p.isDraft === "true";
+    const isDeactivated = p.status === false;
+
+    if (filterType === "published") return matchesSearch && !isDraft && !isDeactivated;
+    if (filterType === "draft") return matchesSearch && isDraft;
+    if (filterType === "deactivated") return matchesSearch && isDeactivated;
     return matchesSearch;
   });
 
@@ -91,7 +95,7 @@ export default function VendorProducts() {
       {/* Filter & Search Bar */}
       <div className="card border-0 shadow-sm p-3 mb-4 bg-white rounded-3">
         <div className="row g-3 align-items-center">
-          <div className="col-md-6">
+          <div className="col-md-5">
             <div className="input-group">
               <span className="input-group-text bg-light border-end-0">
                 <i className="fa-solid fa-magnifying-glass text-muted"></i>
@@ -105,7 +109,7 @@ export default function VendorProducts() {
               />
             </div>
           </div>
-          <div className="col-md-6 text-md-end">
+          <div className="col-md-7 text-md-end">
             <div className="btn-group" role="group">
               <button
                 type="button"
@@ -119,14 +123,21 @@ export default function VendorProducts() {
                 className={`btn ${filterType === "published" ? "btn-primary" : "btn-outline-secondary"}`}
                 onClick={() => setFilterType("published")}
               >
-                Published ({products.filter(p => !p.isDraft).length})
+                Published ({products.filter(p => (p.isDraft !== true && p.isDraft !== "true") && p.status !== false).length})
               </button>
               <button
                 type="button"
                 className={`btn ${filterType === "draft" ? "btn-primary" : "btn-outline-secondary"}`}
                 onClick={() => setFilterType("draft")}
               >
-                Drafts ({products.filter(p => p.isDraft).length})
+                Drafts ({products.filter(p => p.isDraft === true || p.isDraft === "true").length})
+              </button>
+              <button
+                type="button"
+                className={`btn ${filterType === "deactivated" ? "btn-danger" : "btn-outline-danger"}`}
+                onClick={() => setFilterType("deactivated")}
+              >
+                Deactivated ({products.filter(p => p.status === false).length})
               </button>
             </div>
           </div>
@@ -159,6 +170,8 @@ export default function VendorProducts() {
                     const imgUrl = p.image && p.image.length > 0
                       ? (p.image[0].startsWith("http") ? p.image[0] : `/${p.image[0]}`)
                       : "/assets/img/placeholder.jpg";
+                    const isDraft = p.isDraft === true || p.isDraft === "true";
+                    const isDeactivated = p.status === false;
 
                     return (
                       <tr key={p._id}>
@@ -192,8 +205,10 @@ export default function VendorProducts() {
                           )}
                         </td>
                         <td>
-                          {p.isDraft ? (
+                          {isDraft ? (
                             <span className="badge bg-secondary">Draft</span>
+                          ) : isDeactivated ? (
+                            <span className="badge bg-danger" title="Deactivated by Admin">Deactivated</span>
                           ) : (
                             <span className="badge bg-success">Active</span>
                           )}
