@@ -18,6 +18,10 @@ export default function MyOrders() {
 
   useEffect(() => {
     fetchOrders();
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchOrders = () => {
@@ -47,6 +51,8 @@ export default function MyOrders() {
   const getStatusBadge = (status) => {
     switch (status?.toLowerCase()) {
       case "placed": return "bg-success";
+      case "accepted": return "bg-success";
+      case "packed": return "bg-info text-dark";
       case "processing": return "bg-info text-dark";
       case "shipped": return "bg-primary";
       case "delivered": return "bg-success";
@@ -152,6 +158,13 @@ export default function MyOrders() {
                                         <h6 className="mb-1">{item.productId?.name || item.name}</h6>
                                         <small className="text-muted d-block">Qty: {item.quantity}</small>
                                         <small className="text-muted">₹{Number(item.productId?.price) || 0} each</small>
+                                        {item.itemStatus && (
+                                          <div>
+                                            <span className={`badge text-capitalize mt-1 ${getStatusBadge(item.itemStatus)}`}>
+                                              {item.itemStatus}
+                                            </span>
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

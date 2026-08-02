@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { adminAllOrders, adminSingleOrder, adminUpdateOrder } from "../server/Order";
+import { toast } from "react-toastify";
+import { adminAllOrders, adminSingleOrder } from "../server/Order";
 
 export default function ManageOrder() {
   const [orders, setOrders] = useState([]);
@@ -9,6 +10,10 @@ export default function ManageOrder() {
 
   useEffect(() => {
     fetchOrders();
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchOrders = () => {
@@ -29,26 +34,6 @@ export default function ManageOrder() {
         console.log(err);
         toast.error("Error fetching orders");
         setLoading(false);
-      });
-  };
-
-  const handleStatusChange = (_id, newStatus) => {
-    adminUpdateOrder({ _id, orderStatus: newStatus })
-      .then((res) => {
-        if (res.data.success) {
-          toast.success(res.data.message);
-          if (viewDetail) {
-            viewSingleOrder(_id);
-          } else {
-            fetchOrders();
-          }
-        } else {
-          toast.error(res.data.message);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Error updating status");
       });
   };
 
@@ -74,6 +59,8 @@ export default function ManageOrder() {
   const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
       case "placed": return "bg-success text-white";
+      case "accepted": return "bg-success text-white";
+      case "packed": return "bg-info text-dark";
       case "processing": return "bg-info text-dark";
       case "shipped": return "bg-primary text-white";
       case "delivered": return "bg-success text-white";
@@ -109,33 +96,56 @@ export default function ManageOrder() {
                           <thead className="table-light">
                             <tr>
                               <th className="ps-4">Product</th>
+                              <th>Vendor</th>
                               <th>Price</th>
                               <th>Quantity</th>
                               <th className="text-end pe-4">Total</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {selectedOrder.products?.map((item, index) => (
-                              <tr key={index}>
-                                <td className="ps-4">
-                                  <div className="d-flex align-items-center gap-3">
-                                    <img
-                                      src={item.productId?.image?.[0] || item.productId?.image || item.image}
-                                      alt=""
-                                      style={{ width: 50, height: 50, borderRadius: 8, objectFit: "cover" }}
-                                    />
-                                    <span className="fw-medium">{item.productId?.name || item.name}</span>
-                                  </div>
-                                </td>
-                                <td>₹{Number(item.productId?.price) || 0}</td>
-                                <td>{item.quantity}</td>
-                                <td className="text-end fw-bold pe-4">₹{(Number(item.productId?.price) || 0) * item.quantity}</td>
-                              </tr>
-                            ))}
+                            {selectedOrder.products?.map((item, index) => {
+                              const vendorInfo = item.productId?.vendorId;
+                              const vendorName = vendorInfo?.businessName || vendorInfo?.ownerName || "In-House / Direct";
+                              return (
+                                <tr key={index}>
+                                  <td className="ps-4">
+                                    <div className="d-flex align-items-center gap-3">
+                                      <img
+                                        src={item.productId?.image?.[0] || item.productId?.image || item.image}
+                                        alt=""
+                                        style={{ width: 50, height: 50, borderRadius: 8, objectFit: "cover" }}
+                                      />
+                                      <div>
+                                        <span className="fw-medium d-block">{item.productId?.name || item.name}</span>
+                                        {item.itemStatus && (
+                                          <span className="badge bg-secondary text-capitalize mt-1" style={{ fontSize: "0.7rem" }}>
+                                            {item.itemStatus}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <span className="badge bg-light text-dark border px-2 py-1">
+                                      <i className="fa-solid fa-store me-1 text-primary"></i>
+                                      {vendorName}
+                                    </span>
+                                    {vendorInfo?.email && (
+                                      <small className="text-muted d-block" style={{ fontSize: "0.75rem" }}>
+                                        {vendorInfo.email}
+                                      </small>
+                                    )}
+                                  </td>
+                                  <td>₹{Number(item.productId?.price) || 0}</td>
+                                  <td>{item.quantity}</td>
+                                  <td className="text-end fw-bold pe-4">₹{(Number(item.productId?.price) || 0) * item.quantity}</td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                           <tfoot className="table-light">
                             <tr>
-                              <td colSpan="3" className="text-end fw-bold">Grand Total:</td>
+                              <td colSpan="4" className="text-end fw-bold">Grand Total:</td>
                               <td className="text-end fw-bold text-primary pe-4">₹{selectedOrder.grandTotal}</td>
                             </tr>
                           </tfoot>
@@ -152,19 +162,11 @@ export default function ManageOrder() {
                     </div>
                     <div className="card-body">
                       <div className="mb-4">
-                        <label className="form-label small text-uppercase text-muted fw-bold">Status Update</label>
-                        <select
-                          className={`form-select ${getStatusClass(selectedOrder.orderStatus)}`}
-                          value={selectedOrder.orderStatus}
-                          onChange={(e) => handleStatusChange(selectedOrder._id, e.target.value)}
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="placed">Placed</option>
-                          <option value="processing">Processing</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
+                        <label className="form-label small text-uppercase text-muted fw-bold d-block">Order Status</label>
+                        <span className={`badge text-capitalize px-3 py-2 fs-6 ${getStatusClass(selectedOrder.orderStatus)}`}>
+                          {selectedOrder.orderStatus || "Pending"}
+                        </span>
+                        <small className="text-muted d-block mt-1">Managed by Vendor</small>
                       </div>
 
                       <div className="border-top pt-3 mb-4">
@@ -213,6 +215,7 @@ export default function ManageOrder() {
                           <th scope="col" className="ps-4">#</th>
                           <th scope="col">Customer</th>
                           <th scope="col">Items</th>
+                          <th scope="col">Vendor(s)</th>
                           <th scope="col">Total</th>
                           <th scope="col">Payment</th>
                           <th scope="col">Status</th>
@@ -223,7 +226,7 @@ export default function ManageOrder() {
                       <tbody>
                         {loading ? (
                           <tr>
-                            <td colSpan="8" className="text-center py-5">
+                            <td colSpan="9" className="text-center py-5">
                               <div className="spinner-border text-primary" role="status" style={{ width: "2.5rem", height: "2.5rem" }}>
                                 <span className="visually-hidden">Loading...</span>
                               </div>
@@ -239,6 +242,20 @@ export default function ManageOrder() {
                                 <div className="text-muted small">{order.customerId?.email || ""}</div>
                               </td>
                               <td>{order.products?.length || 0}</td>
+                              <td>
+                                {Array.from(
+                                  new Set(
+                                    (order.products || []).map(
+                                      (p) => p.productId?.vendorId?.businessName || p.productId?.vendorId?.ownerName || "In-House"
+                                    )
+                                  )
+                                ).map((vName, idx) => (
+                                  <span key={idx} className="badge bg-light text-dark border me-1 mb-1" style={{ fontSize: "0.75rem" }}>
+                                    <i className="fa-solid fa-store me-1 text-primary"></i>
+                                    {vName}
+                                  </span>
+                                ))}
+                              </td>
                               <td className="fw-bold">₹{(order.grandTotal || 0).toLocaleString("en-IN")}</td>
                               <td>
                                 <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
@@ -246,19 +263,9 @@ export default function ManageOrder() {
                                 </span>
                               </td>
                               <td>
-                                <select
-                                  className={`form-select form-select-sm border-0 ${getStatusClass(order.orderStatus)}`}
-                                  value={order.orderStatus || "pending"}
-                                  onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                  style={{ cursor: "pointer", minWidth: "120px", fontWeight: "500" }}
-                                >
-                                  <option value="pending" className="bg-white text-dark">Pending</option>
-                                  <option value="placed" className="bg-white text-dark">Placed</option>
-                                  <option value="processing" className="bg-white text-dark">Processing</option>
-                                  <option value="shipped" className="bg-white text-dark">Shipped</option>
-                                  <option value="delivered" className="bg-white text-dark">Delivered</option>
-                                  <option value="cancelled" className="bg-white text-dark">Cancelled</option>
-                                </select>
+                                <span className={`badge text-capitalize px-3 py-2 ${getStatusClass(order.orderStatus)}`}>
+                                  {order.orderStatus || "pending"}
+                                </span>
                               </td>
                               <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                               <td>
@@ -273,7 +280,7 @@ export default function ManageOrder() {
                           ))
                         ) : (
                           <tr>
-                            <td colSpan="8" className="text-center py-5 text-muted">
+                            <td colSpan="9" className="text-center py-5 text-muted">
                               No orders found
                             </td>
                           </tr>
