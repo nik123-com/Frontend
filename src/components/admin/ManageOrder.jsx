@@ -9,15 +9,15 @@ export default function ManageOrder() {
   const [viewDetail, setViewDetail] = useState(false);
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(false);
     const interval = setInterval(() => {
-      fetchOrders();
+      fetchOrders(true);
     }, 15000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchOrders = () => {
-    setLoading(true);
+  const fetchOrders = (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     adminAllOrders({})
       .then((res) => {
         if (res.data.success) {
@@ -25,15 +25,17 @@ export default function ManageOrder() {
             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
           );
           setOrders(sorted);
-        } else {
+        } else if (!isSilent) {
           toast.error(res.data.message);
         }
-        setLoading(false);
+        if (!isSilent) setLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        toast.error("Error fetching orders");
-        setLoading(false);
+        if (!isSilent) {
+          toast.error("Error fetching orders");
+          setLoading(false);
+        }
       });
   };
 

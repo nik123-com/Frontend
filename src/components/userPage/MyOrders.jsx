@@ -17,34 +17,36 @@ export default function MyOrders() {
   };
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(false);
     const interval = setInterval(() => {
-      fetchOrders();
+      fetchOrders(true);
     }, 15000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchOrders = () => {
+  const fetchOrders = (isSilent = false) => {
     const userId = sessionStorage.getItem("userId");
     if (!userId) {
-      toast.error("Please login to view orders");
+      if (!isSilent) toast.error("Please login to view orders");
       return;
     }
 
-    setLoading(true);
+    if (!isSilent) setLoading(true);
     allOrder({ userId })
       .then((res) => {
         if (res.data.success) {
           setOrders(res.data.data);
-        } else {
+        } else if (!isSilent) {
           toast.error(res.data.message);
         }
-        setLoading(false);
+        if (!isSilent) setLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        toast.error("Failed to load orders");
-        setLoading(false);
+        if (!isSilent) {
+          toast.error("Failed to load orders");
+          setLoading(false);
+        }
       });
   };
 
