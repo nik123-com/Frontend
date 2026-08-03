@@ -98,8 +98,7 @@ export default function ManageVendors() {
 
   return (
     <>
-      <br /><br /><br />
-      <div className="container-fluid py-3 py-md-4">
+      <div className="container-fluid py-2 py-md-3">
         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <div>
             <h3 className="fw-bold text-success mb-0">Manage Vendor Partners</h3>
