@@ -161,8 +161,8 @@ function Home() {
       {/* Hero End */}
 
       {/* Features Section Start */}
-      <div className="container-fluid featurs py-5">
-        <div className="container py-5">
+      <div className="container-fluid featurs py-4">
+        <div className="container py-3">
           <div className="row g-4">
             <div className="col-md-6 col-lg-3">
               <div className="featurs-item text-center rounded bg-light p-4">
@@ -217,8 +217,8 @@ function Home() {
       {/* Features Section End */}
 
       {/* Fruits Shop Start */}
-      <div className="container-fluid fruite py-5">
-        <div className="container py-5">
+      <div className="container-fluid fruite pt-0 pb-5">
+        <div className="container pt-0 pb-5">
           <div className="tab-class text-center">
             <div className="row g-4 align-items-center mb-4">
               <div className="col-lg-4 text-start">
