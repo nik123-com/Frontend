@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { single, getproductbycat } from "../server/Product";
 import { addCart } from "../server/Cart";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { addreview, allreview } from "../server/Review";
 import ReactStars from 'react-stars'
 import React from 'react'
@@ -47,8 +48,15 @@ export default function ShopDetail() {
 
     const user = sessionStorage.getItem("userId");
     if (!user) {
-      alert("Login first");
-      navigate("/login");
+      Swal.fire({
+        title: "Login Required",
+        text: "Please log in to submit a review.",
+        icon: "info",
+        confirmButtonText: "Log In",
+        confirmButtonColor: "#81c408"
+      }).then(() => {
+        navigate("/login");
+      });
       return;
     }
 
@@ -91,8 +99,15 @@ export default function ShopDetail() {
   const addToCart = (element) => {
     const user = sessionStorage.getItem("userId");
     if (!user) {
-      alert("Login first");
-      navigate("/login");
+      Swal.fire({
+        title: "Login Required",
+        text: "Please log in to add items to your cart.",
+        icon: "info",
+        confirmButtonText: "Log In",
+        confirmButtonColor: "#81c408"
+      }).then(() => {
+        navigate("/login");
+      });
       return;
     }
 

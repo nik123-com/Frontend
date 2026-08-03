@@ -29,31 +29,55 @@ export default function ManageVendors() {
   }, []);
 
   const handleApprove = async (vendorId, businessName) => {
-    try {
-      const res = await approveVendor({ vendorId });
-      if (res.data.success) {
-        toast.success(`Approved vendor "${businessName}" successfully!`);
-        fetchVendors();
-      } else {
-        toast.error(res.data.message || "Approval failed");
+    Swal.fire({
+      title: "Approve Vendor?",
+      text: `Are you sure you want to approve vendor "${businessName}"?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#81c408",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, approve!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await approveVendor({ vendorId });
+          if (res.data.success) {
+            toast.success(`Approved vendor "${businessName}" successfully!`);
+            fetchVendors();
+          } else {
+            toast.error(res.data.message || "Approval failed");
+          }
+        } catch (err) {
+          toast.error("Error approving vendor");
+        }
       }
-    } catch (err) {
-      toast.error("Error approving vendor");
-    }
+    });
   };
 
   const handleReject = async (vendorId, businessName) => {
-    try {
-      const res = await rejectVendor({ vendorId });
-      if (res.data.success) {
-        toast.info(`Rejected vendor "${businessName}"`);
-        fetchVendors();
-      } else {
-        toast.error(res.data.message || "Rejection failed");
+    Swal.fire({
+      title: "Reject Vendor?",
+      text: `Are you sure you want to reject vendor "${businessName}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, reject!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await rejectVendor({ vendorId });
+          if (res.data.success) {
+            toast.info(`Rejected vendor "${businessName}"`);
+            fetchVendors();
+          } else {
+            toast.error(res.data.message || "Rejection failed");
+          }
+        } catch (err) {
+          toast.error("Error rejecting vendor");
+        }
       }
-    } catch (err) {
-      toast.error("Error rejecting vendor");
-    }
+    });
   };
 
   const handleToggleBlock = async (vendorId, currentBlocked) => {

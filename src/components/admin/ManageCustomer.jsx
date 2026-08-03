@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { HashLoader } from "react-spinners";
+import Swal from "sweetalert2";
 import { allCustomer, toggleBlockCustomer } from "../server/Customer";
 import ResponsivePagination from "react-responsive-pagination";
 
@@ -40,29 +41,42 @@ export default function ManageCustomer() {
   };
 
   // Toggle security block (block/unblock user login and API access)
-  const handleBlockToggle = (userId) => {
+  const handleBlockToggle = (userId, currentBlocked, customerName = "") => {
     if (!userId) {
       toast.warning("Associated user account not found");
       return;
     }
 
-    setLoading(true);
-    toggleBlockCustomer({ userId })
-      .then((res) => {
-        if (res.data.success) {
-          toast.success(res.data.message);
-          fetchCustomers();
-        } else {
-          toast.error(res.data.message || "Failed to update block status");
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Error toggling block status");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    const actionText = currentBlocked ? "Unblock" : "Block";
+    Swal.fire({
+      title: `${actionText} Customer?`,
+      text: `Are you sure you want to ${actionText.toLowerCase()} customer ${customerName ? `"${customerName}"` : "access"}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: currentBlocked ? "#3085d6" : "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: `Yes, ${actionText}!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setLoading(true);
+        toggleBlockCustomer({ userId })
+          .then((res) => {
+            if (res.data.success) {
+              toast.success(res.data.message || `Customer ${actionText.toLowerCase()}ed successfully`);
+              fetchCustomers();
+            } else {
+              toast.error(res.data.message || "Failed to update block status");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error("Error toggling block status");
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+    });
   };
 
   // Search filtering
@@ -178,7 +192,7 @@ export default function ManageCustomer() {
                                   {element.userId?.isBlocked ? "Blocked" : "Allowed"}
                                 </span>
                                 <Switch
-                                  onChange={() => handleBlockToggle(element.userId?._id)}
+                                  onChange={() => handleBlockToggle(element.userId?._id, element.userId?.isBlocked, element.name)}
                                   checked={element.userId?.isBlocked || false}
                                   onColor="#dc3545"
                                   offColor="#81c408"

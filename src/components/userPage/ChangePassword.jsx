@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 import { changePassword } from "../server/auth";
 
 const ChangePassword = () => {
@@ -20,16 +21,31 @@ const ChangePassword = () => {
 
   const changed = () => {
     if (!old || !newpass || !confirm) {
-      alert("All fields are required");
+      Swal.fire({
+        title: "Validation Error",
+        text: "All fields are required.",
+        icon: "warning",
+        confirmButtonColor: "#81c408"
+      });
       return;
     }
 
     if (newpass !== confirm) {
-      alert("New Password and Confirm Password do not match");
+      Swal.fire({
+        title: "Password Mismatch",
+        text: "New Password and Confirm Password do not match.",
+        icon: "error",
+        confirmButtonColor: "#d33"
+      });
       return;
     }
 
-    alert("Password Changed Successfully");
+    Swal.fire({
+      title: "Success!",
+      text: "Password Changed Successfully",
+      icon: "success",
+      confirmButtonColor: "#81c408"
+    });
     
     changePassword
     console.log({

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
+import Swal from "sweetalert2";
 import { allProduct, getproductbycat, getproductbybrand } from "../server/Product";
 import { addCart } from "../server/Cart"
 import { addItem, addwishList, allwishList } from '../server/WishList'
@@ -124,8 +125,15 @@ export default function CardProduct() {
     const user = sessionStorage.getItem("userId");
 
     if (!user) {
-      alert("Login first");
-      navigate("/login");
+      Swal.fire({
+        title: "Login Required",
+        text: "Please log in to add items to your cart.",
+        icon: "info",
+        confirmButtonText: "Log In",
+        confirmButtonColor: "#81c408"
+      }).then(() => {
+        navigate("/login");
+      });
       return;
     }
 

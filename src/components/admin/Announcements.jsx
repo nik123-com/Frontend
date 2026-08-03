@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
+import Swal from "sweetalert2";
 import {
   adminAddAnnouncement,
   adminGetAllAnnouncements,
@@ -114,21 +115,31 @@ export default function Announcements() {
   };
 
   const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
-
-    adminDeleteAnnouncement(id)
-      .then((res) => {
-        if (res.data && res.data.success) {
-          toast.success("Announcement deleted successfully!");
-          fetchAnnouncements();
-        } else {
-          toast.error(res.data?.message || "Failed to delete announcement");
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Error deleting announcement");
-      });
+    Swal.fire({
+      title: "Delete Announcement?",
+      text: "Are you sure you want to delete this announcement?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        adminDeleteAnnouncement(id)
+          .then((res) => {
+            if (res.data && res.data.success) {
+              toast.success("Announcement deleted successfully!");
+              fetchAnnouncements();
+            } else {
+              toast.error(res.data?.message || "Failed to delete announcement");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error("Error deleting announcement");
+          });
+      }
+    });
   };
 
   const getAudienceBadge = (target) => {

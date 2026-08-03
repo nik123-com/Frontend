@@ -3,6 +3,7 @@ import Switch from "react-switch";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
+import Swal from "sweetalert2";
 import { allProduct, DeleteOne, softDelete } from "../server/Product";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
@@ -57,24 +58,31 @@ export default function ManageProduct() {
     })
   }
   const deleteProduct = (id) => {
-    const data2 = {
-      _id: id,
-    };
-    DeleteOne(data2).then((res) => {
-      console.log(res);
-
-      if (res.data.success) {
-        toast.success(res.data.message);
-
-      } else {
-        toast.warning(res.data.message);
+    Swal.fire({
+      title: "Delete Product?",
+      text: "Are you sure you want to delete this product? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const data2 = { _id: id };
+        DeleteOne(data2).then((res) => {
+          if (res.data.success) {
+            toast.success(res.data.message || "Product deleted successfully");
+          } else {
+            toast.warning(res.data.message || "Failed to delete product");
+          }
+          fetch();
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error(err?.message || "Error deleting product");
+        });
       }
-      fetch();
-    })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err?.message || "Error deleting product")
-      });
+    });
   }
 
   const startindex = (currentpage - 1) * limit;

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { Navigate, useNavigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
+import Swal from "sweetalert2";
 import { allBrand, HardDelete, softDelete } from "../server/Brand";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
@@ -59,25 +60,32 @@ export default function ManageBrand() {
   }, []);
 
   const deleteBrand = (id) => {
-    const data2 = {
-      _id: id,
-    };
-
-    //For Hard Delete
-    HardDelete(data2)
-      .then((res) => {
-        console.log(res);
-        if (res.data.success) {
-          toast.success(res.data.message);
-          fetch();
-        } else {
-          toast.warning(res.data.message);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err?.message || "Error deleting brand");
-      });
+    Swal.fire({
+      title: "Delete Brand?",
+      text: "Are you sure you want to delete this brand? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const data2 = { _id: id };
+        HardDelete(data2)
+          .then((res) => {
+            if (res.data.success) {
+              toast.success(res.data.message || "Brand deleted successfully");
+              fetch();
+            } else {
+              toast.warning(res.data.message || "Failed to delete brand");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error(err?.message || "Error deleting brand");
+          });
+      }
+    });
   };
 
   // React Paging

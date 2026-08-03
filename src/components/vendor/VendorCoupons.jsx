@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { baseUrl, vendor_add_coupon, vendor_all_coupons, vendor_delete_coupon } from "../endpoints";
 
 export default function VendorCoupons() {
@@ -37,12 +38,12 @@ export default function VendorCoupons() {
         { headers: { Authorization: token } }
       );
       if (res.data.success) {
-        setCoupons(res.data.data);
+        setCoupons(res.data.data || []);
       } else {
         toast.error(res.data.message || "Failed to load coupons");
       }
     } catch (err) {
-      toast.error("Error loading coupons");
+      toast.error("Error fetching coupons");
     } finally {
       setLoading(false);
     }
@@ -52,13 +53,12 @@ export default function VendorCoupons() {
     fetchCoupons();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.code || !formData.discount) {
-      toast.error("Code and Discount value are required.");
-      return;
-    }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
+  const handleCreateCoupon = async (e) => {
+    e.preventDefault();
     const token = sessionStorage.getItem("token");
     try {
       const res = await axios.post(
@@ -67,7 +67,7 @@ export default function VendorCoupons() {
         { headers: { Authorization: token } }
       );
       if (res.data.success) {
-        toast.success("Vendor coupon created!");
+        toast.success(res.data.message || "Coupon created successfully!");
         setShowModal(false);
         setFormData({ code: "", discount: "", discountType: "Percentage", minAmoutSpend: 0, expiryDate: "" });
         fetchCoupons();
@@ -80,22 +80,34 @@ export default function VendorCoupons() {
   };
 
   const handleDelete = async (id) => {
-    const token = sessionStorage.getItem("token");
-    try {
-      const res = await axios.post(
-        baseUrl + vendor_delete_coupon,
-        { _id: id },
-        { headers: { Authorization: token } }
-      );
-      if (res.data.success) {
-        toast.success("Coupon deleted");
-        fetchCoupons();
-      } else {
-        toast.error(res.data.message || "Delete failed");
+    Swal.fire({
+      title: "Delete Coupon?",
+      text: "Are you sure you want to delete this coupon? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const token = sessionStorage.getItem("token");
+        try {
+          const res = await axios.post(
+            baseUrl + vendor_delete_coupon,
+            { _id: id },
+            { headers: { Authorization: token } }
+          );
+          if (res.data.success) {
+            toast.success("Coupon deleted successfully");
+            fetchCoupons();
+          } else {
+            toast.error(res.data.message || "Delete failed");
+          }
+        } catch (err) {
+          toast.error("Error deleting coupon");
+        }
       }
-    } catch (err) {
-      toast.error("Error deleting coupon");
-    }
+    });
   };
 
   return (

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
 import { HashLoader } from "react-spinners";
@@ -64,24 +65,31 @@ export default function ManageCategory() {
   }
   //For Deleting
   const deleteCategory = (id) => {
-    const data2 = {
-      _id: id,
-    };
-    DeleteOne(data2).then((res) => {
-      console.log(res);
-
-      if (res.data.success) {
-        toast.success(res.data.message);
-
-      } else {
-        toast.warning(res.data.message);
+    Swal.fire({
+      title: "Delete Category?",
+      text: "Are you sure you want to delete this category? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const data2 = { _id: id };
+        DeleteOne(data2).then((res) => {
+          if (res.data.success) {
+            toast.success(res.data.message || "Category deleted successfully");
+          } else {
+            toast.warning(res.data.message || "Failed to delete category");
+          }
+          fetch();
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error(err?.message || "Error deleting category");
+        });
       }
-      fetch();
-    })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err?.message || "Error deleting category")
-      })
+    });
   }
 
   // React Paging

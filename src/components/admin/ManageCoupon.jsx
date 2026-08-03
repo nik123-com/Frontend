@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 // React Paging 
 import ResponsivePagination from "react-responsive-pagination";
 import { adminCoupon, deleteCoupon } from "../server/Coupon";
@@ -44,21 +45,31 @@ export default function ManageCoupon() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this coupon?")) {
-      deleteCoupon({ _id: id })
-        .then((res) => {
-          if (res.data.success) {
-            toast.success(res.data.message || "Coupon deleted successfully");
-            fetch();
-          } else {
-            toast.error(res.data.message || "Failed to delete coupon");
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error(err.response?.data?.message || "Error deleting coupon");
-        });
-    }
+    Swal.fire({
+      title: "Delete Coupon?",
+      text: "Are you sure you want to delete this coupon?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCoupon({ _id: id })
+          .then((res) => {
+            if (res.data.success) {
+              toast.success(res.data.message || "Coupon deleted successfully");
+              fetch();
+            } else {
+              toast.error(res.data.message || "Failed to delete coupon");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error(err.response?.data?.message || "Error deleting coupon");
+          });
+      }
+    });
   };
 
   // React Paging

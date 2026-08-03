@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { baseUrl } from "../endpoints";
 
 const blockedKeywords = [
@@ -246,21 +247,31 @@ export default function MyChatBot() {
   };
 
   const handleReset = () => {
-    if (window.confirm("Are you sure you want to clear chat history?")) {
-      sessionStorage.removeItem("sana-chat-messages");
-      sessionStorage.removeItem("sana-chat-username");
-      sessionStorage.removeItem("sana-chat-step");
-      setMessages([
-        {
-          id: "welcome",
-          sender: "bot",
-          text: "👋 Welcome to Aventra!\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
-      setUserName("");
-      setStep("ask_name");
-    }
+    Swal.fire({
+      title: "Clear Chat History?",
+      text: "Are you sure you want to clear your chat history?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, clear it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem("sana-chat-messages");
+        sessionStorage.removeItem("sana-chat-username");
+        sessionStorage.removeItem("sana-chat-step");
+        setMessages([
+          {
+            id: "welcome",
+            sender: "bot",
+            text: "👋 Welcome to Aventra!\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]);
+        setUserName("");
+        setStep("ask_name");
+      }
+    });
   };
 
   return (
