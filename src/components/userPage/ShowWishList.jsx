@@ -462,7 +462,7 @@ const AddFriend = () => {
                                                                     }}
                                                                     onClick={() => navigate(`/wishlist/${element?._id}`)}
                                                                 >
-                                                                    View
+                                                                    Chat
                                                                 </button>
 
                                                                 {isOwner && (
