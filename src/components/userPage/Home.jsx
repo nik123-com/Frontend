@@ -228,11 +228,11 @@ function Home() {
       <div className="container-fluid fruite pt-0 pb-5">
         <div className="container pt-0 pb-5">
           <div className="tab-class text-center">
-            <div className="row g-4 align-items-center mb-4">
-              <div className="col-lg-4 text-start">
+            <div className="row g-3 align-items-center mb-4">
+              <div className="col-12 text-start">
                 <h1 className="fw-bold text-dark mb-0">Our Organic Products</h1>
               </div>
-              <div className="col-lg-8 text-start text-lg-end">
+              <div className="col-12 text-start">
                 <div className="d-flex align-items-center position-relative">
                   <button
                     className="btn btn-sm btn-light border rounded-circle me-2 d-none d-md-flex align-items-center justify-content-center shadow-sm"
