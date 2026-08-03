@@ -14,6 +14,7 @@ import { Line, Bar } from "react-chartjs-2";
 import { allProduct } from "../server/Product";
 import { allCustomer } from "../server/Customer";
 import { adminAllOrders } from "../server/Order";
+import { allVendor } from "../server/Vendor";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +33,7 @@ export default function Admindashboard() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -42,23 +44,27 @@ export default function Admindashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [resProducts, resOrders, resCustomers] = await Promise.all([
+      const [resProducts, resOrders, resCustomers, resVendors] = await Promise.all([
         allProduct(),
         adminAllOrders({}),
-        allCustomer()
+        allCustomer(),
+        allVendor()
       ]);
 
-      if (resProducts.data.success) {
+      if (resProducts.data?.success) {
         setProducts(resProducts.data.data || []);
       }
-      if (resOrders.data.success) {
+      if (resOrders.data?.success) {
         const sortedOrders = [...(resOrders.data.data || [])].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         setOrders(sortedOrders);
       }
-      if (resCustomers.data.success) {
+      if (resCustomers.data?.success) {
         setCustomers(resCustomers.data.data || []);
+      }
+      if (resVendors.data?.success) {
+        setVendors(resVendors.data.data || []);
       }
     } catch (err) {
       console.error(err);
@@ -67,6 +73,10 @@ export default function Admindashboard() {
       setLoading(false);
     }
   };
+
+  // Helper formatting for Active Users / Vendors
+  const activeCustomers = customers.filter((c) => c.status !== false && !c.userId?.isBlocked).length;
+  const activeVendors = vendors.filter((v) => v.status === "Approved" && !v.isBlocked).length;
 
   // Helper formatting for Revenue
   const totalRevenue = orders.reduce((acc, order) => acc + (Number(order.grandTotal) || 0), 0);
@@ -207,8 +217,8 @@ export default function Admindashboard() {
         </div>
 
         {/* Statistics Cards */}
-        <div className="row g-3 g-md-4 mb-4">
-          <div className="col-12 col-sm-6 col-lg-3">
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3 g-md-4 mb-4">
+          <div className="col">
             <div className="card border-0 shadow-sm h-100 rounded-4">
               <div className="card-body p-4">
                 <h6 className="text-muted fw-semibold mb-2">Total Products</h6>
@@ -217,7 +227,7 @@ export default function Admindashboard() {
             </div>
           </div>
 
-          <div className="col-12 col-sm-6 col-lg-3">
+          <div className="col">
             <div className="card border-0 shadow-sm h-100 rounded-4">
               <div className="card-body p-4">
                 <h6 className="text-muted fw-semibold mb-2">Total Orders</h6>
@@ -226,16 +236,27 @@ export default function Admindashboard() {
             </div>
           </div>
 
-          <div className="col-12 col-sm-6 col-lg-3">
+          <div className="col">
             <div className="card border-0 shadow-sm h-100 rounded-4">
               <div className="card-body p-4">
-                <h6 className="text-muted fw-semibold mb-2">Customers</h6>
-                <h2 className="fw-bold text-warning mb-0">{customers.length}</h2>
+                <h6 className="text-muted fw-semibold mb-2">Active Customers</h6>
+                <h2 className="fw-bold text-warning mb-0">{activeCustomers}</h2>
+                <small className="text-muted" style={{ fontSize: "0.8rem" }}>{customers.length} Total Registered</small>
               </div>
             </div>
           </div>
 
-          <div className="col-12 col-sm-6 col-lg-3">
+          <div className="col">
+            <div className="card border-0 shadow-sm h-100 rounded-4">
+              <div className="card-body p-4">
+                <h6 className="text-muted fw-semibold mb-2">Active Vendors</h6>
+                <h2 className="fw-bold text-info mb-0">{activeVendors}</h2>
+                <small className="text-muted" style={{ fontSize: "0.8rem" }}>{vendors.length} Total Registered</small>
+              </div>
+            </div>
+          </div>
+
+          <div className="col">
             <div className="card border-0 shadow-sm h-100 rounded-4">
               <div className="card-body p-4">
                 <h6 className="text-muted fw-semibold mb-2">Total Revenue</h6>
@@ -358,6 +379,12 @@ export default function Admindashboard() {
                   onClick={() => navigate("/admin/customermanage")}
                 >
                   Manage Customers
+                </button>
+                <button
+                  className="btn btn-info text-white"
+                  onClick={() => navigate("/admin/managevendors")}
+                >
+                  Manage Vendors
                 </button>
               </div>
             </div>

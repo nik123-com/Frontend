@@ -1,30 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import {
-  baseUrl,
-  admin_all_vendors,
-  admin_approve_vendor,
-  admin_reject_vendor,
-  admin_toggle_block_vendor
-} from "../endpoints";
+import { allVendor, approveVendor, rejectVendor, toggleBlockVendor } from "../server/Vendor";
 
 export default function ManageVendors() {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchVendors = async () => {
-    const token = sessionStorage.getItem("token");
     try {
-      const res = await axios.post(
-        baseUrl + admin_all_vendors,
-        {},
-        { headers: { Authorization: token } }
-      );
+      const res = await allVendor();
       if (res.data.success) {
-        setVendors(res.data.data);
+        setVendors(res.data.data || []);
       } else {
         toast.error(res.data.message || "Failed to load vendors");
       }
@@ -40,13 +29,8 @@ export default function ManageVendors() {
   }, []);
 
   const handleApprove = async (vendorId, businessName) => {
-    const token = sessionStorage.getItem("token");
     try {
-      const res = await axios.post(
-        baseUrl + admin_approve_vendor,
-        { vendorId },
-        { headers: { Authorization: token } }
-      );
+      const res = await approveVendor({ vendorId });
       if (res.data.success) {
         toast.success(`Approved vendor "${businessName}" successfully!`);
         fetchVendors();
@@ -59,13 +43,8 @@ export default function ManageVendors() {
   };
 
   const handleReject = async (vendorId, businessName) => {
-    const token = sessionStorage.getItem("token");
     try {
-      const res = await axios.post(
-        baseUrl + admin_reject_vendor,
-        { vendorId },
-        { headers: { Authorization: token } }
-      );
+      const res = await rejectVendor({ vendorId });
       if (res.data.success) {
         toast.info(`Rejected vendor "${businessName}"`);
         fetchVendors();
@@ -87,13 +66,8 @@ export default function ManageVendors() {
       confirmButtonText: `Yes, ${actionText}`
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const token = sessionStorage.getItem("token");
         try {
-          const res = await axios.post(
-            baseUrl + admin_toggle_block_vendor,
-            { vendorId },
-            { headers: { Authorization: token } }
-          );
+          const res = await toggleBlockVendor({ vendorId });
           if (res.data.success) {
             toast.success(res.data.message || "Vendor status updated");
             fetchVendors();
@@ -108,150 +82,181 @@ export default function ManageVendors() {
   };
 
   const filtered = vendors.filter((v) => {
-    if (filterStatus === "all") return true;
-    return v.status === filterStatus;
+    const matchesStatus = filterStatus === "all" || v.status === filterStatus;
+    const query = searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !query ||
+      (v.businessName && v.businessName.toLowerCase().includes(query)) ||
+      (v.ownerName && v.ownerName.toLowerCase().includes(query)) ||
+      (v.email && v.email.toLowerCase().includes(query)) ||
+      (v.phone && v.phone.includes(query)) ||
+      (v.gstNumber && v.gstNumber.toLowerCase().includes(query)) ||
+      (v.panNumber && v.panNumber.toLowerCase().includes(query));
+
+    return matchesStatus && matchesSearch;
   });
 
   return (
-    <div className="container-fluid p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-          <h3 className="fw-bold mb-0">Manage Vendor Partners</h3>
-          <p className="text-muted mb-0">Review vendor registration applications, GST/PAN compliance, and block/approve stores.</p>
+    <>
+      <br /><br /><br />
+      <div className="container-fluid py-3 py-md-4">
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h3 className="fw-bold text-success mb-0">Manage Vendor Partners</h3>
+            <p className="text-muted mb-0">Review vendor registration applications, GST/PAN compliance, and manage store access.</p>
+          </div>
         </div>
-      </div>
 
-      {/* Filter Bar */}
-      <div className="card border-0 shadow-sm p-3 mb-4 bg-white rounded-3">
-        <div className="btn-group" role="group">
-          {["all", "Pending", "Approved", "Rejected", "Blocked"].map((status) => (
-            <button
-              key={status}
-              type="button"
-              className={`btn text-capitalize ${
-                filterStatus === status ? "btn-primary" : "btn-outline-secondary"
-              }`}
-              onClick={() => setFilterStatus(status)}
-            >
-              {status} ({vendors.filter((v) => (status === "all" ? true : v.status === status)).length})
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Vendors Table */}
-      <div className="card border-0 shadow-sm bg-white rounded-3">
-        <div className="card-body p-0">
-          {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status"></div>
-              <p className="mt-2 text-muted">Loading vendor applications...</p>
+        {/* Filter and Search Bar */}
+        <div className="card border-0 shadow-sm p-3 mb-4 bg-white rounded-3">
+          <div className="row g-3 align-items-center">
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="input-group">
+                <span className="input-group-text bg-light border-end-0">
+                  <i className="fas fa-search text-muted"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control bg-light border-start-0 ps-0"
+                  placeholder="Search by store, owner, email, GST..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
-          ) : filtered.length > 0 ? (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th className="ps-4">Store Name & Owner</th>
-                    <th>Contact Info</th>
-                    <th>GST & PAN</th>
-                    <th>Bank Account</th>
-                    <th>Status</th>
-                    <th className="text-end pe-4">Admin Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((v) => (
-                    <tr key={v._id}>
-                      <td className="ps-4">
-                        <div className="fw-bold text-dark">{v.businessName}</div>
-                        <small className="text-muted">Owner: {v.ownerName}</small>
-                      </td>
-                      <td>
-                        <div className="fs-7">{v.email}</div>
-                        <small className="text-muted">{v.phone || "No phone"}</small>
-                      </td>
-                      <td>
-                        <div>GST: <code>{v.gstNumber || "N/A"}</code></div>
-                        <small>PAN: <code>{v.panNumber || "N/A"}</code></small>
-                      </td>
-                      <td className="fs-7">
-                        {v.bankDetails?.accountNo ? (
-                          <div>
-                            <div>Acc: {v.bankDetails.accountNo}</div>
-                            <small className="text-muted">IFSC: {v.bankDetails.ifsc}</small>
-                          </div>
-                        ) : (
-                          <span className="text-muted">Not provided</span>
-                        )}
-                      </td>
-                      <td>
-                        <span
-                          className={`badge text-capitalize px-3 py-2 ${
-                            v.status === "Approved"
-                              ? "bg-success"
-                              : v.status === "Pending"
-                              ? "bg-warning text-dark"
-                              : v.status === "Blocked"
-                              ? "bg-danger"
-                              : "bg-secondary"
-                          }`}
-                        >
-                          {v.status}
-                        </span>
-                      </td>
-                      <td className="text-end pe-4">
-                        <div className="btn-group">
-                          {v.status === "Pending" && (
-                            <>
+            <div className="col-12 col-md-6 col-lg-8">
+              <div className="btn-group flex-wrap w-100" role="group">
+                {["all", "Pending", "Approved", "Rejected", "Blocked"].map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    className={`btn text-capitalize ${
+                      filterStatus === status ? "btn-success text-white" : "btn-outline-secondary"
+                    }`}
+                    onClick={() => setFilterStatus(status)}
+                  >
+                    {status} ({vendors.filter((v) => (status === "all" ? true : v.status === status)).length})
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Vendors Table */}
+        <div className="card border-0 shadow-sm bg-white rounded-3">
+          <div className="card-body p-0">
+            {loading ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-success" role="status"></div>
+                <p className="mt-2 text-muted">Loading vendor applications...</p>
+              </div>
+            ) : filtered.length > 0 ? (
+              <div className="table-responsive">
+                <table className="table table-hover align-middle mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="ps-4">Store Name & Owner</th>
+                      <th>Contact Info</th>
+                      <th>GST & PAN</th>
+                      <th>Bank Account</th>
+                      <th>Status</th>
+                      <th className="text-end pe-4">Admin Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((v) => (
+                      <tr key={v._id}>
+                        <td className="ps-4">
+                          <div className="fw-bold text-dark">{v.businessName}</div>
+                          <small className="text-muted">Owner: {v.ownerName}</small>
+                        </td>
+                        <td>
+                          <div className="fs-7">{v.email}</div>
+                          <small className="text-muted">{v.phone || "No phone"}</small>
+                        </td>
+                        <td>
+                          <div>GST: <code>{v.gstNumber || "N/A"}</code></div>
+                          <small>PAN: <code>{v.panNumber || "N/A"}</code></small>
+                        </td>
+                        <td className="fs-7">
+                          {v.bankDetails?.accountNo ? (
+                            <div>
+                              <div>Acc: {v.bankDetails.accountNo}</div>
+                              <small className="text-muted">IFSC: {v.bankDetails.ifsc}</small>
+                            </div>
+                          ) : (
+                            <span className="text-muted">Not provided</span>
+                          )}
+                        </td>
+                        <td>
+                          <span
+                            className={`badge text-capitalize px-3 py-2 ${
+                              v.status === "Approved"
+                                ? "bg-success"
+                                : v.status === "Pending"
+                                ? "bg-warning text-dark"
+                                : v.status === "Blocked"
+                                ? "bg-danger"
+                                : "bg-secondary"
+                            }`}
+                          >
+                            {v.status}
+                          </span>
+                        </td>
+                        <td className="text-end pe-4">
+                          <div className="btn-group">
+                            {v.status === "Pending" && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(v._id, v.businessName)}
+                                  className="btn btn-sm btn-success text-white"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => handleReject(v._id, v.businessName)}
+                                  className="btn btn-sm btn-outline-danger"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+
+                            {v.status === "Approved" && (
                               <button
-                                onClick={() => handleApprove(v._id, v.businessName)}
-                                className="btn btn-sm btn-success"
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() => handleReject(v._id, v.businessName)}
+                                onClick={() => handleToggleBlock(v._id, false)}
                                 className="btn btn-sm btn-outline-danger"
                               >
-                                Reject
+                                Block Store
                               </button>
-                            </>
-                          )}
+                            )}
 
-                          {v.status === "Approved" && (
-                            <button
-                              onClick={() => handleToggleBlock(v._id, false)}
-                              className="btn btn-sm btn-outline-danger"
-                            >
-                              Block Store
-                            </button>
-                          )}
-
-                          {v.status === "Blocked" && (
-                            <button
-                              onClick={() => handleToggleBlock(v._id, true)}
-                              className="btn btn-sm btn-success"
-                            >
-                              Unblock Store
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-5 text-muted">
-              <i className="fa-solid fa-store fs-1 mb-2 text-secondary"></i>
-              <h5>No Vendors Found</h5>
-              <p>Vendor applications will appear here for Admin approval.</p>
-            </div>
-          )}
+                            {v.status === "Blocked" && (
+                              <button
+                                onClick={() => handleToggleBlock(v._id, true)}
+                                className="btn btn-sm btn-success text-white"
+                              >
+                                Unblock Store
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-5 text-muted">
+                <i className="fa-solid fa-store fs-1 mb-2 text-secondary"></i>
+                <h5>No Vendors Found</h5>
+                <p>Vendor applications will appear here for Admin approval.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
