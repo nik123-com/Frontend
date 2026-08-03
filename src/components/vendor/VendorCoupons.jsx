@@ -16,6 +16,18 @@ export default function VendorCoupons() {
     expiryDate: ""
   });
 
+  const generateCode = () => {
+    const prefixes = ["STORE", "DEAL", "OFFER", "VENDOR", "PROMO"];
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const num = Math.floor(100 + Math.random() * 900);
+    setFormData((prev) => ({ ...prev, code: `${prefix}${num}` }));
+  };
+
+  const handleOpenModal = () => {
+    generateCode();
+    setShowModal(true);
+  };
+
   const fetchCoupons = async () => {
     const token = sessionStorage.getItem("token");
     try {
@@ -93,7 +105,7 @@ export default function VendorCoupons() {
           <h3 className="fw-bold mb-0">Vendor Store Coupons</h3>
           <p className="text-muted mb-0">View coupons created by Admin and manage promotional discount coupons for your store.</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn btn-primary fw-bold shadow-sm">
+        <button onClick={handleOpenModal} className="btn btn-primary fw-bold shadow-sm">
           <i className="fa-solid fa-plus me-2"></i> Create Store Coupon
         </button>
       </div>
@@ -185,14 +197,24 @@ export default function VendorCoupons() {
                 <div className="modal-body p-4">
                   <div className="mb-3">
                     <label className="form-label fw-semibold">Coupon Code *</label>
-                    <input
-                      type="text"
-                      className="form-control text-uppercase"
-                      placeholder="e.g. SUMMER10"
-                      value={formData.code}
-                      onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                      required
-                    />
+                    <div className="input-group shadow-sm">
+                      <input
+                        type="text"
+                        className="form-control text-uppercase font-monospace fw-bold"
+                        placeholder="e.g. STORE101"
+                        value={formData.code}
+                        onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary fw-bold"
+                        onClick={generateCode}
+                        title="Auto Generate Coupon Code"
+                      >
+                        <i className="fa-solid fa-wand-magic-sparkles me-1"></i> Auto Generate
+                      </button>
+                    </div>
                   </div>
 
                   <div className="row g-3 mb-3">

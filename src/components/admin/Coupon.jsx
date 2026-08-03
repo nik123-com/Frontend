@@ -1,5 +1,4 @@
-// import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { addCoupon } from "../server/Coupon";
 
@@ -9,46 +8,51 @@ export default function Coupon() {
   const [discountType, setDiscountType] = useState("1");
   const [MinAmtSpend, setminAmtSpend] = useState("");
   const [expiry, setExpiry] = useState("");
- let [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const generateCode = () => {
+    const prefixes = ["SAVE", "OFFER", "PROMO", "DEAL", "SPECIAL"];
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const num = Math.floor(100 + Math.random() * 900);
+    setCode(`${prefix}${num}`);
+  };
+
+  useEffect(() => {
+    generateCode();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true)
-    const token = sessionStorage.getItem("token");
+    setLoading(true);
 
-    const head = {
-      Authorization: token
-    }
-
-    let data={
-      code,
+    let data = {
+      code: code || undefined,
       discount,
       discountType,
-      minAmoutSpend:MinAmtSpend,
-      expiryDate:expiry
-    }
-    // let data = new FormData()
-    // data.append("code", code)
-    // data.append("discount",discount)
-    // data.append("discountType",discountType)
-    // data.append("minAmoutSpend",MinAmtSpend)
-    // data.append("expiryDate",expiry)
-    
-  addCoupon(data).then((res) => {
-      console.log(res.data);
-      setLoading(true)
-      if (res.data.success) {
-        toast.success(res.data.message);
-      } else {
-        toast.warning(res.data.message);
-      }
-    })
-    .catch((err) => {
-      console.log(err.message);
-      toast.error(err);
-    }).finally(() => {
-      setLoading(false)
-    })
+      minAmoutSpend: MinAmtSpend,
+      expiryDate: expiry
+    };
+
+    addCoupon(data)
+      .then((res) => {
+        if (res.data.success) {
+          toast.success(res.data.message);
+          setCode("");
+          setDiscount("");
+          setminAmtSpend("");
+          setExpiry("");
+          generateCode();
+        } else {
+          toast.warning(res.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        toast.error(err.response?.data?.message || "Error adding coupon");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -68,14 +72,26 @@ export default function Coupon() {
               <div className="col-lg-7 mx-auto">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
-                    <label className="form-label fw-semibold">Code : </label>
-                    <input
-                      type="text"
-                      className="form-control py-3 rounded border-0 bg-white"
-                      placeholder="Enter coupon Code"
-                      value={code}
-                      onChange={(e) => setCode(e.target.value)}
-                    />
+                    <label className="form-label fw-semibold">Coupon Code :</label>
+                    <div className="input-group shadow-sm rounded">
+                      <input
+                        type="text"
+                        className="form-control py-3 border-0 bg-white text-uppercase font-monospace fw-bold"
+                        placeholder="e.g. SAVE101"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="btn text-white fw-bold px-3"
+                        style={{ backgroundColor: "#81c408" }}
+                        onClick={generateCode}
+                        title="Auto Generate Random Coupon Code"
+                      >
+                        <i className="fa-solid fa-wand-magic-sparkles me-1"></i> Auto Generate
+                      </button>
+                    </div>
                   </div>
                   <div className="mb-4">
                     <label className="form-label fw-semibold">Discount :</label>
@@ -85,49 +101,55 @@ export default function Coupon() {
                       placeholder="Enter Discount Amount"
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="mb-4">
                     <label className="form-label fw-semibold">Discount Type :</label>
-                    <select  className="form-control"
-                     value={discountType}
+                    <select
+                      className="form-control py-3 rounded border-0 bg-white"
+                      value={discountType}
                       onChange={(e) => setDiscountType(e.target.value)}
-                       name="" id="">
-                      {/* <option disabled selected value="">Choose one</option> */}
-                      <option value="1">Flat</option>
-                      <option value="2">Percentage</option>
-
+                    >
+                      <option value="1">Flat (₹)</option>
+                      <option value="2">Percentage (%)</option>
                     </select>
-                   
                   </div>
                   <div className="mb-4">
-                    <label className="form-label fw-semibold">Minimium Amount:</label>
+                    <label className="form-label fw-semibold">Minimum Amount:</label>
                     <input
-                      type="text"
+                      type="number"
                       className="form-control py-3 rounded border-0 bg-white"
-                      placeholder="Enter Minimium Amount"
+                      placeholder="Enter Minimum Amount"
                       value={MinAmtSpend}
                       onChange={(e) => setminAmtSpend(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="form-label fw-semibold">Expiry Date:</label>
                     <input
                       type="date"
                       className="form-control py-3 rounded border-0 bg-white"
-                      placeholder="Enter Minimium Amount"
                       value={expiry}
                       onChange={(e) => setExpiry(e.target.value)}
                     />
                   </div>
-               
+
                   <button
                     type="submit"
-                    className="btn w-100 py-3 text-white fw-bold rounded"
+                    className="btn w-100 py-3 text-white fw-bold rounded shadow-sm"
                     style={{ backgroundColor: "#81c408" }}
+                    disabled={loading}
                   >
-                    Add Coupon
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Adding Coupon...
+                      </>
+                    ) : (
+                      "Add Coupon"
+                    )}
                   </button>
                 </form>
               </div>
@@ -137,4 +159,4 @@ export default function Coupon() {
       </div>
     </>
   );
-};
+}
