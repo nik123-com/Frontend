@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactStars from "react-stars";
 import { vendorAddQuery, vendorGetQueries, vendorSubmitFeedback } from "../server/Query";
+import socket from "../../socket";
 
 export default function VendorQueries() {
   const context = useOutletContext();
@@ -36,6 +37,16 @@ export default function VendorQueries() {
     if (userId) {
       fetchQueries();
     }
+
+    const handleQueryUpdate = () => {
+      if (userId) fetchQueries();
+    };
+
+    socket.on("query_updated", handleQueryUpdate);
+
+    return () => {
+      socket.off("query_updated", handleQueryUpdate);
+    };
   }, [userId]);
 
   const fetchQueries = () => {

@@ -5,6 +5,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { addCart } from "../server/Cart";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { HashLoader } from "react-spinners";
 import AddToCartButton from "../common/AddToCartButton";
 
 
@@ -12,32 +13,27 @@ function Home() {
   const [productData, setProductData] = useState();
   const [categoryData, setCategoryData] = useState();
   const [activeCategory, setActiveCategory] = useState("all");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const filteredProducts = activeCategory === "all"
     ? productData
     : productData?.filter((el) => el.category_id?._id === activeCategory);
 
-  const fetchProduct = (data) => {
-    allProduct(data).then((res) => {
-      console.log(res);
-      setProductData(res.data.data);
-
-    })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const fetchCategory = (data) => {
-    allCategory(data).then((res) => {
-      console.log(res);
-      setCategoryData(res.data.data);
-
-    })
-      .catch((err) => {
-        console.log(err);
-      });
+  const fetchHomeData = async () => {
+    setLoading(true);
+    try {
+      const [productRes, categoryRes] = await Promise.all([
+        allProduct(),
+        allCategory()
+      ]);
+      setProductData(productRes?.data?.data);
+      setCategoryData(categoryRes?.data?.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addToCart = (element) => {
@@ -82,9 +78,16 @@ function Home() {
   };
 
   useEffect(() => {
-    fetchProduct();
-    fetchCategory()
+    fetchHomeData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100 py-5">
+        <HashLoader size={70} color={"#81c408"} />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -295,6 +298,7 @@ function Home() {
                                     src={Array.isArray(el.image) ? el.image?.[0] : el.image}
                                     className="img-fluid w-100 rounded-top"
                                     alt={el.name}
+                                    loading="lazy"
                                   />
                                   {el?.status === false && (
                                     <div

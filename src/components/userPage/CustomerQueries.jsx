@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactStars from "react-stars";
 import { addQuery, getCustomerQueries, submitQueryFeedback } from "../server/Query";
+import socket from "../../socket";
 
 export default function CustomerQueries() {
   const navigate = useNavigate();
@@ -35,6 +36,16 @@ export default function CustomerQueries() {
       return;
     }
     fetchQueries();
+
+    const handleQueryUpdate = (data) => {
+      fetchQueries();
+    };
+
+    socket.on("query_updated", handleQueryUpdate);
+
+    return () => {
+      socket.off("query_updated", handleQueryUpdate);
+    };
   }, [userId]);
 
   const fetchQueries = () => {

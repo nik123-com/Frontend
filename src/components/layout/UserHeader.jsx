@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
 import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNotificationApi } from "../server/Notification";
 import { toast } from "react-toastify";
+import socket from "../../socket";
 
 function UserHeader() {
   const location = useLocation();
@@ -84,13 +85,30 @@ function UserHeader() {
     fetchCartCount();
     loadNotifications();
 
-    const interval = setInterval(loadNotifications, 10000);
+    const handleNewNotif = (data) => {
+      const currentUserId = sessionStorage.getItem("userId");
+      if (!data.userId || data.userId === currentUserId) {
+        toast.info(data.message || "New notification received!", {
+          position: "top-right",
+          autoClose: 4000
+        });
+        loadNotifications();
+      }
+    };
+
+    const handleQueryUpdate = () => {
+      loadNotifications();
+    };
+
+    socket.on("new_notification", handleNewNotif);
+    socket.on("query_updated", handleQueryUpdate);
 
     window.addEventListener("cartUpdated", fetchCartCount);
     window.addEventListener("notificationUpdated", loadNotifications);
 
     return () => {
-      clearInterval(interval);
+      socket.off("new_notification", handleNewNotif);
+      socket.off("query_updated", handleQueryUpdate);
       window.removeEventListener("cartUpdated", fetchCartCount);
       window.removeEventListener("notificationUpdated", loadNotifications);
     };

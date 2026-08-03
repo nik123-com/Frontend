@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import ReactStars from "react-stars";
 import { HashLoader } from "react-spinners";
 import { adminAllQueries, adminReplyQuery } from "../server/Query";
+import socket from "../../socket";
 
 const modalCustomStyles = {
   content: {
@@ -44,6 +45,16 @@ export default function ManageQueries() {
 
   useEffect(() => {
     fetchQueries();
+
+    const handleQueryUpdate = () => {
+      fetchQueries();
+    };
+
+    socket.on("query_updated", handleQueryUpdate);
+
+    return () => {
+      socket.off("query_updated", handleQueryUpdate);
+    };
   }, []);
 
   const fetchQueries = () => {

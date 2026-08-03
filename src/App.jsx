@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
 import { ToastContainer } from "react-toastify";
+import { HashLoader } from "react-spinners";
 import "react-toastify/dist/ReactToastify.css";
 import "react-responsive-pagination/themes/bootstrap.css";
 import { LoadingProvider } from "./components/layout/LoadingContext";
@@ -14,28 +15,28 @@ import VoiceSearch from "./components/layout/VoiceSearch";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import Home from "./components/userPage/Home";
 
-// Page components (imported directly for instant customer landing)
-import Contact from "./components/userPage/Contact";
-import ShopDetail from "./components/userPage/ShopDetail";
-import Checkout from "./components/userPage/pages/Checkout";
-import Testimonial from "./components/userPage/pages/Testimonial";
-import Error from "./components/userPage/pages/Error";
-import Login from "./components/auth/Login";
-import CustomerReg from "./components/signup/CustomerReg";
-import CardCategory from "./components/userPage/CardCategory";
-import CardBrand from "./components/userPage/CardBrand";
-import CardProduct from "./components/userPage/CardProduct";
-import Cart from "./components/userPage/pages/Cart";
-import Address from "./components/userPage/Address";
-import ShowWishList from "./components/userPage/ShowWishList";
-import MyOrders from "./components/userPage/MyOrders";
-import ChangePassword from "./components/userPage/ChangePassword";
-import ViewWishList from "./components/userPage/ViewWishList";
-import ForgotPassword from "./components/auth/ForgotPassword";
-import ResetPassword from "./components/auth/ResetPassword";
-import CustomerQueries from "./components/userPage/CustomerQueries";
-import VendorRegister from "./components/auth/VendorRegister";
-import VendorMaster from "./components/vendor/vendorlayout/VendorMaster";
+// Lazy-loaded User Page components for fast initial load
+const Contact = lazy(() => import("./components/userPage/Contact"));
+const ShopDetail = lazy(() => import("./components/userPage/ShopDetail"));
+const Checkout = lazy(() => import("./components/userPage/pages/Checkout"));
+const Testimonial = lazy(() => import("./components/userPage/pages/Testimonial"));
+const Error = lazy(() => import("./components/userPage/pages/Error"));
+const Login = lazy(() => import("./components/auth/Login"));
+const CustomerReg = lazy(() => import("./components/signup/CustomerReg"));
+const CardCategory = lazy(() => import("./components/userPage/CardCategory"));
+const CardBrand = lazy(() => import("./components/userPage/CardBrand"));
+const CardProduct = lazy(() => import("./components/userPage/CardProduct"));
+const Cart = lazy(() => import("./components/userPage/pages/Cart"));
+const Address = lazy(() => import("./components/userPage/Address"));
+const ShowWishList = lazy(() => import("./components/userPage/ShowWishList"));
+const MyOrders = lazy(() => import("./components/userPage/MyOrders"));
+const ChangePassword = lazy(() => import("./components/userPage/ChangePassword"));
+const ViewWishList = lazy(() => import("./components/userPage/ViewWishList"));
+const ForgotPassword = lazy(() => import("./components/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./components/auth/ResetPassword"));
+const CustomerQueries = lazy(() => import("./components/userPage/CustomerQueries"));
+const VendorRegister = lazy(() => import("./components/auth/VendorRegister"));
+const VendorMaster = lazy(() => import("./components/vendor/vendorlayout/VendorMaster"));
 
 // Lazy loaded Admin & Vendor modules for fast code-splitting
 const Admindashboard = lazy(() => import("./components/admin/Admindashboard"));
@@ -68,11 +69,7 @@ const VendorQueries = lazy(() => import("./components/vendor/VendorQueries"));
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-    <div className="text-center">
-      <div className="spinner-border text-primary" role="status" style={{ width: "3rem", height: "3rem" }}>
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <HashLoader size={60} color={"#81c408"} />
   </div>
 );
 
@@ -166,4 +163,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;
