@@ -83,7 +83,7 @@ body {
 
 /* Responsive main content offset for fixed header */
 .page-content-offset {
-  padding-top: 140px;
+  padding-top: 95px;
 }
 
 .hero-header,
@@ -93,7 +93,7 @@ body {
 
 @media (max-width: 1199.98px) {
   .page-content-offset {
-    padding-top: 90px;
+    padding-top: 80px;
   }
   .hero-header,
   .page-header {
