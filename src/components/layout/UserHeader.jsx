@@ -137,8 +137,11 @@ function UserHeader() {
     const handleNewNotif = (data) => {
       const currentUserId = sessionStorage.getItem("userId");
       if (!data.userId || data.userId === currentUserId) {
-        // Do not show duplicate toast.info on query submission so only toast.success is shown
-        if (!data.title?.includes("Query") && !data.message?.toLowerCase().includes("submitted by")) {
+        // Show toast ONLY for non-announcement & non-query-submission notifications
+        const isAnnouncement = data.announcementId || data.title?.includes("Announcement") || data.title?.includes("📢");
+        const isQuerySubmit = data.title?.includes("Query") || data.message?.toLowerCase().includes("submitted by");
+
+        if (!isAnnouncement && !isQuerySubmit) {
           toast.info(data.message || "New notification received!", {
             position: "top-right",
             autoClose: 4000
