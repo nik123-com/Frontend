@@ -144,6 +144,7 @@ export const admin_all_announcement = "/api/announcement/all";
 export const admin_delete_announcement = "/api/announcement/delete";
 export const customer_announcements = "/customer/announcement/all";
 export const vendor_announcements = "/vendor/announcement/all";
+export const ai_announcement_description = "/api/ai/announcement-description";
 
 
 

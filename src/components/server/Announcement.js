@@ -6,6 +6,7 @@ import {
   admin_delete_announcement,
   customer_announcements,
   vendor_announcements,
+  ai_announcement_description,
 } from "../endpoints";
 
 function getToken() {
@@ -31,4 +32,8 @@ export function getCustomerAnnouncements() {
 
 export function getVendorAnnouncements() {
   return axios.post(baseUrl + vendor_announcements, { targetAudience: "Vendors" }, getToken());
+}
+
+export function generateAIAnnouncementDescription(data) {
+  return axios.post(baseUrl + ai_announcement_description, data, getToken());
 }

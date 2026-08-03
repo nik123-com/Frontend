@@ -21,6 +21,7 @@ function UserHeader() {
 
   const loadNotifications = () => {
     if (!isLogin) return;
+    const dismissed = JSON.parse(sessionStorage.getItem("dismissed_announcements") || "[]");
     Promise.all([fetchNotifications(), getCustomerAnnouncements()])
       .then(([notifRes, annRes]) => {
         let list = [];
@@ -28,13 +29,15 @@ function UserHeader() {
           list = notifRes.data.data || [];
         }
         if (annRes.data?.success) {
-          const annList = (annRes.data.data || []).map((a) => ({
-            _id: a._id,
-            type: "announcement",
-            message: `📢 [Announcement] ${a.title}: ${a.message}`,
-            status: "read",
-            createdAt: a.createdAt,
-          }));
+          const annList = (annRes.data.data || [])
+            .filter((a) => !dismissed.includes(a._id))
+            .map((a) => ({
+              _id: a._id,
+              type: "announcement",
+              message: `📢 [Announcement] ${a.title}: ${a.message}`,
+              status: "read",
+              createdAt: a.createdAt,
+            }));
           list = [...annList, ...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
         setNotifications(list);
@@ -46,7 +49,41 @@ function UserHeader() {
       });
   };
 
-  const handleClearNotification = (notificationId) => {
+  const handleClearNotification = (notificationId, type) => {
+    const dismissed = JSON.parse(sessionStorage.getItem("dismissed_announcements") || "[]");
+
+    if (!notificationId) {
+      // Clear All action
+      const announcementIds = notifications
+        .filter((n) => n.type === "announcement")
+        .map((n) => n._id);
+
+      const updatedDismissed = Array.from(new Set([...dismissed, ...announcementIds]));
+      sessionStorage.setItem("dismissed_announcements", JSON.stringify(updatedDismissed));
+
+      deleteNotificationApi(null)
+        .then(() => {
+          setNotifications([]);
+          setUnreadCount(0);
+        })
+        .catch((err) => {
+          console.error("Error clearing notifications:", err);
+          setNotifications([]);
+          setUnreadCount(0);
+        });
+      return;
+    }
+
+    // Single item clear action
+    if (type === "announcement" || notifications.some((n) => n._id === notificationId && n.type === "announcement")) {
+      if (!dismissed.includes(notificationId)) {
+        dismissed.push(notificationId);
+        sessionStorage.setItem("dismissed_announcements", JSON.stringify(dismissed));
+      }
+      setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+      return;
+    }
+
     deleteNotificationApi(notificationId)
       .then((res) => {
         if (res.data?.success) {
@@ -290,7 +327,7 @@ function UserHeader() {
                                 style={{ top: "8px", right: "8px", fontSize: "0.65rem" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleClearNotification(notif._id);
+                                  handleClearNotification(notif._id, notif.type);
                                 }}
                                 title="Clear notification"
                               />

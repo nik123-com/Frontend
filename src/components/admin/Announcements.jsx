@@ -5,6 +5,7 @@ import {
   adminAddAnnouncement,
   adminGetAllAnnouncements,
   adminDeleteAnnouncement,
+  generateAIAnnouncementDescription,
 } from "../server/Announcement";
 import socket from "../../socket";
 
@@ -12,12 +13,40 @@ export default function Announcements() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
 
   // Form State
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [targetAudience, setTargetAudience] = useState("Customers"); // Customers, Vendors, Both
   const [priority, setPriority] = useState("Normal"); // Normal, Important, Urgent
+
+  const handleGenerateAIDescription = () => {
+    if (!title.trim()) {
+      toast.warning("Please enter an Announcement Title first so Gemini AI can generate the description!");
+      return;
+    }
+
+    setGeneratingAI(true);
+    generateAIAnnouncementDescription({
+      title,
+      targetAudience,
+      priority,
+    })
+      .then((res) => {
+        if (res.data && res.data.success && res.data.description) {
+          setMessage(res.data.description);
+          toast.success("Notice description generated using Gemini AI!");
+        } else {
+          toast.error(res.data?.message || "Failed to generate description with AI");
+        }
+      })
+      .catch((err) => {
+        console.error("Gemini AI generation error:", err);
+        toast.error("Error connecting to Gemini AI service");
+      })
+      .finally(() => setGeneratingAI(false));
+  };
 
   useEffect(() => {
     fetchAnnouncements();
@@ -216,13 +245,33 @@ export default function Announcements() {
 
                 {/* Message */}
                 <div className="mb-4">
-                  <label className="form-label fw-semibold text-secondary small">
-                    Message / Description <span className="text-danger">*</span>
-                  </label>
+                  <div className="d-flex align-items-center justify-content-between mb-1">
+                    <label className="form-label fw-semibold text-secondary small mb-0">
+                      Message / Description <span className="text-danger">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-sm"
+                      onClick={handleGenerateAIDescription}
+                      disabled={generatingAI}
+                      title="Use Gemini AI to write a notice description based on the title"
+                      style={{ fontSize: "0.78rem" }}
+                    >
+                      {generatingAI ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-1 text-success"></span>Generating Notice...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-wand-magic-sparkles me-1 text-success"></i>Auto-Generate with Gemini AI
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <textarea
                     className="form-control rounded-3"
                     rows="4"
-                    placeholder="Write detailed announcement text..."
+                    placeholder="Write detailed announcement text or generate with Gemini AI..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     required
