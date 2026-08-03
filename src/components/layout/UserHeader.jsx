@@ -88,10 +88,13 @@ function UserHeader() {
     const handleNewNotif = (data) => {
       const currentUserId = sessionStorage.getItem("userId");
       if (!data.userId || data.userId === currentUserId) {
-        toast.info(data.message || "New notification received!", {
-          position: "top-right",
-          autoClose: 4000
-        });
+        // Do not show duplicate toast.info on query submission so only toast.success is shown
+        if (!data.title?.includes("Query") && !data.message?.toLowerCase().includes("submitted by")) {
+          toast.info(data.message || "New notification received!", {
+            position: "top-right",
+            autoClose: 4000
+          });
+        }
         loadNotifications();
       }
     };

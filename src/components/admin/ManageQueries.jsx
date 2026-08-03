@@ -308,12 +308,12 @@ export default function ManageQueries() {
                 Admin Description / Reply <span className="text-warning">*</span>
               </label>
               <textarea
-                className="form-control rounded-3 p-3"
+                className="form-control modal-green-input placeholder-white rounded-3 p-3"
                 rows="4"
                 placeholder="Write your response to the customer or vendor..."
                 value={replyDescription}
                 onChange={(e) => setReplyDescription(e.target.value)}
-                style={{ backgroundColor: "#ffffff", color: "#212529", border: "1px solid #ced4da" }}
+                style={{ backgroundColor: "#619504", color: "#ffffff", border: "2px solid #ffffff" }}
                 required
               />
             </div>
@@ -324,11 +324,11 @@ export default function ManageQueries() {
               </label>
               <input
                 type="text"
-                className="form-control rounded-3 p-2"
+                className="form-control modal-green-input placeholder-white rounded-3 p-2"
                 placeholder="https://meet.google.com/xyz-abc-def"
                 value={meetLink}
                 onChange={(e) => setMeetLink(e.target.value)}
-                style={{ backgroundColor: "#ffffff", color: "#212529", border: "1px solid #ced4da" }}
+                style={{ backgroundColor: "#619504", color: "#ffffff", border: "2px solid #ffffff" }}
               />
             </div>
 
@@ -338,9 +338,9 @@ export default function ManageQueries() {
               </label>
               <input
                 type="file"
-                className="form-control rounded-3 p-2"
+                className="form-control modal-green-input placeholder-white rounded-3 p-2"
                 onChange={(e) => setAdminDocument(e.target.files[0])}
-                style={{ backgroundColor: "#ffffff", color: "#212529", border: "1px solid #ced4da" }}
+                style={{ backgroundColor: "#619504", color: "#ffffff", border: "2px solid #ffffff" }}
               />
               {selectedQuery.adminAttachment && !adminDocument && (
                 <small className="text-white-50 d-block mt-1">
