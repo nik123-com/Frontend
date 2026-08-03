@@ -39,20 +39,20 @@ function Home() {
   const addToCart = (element) => {
     const user = sessionStorage.getItem("userId");
 
-   if (!user) {
-  Swal.fire({
-    title: "Login Required",
-    text: "Please log in to access this feature.",
-    icon: "warning",
-    confirmButtonText: "OK",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      navigate("/Login");
-    }
-  });
+    if (!user) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please log in to access this feature.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/Login");
+        }
+      });
 
-  return;
-}
+      return;
+    }
 
     const data2 = {
       user_id: user,
@@ -161,8 +161,8 @@ function Home() {
       {/* Hero End */}
 
       {/* Features Section Start */}
-      <div className="container-fluid featurs py-4">
-        <div className="container py-3">
+      <div className="container-fluid featurs pt-4 pb-2">
+        <div className="container py-0">
           <div className="row g-4">
             <div className="col-md-6 col-lg-3">
               <div className="featurs-item text-center rounded bg-light p-4">
@@ -171,7 +171,7 @@ function Home() {
                 </div>
                 <div className="featurs-content text-center">
                   <h5>Free Shipping</h5>
-                  <p className="mb-0">Free on order over $300</p>
+                  <p className="mb-0">Free on order over ₹200</p>
                 </div>
               </div>
             </div>
@@ -224,11 +224,8 @@ function Home() {
               <div className="col-lg-4 text-start">
                 <h1 className="fw-bold text-dark mb-0">Our Organic Products</h1>
               </div>
-            </div>
-
-            <div className="row mb-5">
-              <div className="col-12">
-                <div className="d-flex overflow-auto py-2 scrollbar-hidden" style={{
+              <div className="col-lg-8 text-start text-lg-end">
+                <div className="d-flex overflow-auto py-2 scrollbar-hidden justify-content-start justify-content-lg-end" style={{
                   gap: "10px",
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
@@ -261,7 +258,7 @@ function Home() {
                       box-shadow: 0 4px 10px rgba(129, 196, 8, 0.2);
                     }
                   `}</style>
-                  <button 
+                  <button
                     className={`category-tab-btn ${activeCategory === "all" ? "active" : ""}`}
                     onClick={() => setActiveCategory("all")}
                   >
@@ -515,64 +512,63 @@ function Home() {
 
       {/* Bestseller Product Start */}
       <div className="container-fluid py-5">
-  <div className="container py-5">
-    <div
-      className="text-center mx-auto mb-5"
-      style={{ maxWidth: "700px" }}
-    >
-      <h1 className="display-4">Bestseller Products</h1>
-      <p>
-        Discover our most popular products, trusted and loved by customers.
-      </p>
-    </div>
+        <div className="container py-5">
+          <div
+            className="text-center mx-auto mb-5"
+            style={{ maxWidth: "700px" }}
+          >
+            <h1 className="display-4">Bestseller Products</h1>
+            <p>
+              Discover our most popular products, trusted and loved by customers.
+            </p>
+          </div>
 
-    <div className="row g-4">
-      {productData?.map((e) => (
-        <div
-          className="col-12 col-md-6 col-xl-4"
-          key={e._id}
-        >
-          <div className="bestseller-card p-4 h-100 d-flex align-items-center">
-            <div className="row align-items-center w-100 g-3 m-0">
-              <div className="col-5 col-sm-5 d-flex justify-content-center p-0">
-                <div className="bestseller-img-circle">
-                  <img
-                    src={Array.isArray(e.image) ? e.image?.[0] : e.image}
-                    alt={e.name}
-                  />
+          <div className="row g-4">
+            {productData?.map((e) => (
+              <div
+                className="col-12 col-md-6 col-xl-4"
+                key={e._id}
+              >
+                <div className="bestseller-card p-4 h-100 d-flex align-items-center">
+                  <div className="row align-items-center w-100 g-3 m-0">
+                    <div className="col-5 col-sm-5 d-flex justify-content-center p-0">
+                      <div className="bestseller-img-circle">
+                        <img
+                          src={Array.isArray(e.image) ? e.image?.[0] : e.image}
+                          alt={e.name}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-7 col-sm-7 d-flex flex-column justify-content-between h-100 ps-3 pe-0">
+                      <h5 className="bestseller-title" title={e.name}>
+                        {e.name}
+                      </h5>
+
+                      <div className="d-flex align-items-center mb-2 bestseller-stars">
+                        {[...Array(5)].map((_, i) => (
+                          <i
+                            key={i}
+                            className={`fas fa-star ${i < Math.round(e.rating || 5) ? "text-primary" : "text-secondary opacity-25"
+                              }`}
+                            style={{ fontSize: "0.85rem", marginRight: "2px" }}
+                          />
+                        ))}
+                      </div>
+
+                      <h4 className="bestseller-price">₹{e.price}</h4>
+
+                      <div>
+                        <AddToCartButton product={e} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div className="col-7 col-sm-7 d-flex flex-column justify-content-between h-100 ps-3 pe-0">
-                <h5 className="bestseller-title" title={e.name}>
-                  {e.name}
-                </h5>
-
-                <div className="d-flex align-items-center mb-2 bestseller-stars">
-                  {[...Array(5)].map((_, i) => (
-                    <i
-                      key={i}
-                      className={`fas fa-star ${
-                        i < Math.round(e.rating || 5) ? "text-primary" : "text-secondary opacity-25"
-                      }`}
-                      style={{ fontSize: "0.85rem", marginRight: "2px" }}
-                    />
-                  ))}
-                </div>
-
-                <h4 className="bestseller-price">₹{e.price}</h4>
-
-                <div>
-                  <AddToCartButton product={e} />
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
+      </div>
       {/* Bestseller Product End */}
 
       {/* Fact Start */}
@@ -584,7 +580,7 @@ function Home() {
                 <div className="counter bg-white rounded p-5">
                   <i className="fa fa-users text-secondary" />
                   <h4>satisfied customers</h4>
-                  
+
                 </div>
               </div>
 
@@ -592,7 +588,7 @@ function Home() {
                 <div className="counter bg-white rounded p-5">
                   <i className="fa fa-users text-secondary" />
                   <h4>quality of service</h4>
-                  
+
                 </div>
               </div>
 
@@ -600,7 +596,7 @@ function Home() {
                 <div className="counter bg-white rounded p-5">
                   <i className="fa fa-users text-secondary" />
                   <h4>quality certificates</h4>
-                  
+
                 </div>
               </div>
 
@@ -608,7 +604,7 @@ function Home() {
                 <div className="counter bg-white rounded p-5">
                   <i className="fa fa-users text-secondary" />
                   <h4>Available Products</h4>
-                  
+
                 </div>
               </div>
             </div>
