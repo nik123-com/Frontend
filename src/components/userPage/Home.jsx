@@ -229,7 +229,7 @@ function Home() {
         <div className="container pt-0 pb-5">
           <div className="tab-class text-center">
             <div className="d-flex flex-column align-items-start mb-4 gap-3 w-100">
-              <div className="w-100 text-start">
+              <div className="w-100 text-start"><br /><br />
                 <h1 className="fw-bold text-dark mb-0">Our Organic Products</h1>
               </div>
               <div className="w-100 text-start">
