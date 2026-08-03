@@ -57,6 +57,7 @@ export const HardDelete_cart = "/customer/cart/DeleteOne";
 export const add_coupon = "/api/coupon/add";
 export const all_coupon = "/customer/coupon/all";
 export const admin_coupon = "/api/coupon/all";
+export const delete_coupon = "/api/coupon/DeleteOne";
 
 export const add_order = "/customer/order/add"
 export const all_order = "/customer/order/all"
