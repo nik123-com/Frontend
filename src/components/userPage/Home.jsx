@@ -228,12 +228,12 @@ function Home() {
       <div className="container-fluid fruite pt-0 pb-5">
         <div className="container pt-0 pb-5">
           <div className="tab-class text-center">
-            <div className="row g-3 align-items-center mb-4">
-              <div className="col-12 text-start">
+            <div className="d-flex flex-column align-items-start mb-4 gap-3 w-100">
+              <div className="w-100 text-start">
                 <h1 className="fw-bold text-dark mb-0">Our Organic Products</h1>
               </div>
-              <div className="col-12 text-start">
-                <div className="d-flex align-items-center position-relative">
+              <div className="w-100 text-start">
+                <div className="d-flex align-items-center position-relative w-100">
                   <button
                     className="btn btn-sm btn-light border rounded-circle me-2 d-none d-md-flex align-items-center justify-content-center shadow-sm"
                     style={{ width: "36px", height: "36px", flexShrink: 0, zIndex: 2 }}
