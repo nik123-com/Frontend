@@ -179,6 +179,12 @@ body {
   background: transparent !important;
 }
 
+.green-modal-box {
+  background-color: #81c408 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+}
+
 @keyframes modalPopIn {
   0% {
     opacity: 0;
