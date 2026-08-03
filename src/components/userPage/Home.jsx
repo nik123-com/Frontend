@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { allProduct } from "../server/Product";
 import { allCategory } from "../server/Category";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -15,6 +15,14 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const categoryScrollRef = useRef(null);
+
+  const scrollCategories = (direction) => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = direction === "left" ? -300 : 300;
+      categoryScrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   const filteredProducts = activeCategory === "all"
     ? productData
@@ -225,54 +233,82 @@ function Home() {
                 <h1 className="fw-bold text-dark mb-0">Our Organic Products</h1>
               </div>
               <div className="col-lg-8 text-start text-lg-end">
-                <div className="d-flex overflow-auto py-2 scrollbar-hidden justify-content-start justify-content-lg-end" style={{
-                  gap: "10px",
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                  whiteSpace: "nowrap",
-                  WebkitOverflowScrolling: "touch"
-                }}>
-                  <style>{`
-                    .scrollbar-hidden::-webkit-scrollbar {
-                      display: none;
-                    }
-                    .category-tab-btn {
-                      background-color: #f4f6f8;
-                      color: #495057;
-                      font-weight: 600;
-                      font-size: 14px;
-                      padding: 10px 24px;
-                      border-radius: 50px;
-                      border: none;
-                      cursor: pointer;
-                      transition: all 0.2s ease-in-out;
-                      white-space: nowrap;
-                    }
-                    .category-tab-btn:hover {
-                      background-color: #e9ecef;
-                      color: #212529;
-                    }
-                    .category-tab-btn.active {
-                      background-color: #81c408;
-                      color: white !important;
-                      box-shadow: 0 4px 10px rgba(129, 196, 8, 0.2);
-                    }
-                  `}</style>
+                <div className="d-flex align-items-center position-relative">
                   <button
-                    className={`category-tab-btn ${activeCategory === "all" ? "active" : ""}`}
-                    onClick={() => setActiveCategory("all")}
+                    className="btn btn-sm btn-light border rounded-circle me-2 d-none d-md-flex align-items-center justify-content-center shadow-sm"
+                    style={{ width: "36px", height: "36px", flexShrink: 0, zIndex: 2 }}
+                    onClick={() => scrollCategories("left")}
+                    aria-label="Scroll left"
+                    type="button"
                   >
-                    All Products
+                    <i className="fa fa-chevron-left text-dark" />
                   </button>
-                  {categoryData?.map((category) => (
+
+                  <div
+                    ref={categoryScrollRef}
+                    className="d-flex overflow-auto py-2 scrollbar-hidden justify-content-start flex-grow-1"
+                    style={{
+                      gap: "10px",
+                      scrollbarWidth: "none",
+                      msOverflowStyle: "none",
+                      whiteSpace: "nowrap",
+                      WebkitOverflowScrolling: "touch",
+                      scrollBehavior: "smooth"
+                    }}
+                  >
+                    <style>{`
+                      .scrollbar-hidden::-webkit-scrollbar {
+                        display: none;
+                      }
+                      .category-tab-btn {
+                        background-color: #f4f6f8;
+                        color: #495057;
+                        font-weight: 600;
+                        font-size: 14px;
+                        padding: 10px 24px;
+                        border-radius: 50px;
+                        border: none;
+                        cursor: pointer;
+                        transition: all 0.2s ease-in-out;
+                        white-space: nowrap;
+                        flex-shrink: 0;
+                      }
+                      .category-tab-btn:hover {
+                        background-color: #e9ecef;
+                        color: #212529;
+                      }
+                      .category-tab-btn.active {
+                        background-color: #81c408;
+                        color: white !important;
+                        box-shadow: 0 4px 10px rgba(129, 196, 8, 0.2);
+                      }
+                    `}</style>
                     <button
-                      key={category._id}
-                      className={`category-tab-btn ${activeCategory === category._id ? "active" : ""}`}
-                      onClick={() => setActiveCategory(category._id)}
+                      className={`category-tab-btn ${activeCategory === "all" ? "active" : ""}`}
+                      onClick={() => setActiveCategory("all")}
                     >
-                      {category.name}
+                      All Products
                     </button>
-                  ))}
+                    {categoryData?.map((category) => (
+                      <button
+                        key={category._id}
+                        className={`category-tab-btn ${activeCategory === category._id ? "active" : ""}`}
+                        onClick={() => setActiveCategory(category._id)}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    className="btn btn-sm btn-light border rounded-circle ms-2 d-none d-md-flex align-items-center justify-content-center shadow-sm"
+                    style={{ width: "36px", height: "36px", flexShrink: 0, zIndex: 2 }}
+                    onClick={() => scrollCategories("right")}
+                    aria-label="Scroll right"
+                    type="button"
+                  >
+                    <i className="fa fa-chevron-right text-dark" />
+                  </button>
                 </div>
               </div>
             </div>
