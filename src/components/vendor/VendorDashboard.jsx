@@ -3,6 +3,8 @@ import { useOutletContext, Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { baseUrl, vendor_dashboard } from "../endpoints";
+import { getVendorAnnouncements } from "../server/Announcement";
+import socket from "../../socket";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,7 +30,18 @@ ChartJS.register(
 export default function VendorDashboard() {
   const { vendor } = useOutletContext();
   const [stats, setStats] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const fetchAnnouncements = () => {
+    getVendorAnnouncements()
+      .then((res) => {
+        if (res.data && res.data.success) {
+          setAnnouncements(res.data.data || []);
+        }
+      })
+      .catch((err) => console.error("Error loading announcements:", err));
+  };
 
   const fetchStats = async () => {
     const token = sessionStorage.getItem("token");
@@ -52,6 +65,20 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     fetchStats();
+    fetchAnnouncements();
+
+    const handleNewAnnouncement = (data) => {
+      if (data.targetAudience === "Vendors" || data.targetAudience === "Both") {
+        toast.info(`📢 Announcement: ${data.title}`, { position: "top-right", autoClose: 5000 });
+        fetchAnnouncements();
+      }
+    };
+
+    socket.on("new_announcement", handleNewAnnouncement);
+
+    return () => {
+      socket.off("new_announcement", handleNewAnnouncement);
+    };
   }, []);
 
   if (loading) {
@@ -108,6 +135,32 @@ export default function VendorDashboard() {
           <i className="fa-solid fa-plus me-2"></i> Add New Product
         </Link>
       </div>
+
+      {/* Admin Announcements for Vendors */}
+      {announcements.length > 0 && (
+        <div className="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white border-start border-4 border-primary">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h5 className="fw-bold text-dark mb-0 d-flex align-items-center">
+              <i className="fa-solid fa-bullhorn text-primary me-2 fs-5"></i> Admin Announcements & Updates
+            </h5>
+            <span className="badge bg-primary-subtle text-primary border border-primary px-3 py-1 rounded-pill">
+              {announcements.length} Active Update{announcements.length > 1 ? "s" : ""}
+            </span>
+          </div>
+
+          <div className="d-flex flex-column gap-3">
+            {announcements.slice(0, 3).map((item) => (
+              <div key={item._id} className="p-3 bg-light rounded-3 border-start border-3 border-info">
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <span className="fw-bold text-dark fs-6">{item.title}</span>
+                  <small className="text-muted">{new Date(item.createdAt).toLocaleDateString()}</small>
+                </div>
+                <p className="text-secondary small mb-0">{item.message}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Metric Cards Row */}
       <div className="row g-3 mb-4">

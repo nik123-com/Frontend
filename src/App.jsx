@@ -55,6 +55,7 @@ const ManageCoupon = lazy(() => import("./components/admin/ManageCoupon"));
 const ManageOrder = lazy(() => import("./components/admin/ManageOrder"));
 const ManageQueries = lazy(() => import("./components/admin/ManageQueries"));
 const ManageVendors = lazy(() => import("./components/admin/ManageVendors"));
+const Announcements = lazy(() => import("./components/admin/Announcements"));
 
 const VendorDashboard = lazy(() => import("./components/vendor/VendorDashboard"));
 const VendorProducts = lazy(() => import("./components/vendor/VendorProducts"));
@@ -150,6 +151,7 @@ function App() {
                 <Route path='/admin/updateBrand/:_id' element={<UpdateBrand />} />
                 <Route path='/admin/manageorder' element={<ManageOrder />} />
                 <Route path='/admin/managequeries' element={<ManageQueries />} />
+                <Route path='/admin/announcements' element={<Announcements />} />
               </Route>
               <Route path="*" element={<Error />} ></Route>
             </Routes>

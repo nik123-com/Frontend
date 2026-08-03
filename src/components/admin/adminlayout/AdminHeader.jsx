@@ -161,6 +161,9 @@ function AdminHeader() {
                 <Link to="/admin/managequeries" className={`nav-item nav-link px-2 ${location.pathname === '/admin/managequeries' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
                   Queries
                 </Link>
+                <Link to="/admin/announcements" className={`nav-item nav-link px-2 ${location.pathname === '/admin/announcements' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
+                  Announcements
+                </Link>
               </div>
 
               <div className="d-flex align-items-center ms-xl-3 my-2 my-xl-0">

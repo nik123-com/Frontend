@@ -138,6 +138,14 @@ export const admin_approve_vendor = "/api/vendor/approve";
 export const admin_reject_vendor = "/api/vendor/reject";
 export const admin_toggle_block_vendor = "/api/vendor/toggleBlock";
 
+// Announcements
+export const admin_add_announcement = "/api/announcement/add";
+export const admin_all_announcement = "/api/announcement/all";
+export const admin_delete_announcement = "/api/announcement/delete";
+export const customer_announcements = "/customer/announcement/all";
+export const vendor_announcements = "/vendor/announcement/all";
+
+
 
 
 

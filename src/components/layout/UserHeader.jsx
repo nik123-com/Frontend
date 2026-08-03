@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
 import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNotificationApi } from "../server/Notification";
+import { getCustomerAnnouncements } from "../server/Announcement";
 import { toast } from "react-toastify";
 import socket from "../../socket";
 
@@ -20,14 +21,25 @@ function UserHeader() {
 
   const loadNotifications = () => {
     if (!isLogin) return;
-    fetchNotifications()
-      .then((res) => {
-        if (res.data?.success) {
-          const list = res.data.data || [];
-          setNotifications(list);
-          const count = list.filter((n) => n.status === "pending").length;
-          setUnreadCount(count);
+    Promise.all([fetchNotifications(), getCustomerAnnouncements()])
+      .then(([notifRes, annRes]) => {
+        let list = [];
+        if (notifRes.data?.success) {
+          list = notifRes.data.data || [];
         }
+        if (annRes.data?.success) {
+          const annList = (annRes.data.data || []).map((a) => ({
+            _id: a._id,
+            type: "announcement",
+            message: `📢 [Announcement] ${a.title}: ${a.message}`,
+            status: "read",
+            createdAt: a.createdAt,
+          }));
+          list = [...annList, ...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        setNotifications(list);
+        const count = list.filter((n) => n.status === "pending").length;
+        setUnreadCount(count);
       })
       .catch((err) => {
         console.error("Error fetching notifications:", err);
@@ -103,8 +115,16 @@ function UserHeader() {
       loadNotifications();
     };
 
+    const handleNewAnnouncement = (data) => {
+      if (data.targetAudience === "Customers" || data.targetAudience === "Both") {
+        toast.info(`📢 Announcement: ${data.title}`, { position: "top-right", autoClose: 5000 });
+        loadNotifications();
+      }
+    };
+
     socket.on("new_notification", handleNewNotif);
     socket.on("query_updated", handleQueryUpdate);
+    socket.on("new_announcement", handleNewAnnouncement);
 
     window.addEventListener("cartUpdated", fetchCartCount);
     window.addEventListener("notificationUpdated", loadNotifications);
@@ -112,6 +132,7 @@ function UserHeader() {
     return () => {
       socket.off("new_notification", handleNewNotif);
       socket.off("query_updated", handleQueryUpdate);
+      socket.off("new_announcement", handleNewAnnouncement);
       window.removeEventListener("cartUpdated", fetchCartCount);
       window.removeEventListener("notificationUpdated", loadNotifications);
     };
@@ -280,7 +301,9 @@ function UserHeader() {
                                     width: "30px",
                                     height: "30px",
                                     background:
-                                      notif.type === "wishlist_invite"
+                                      notif.type === "announcement"
+                                        ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
+                                        : notif.type === "wishlist_invite"
                                         ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
                                         : notif.type === "invite_accepted"
                                         ? "#10b981"
@@ -292,7 +315,9 @@ function UserHeader() {
                                 >
                                   <i
                                     className={`fa-solid ${
-                                      notif.type === "wishlist_invite"
+                                      notif.type === "announcement"
+                                        ? "fa-bullhorn"
+                                        : notif.type === "wishlist_invite"
                                         ? "fa-user-plus"
                                         : notif.type === "invite_accepted"
                                         ? "fa-circle-check"
