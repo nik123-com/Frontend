@@ -61,19 +61,20 @@ export default function ManageQueries() {
     setLoading(true);
     adminAllQueries({})
       .then((res) => {
-        if (res.data.success) {
+        if (res.data && res.data.success) {
           // Guarantee latest on top
           const sorted = [...(res.data.data || [])].sort(
             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
           );
           setQueries(sorted);
         } else {
-          toast.error(res.data.message || "Failed to fetch queries");
+          toast.error(res.data?.message || "Failed to fetch queries");
         }
       })
       .catch((err) => {
-        console.error(err);
-        toast.error("Error fetching queries");
+        console.error("Error fetching queries:", err);
+        const errMsg = err.response?.data?.message || err.message || "Error fetching queries";
+        toast.error(errMsg);
       })
       .finally(() => setLoading(false));
   };

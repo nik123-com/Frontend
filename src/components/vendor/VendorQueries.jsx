@@ -53,15 +53,16 @@ export default function VendorQueries() {
     setLoading(true);
     vendorGetQueries({ userId, email: vendorEmail })
       .then((res) => {
-        if (res.data.success) {
+        if (res.data && res.data.success) {
           setQueries(res.data.data || []);
         } else {
-          toast.error(res.data.message || "Failed to load queries");
+          toast.error(res.data?.message || "Failed to load queries");
         }
       })
       .catch((err) => {
-        console.error(err);
-        toast.error("Error fetching queries");
+        console.error("Error fetching queries:", err);
+        const errMsg = err.response?.data?.message || err.message || "Error fetching queries";
+        toast.error(errMsg);
       })
       .finally(() => setLoading(false));
   };
