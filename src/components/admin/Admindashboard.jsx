@@ -208,12 +208,6 @@ export default function Admindashboard() {
         {/* Page Header */}
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
           <h2 className="fw-bold text-success mb-0">Admin Dashboard</h2>
-          <button
-            className="btn btn-success text-white px-4 py-2 rounded-pill fw-medium align-self-start align-self-sm-auto"
-            onClick={() => navigate("/admin/addproduct")}
-          >
-            <i className="fa-solid fa-plus me-2"></i>Add Product
-          </button>
         </div>
 
         {/* Statistics Cards */}
@@ -362,12 +356,6 @@ export default function Admindashboard() {
                 <h5 className="mb-0">Quick Actions</h5>
               </div>
               <div className="card-body d-grid gap-2">
-                <button
-                  className="btn btn-success text-white"
-                  onClick={() => navigate("/admin/addproduct")}
-                >
-                  Add Product
-                </button>
                 <button
                   className="btn btn-primary text-white"
                   onClick={() => navigate("/admin/manageorder")}

@@ -100,9 +100,6 @@ function AdminHeader() {
                     Product
                   </a>
                   <div className={`dropdown-menu m-0 border-0 bg-light rounded-3 shadow-sm ${openDropdown === 'product' ? 'show d-block' : ''}`}>
-                    <Link to="/admin/addProduct" className="dropdown-item py-2 ps-4" onClick={closeNav}>
-                      Add Product
-                    </Link>
                     <Link to="/admin/productmanage" className="dropdown-item py-2 ps-4" onClick={closeNav}>
                       Manage Product
                     </Link>
