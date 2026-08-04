@@ -159,7 +159,7 @@ function App() {
           <VoiceSearch />
         </BrowserRouter>
         <MyChatBot />
-        <ToastContainer />
+        <ToastContainer icon={false} />
       </CartProvider>
     </LoadingProvider>
   );
