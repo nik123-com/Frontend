@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { allOrder } from "../server/Order";
 import { numberToWords } from "../../utils/numberToWords";
+import DeliveryTracker from "./DeliveryTracker";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedOrders, setExpandedOrders] = useState({});
+  const [activeTrackingId, setActiveTrackingId] = useState(null);
+  const location = useLocation();
 
   const toggleOrderExpand = (index) => {
     setExpandedOrders((prev) => ({
@@ -16,11 +19,15 @@ export default function MyOrders() {
     }));
   };
 
+  const toggleTracking = (orderId) => {
+    setActiveTrackingId((prev) => (prev === orderId ? null : orderId));
+  };
+
   useEffect(() => {
     fetchOrders(false);
     const interval = setInterval(() => {
       fetchOrders(true);
-    }, 15000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -35,7 +42,13 @@ export default function MyOrders() {
     allOrder({ userId })
       .then((res) => {
         if (res.data.success) {
-          setOrders(res.data.data);
+          const fetchedOrders = res.data.data;
+          setOrders(fetchedOrders);
+
+          if (!isSilent && fetchedOrders.length > 0) {
+            const targetId = location.state?.trackOrderId || null;
+            setActiveTrackingId(targetId);
+          }
         } else if (!isSilent) {
           toast.error(res.data.message);
         }
@@ -75,7 +88,7 @@ export default function MyOrders() {
       </div>
 
       <div className="container-fluid py-5">
-        <div className="container py-5">
+        <div className="container py-3">
           {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" role="status"></div>
@@ -92,7 +105,7 @@ export default function MyOrders() {
                     <th scope="col">Total</th>
                     <th scope="col">Payment</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Details</th>
+                    <th scope="col" className="text-center">Delivery Tracking</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -110,7 +123,6 @@ export default function MyOrders() {
                                 alt=""
                                 style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover" }}
                               />
-                              
                             ))}
                             {order.products?.length > 3 && (
                               <span className="badge bg-secondary">+{order.products.length - 3}</span>
@@ -133,24 +145,48 @@ export default function MyOrders() {
                             {order.orderStatus}
                           </span>
                         </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-outline-primary rounded-pill"
-                            type="button"
-                            onClick={() => toggleOrderExpand(index)}
-                          >
-                            {expandedOrders[index] ? "Hide Items" : "View Items"}
-                          </button>
+                        <td className="text-center">
+                          <div className="d-flex gap-2 justify-content-center">
+                            <button
+                              className={`btn btn-sm ${activeTrackingId === order._id ? "btn-success" : "btn-primary"} rounded-pill px-3 fw-bold d-flex align-items-center gap-1`}
+                              type="button"
+                              onClick={() => toggleTracking(order._id)}
+                            >
+                              <i className="fa fa-truck-fast"></i>
+                              {activeTrackingId === order._id ? "Hide Tracker" : "Track Delivery"}
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                              type="button"
+                              onClick={() => toggleOrderExpand(index)}
+                            >
+                              {expandedOrders[index] ? "Hide Items" : "Items"}
+                            </button>
+                          </div>
                         </td>
                       </tr>
+
+                      {activeTrackingId === order._id && (
+                        <tr>
+                          <td colSpan={7} className="p-0 border-0">
+                            <div className="px-2 py-3 bg-light">
+                              <DeliveryTracker
+                                order={order}
+                                onClose={() => setActiveTrackingId(null)}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+
                       <tr>
-                        <td colSpan={7} className="p-0">
+                        <td colSpan={7} className="p-0 border-0">
                           <div className={`collapse ${expandedOrders[index] ? "show" : ""}`} id={`orderDetail${index}`}>
-                            <div className="p-3 bg-light rounded">
+                            <div className="p-3 bg-light rounded m-2">
                               <div className="row g-3">
                                 {order.products?.map((item, i) => (
                                   <div key={i} className="col-md-4">
-                                    <div className="d-flex align-items-center gap-3 p-2 bg-white rounded-3">
+                                    <div className="d-flex align-items-center gap-3 p-2 bg-white rounded-3 shadow-sm">
                                       <img
                                         src={item.productId?.image?.[0] || item.productId?.image || item.image}
                                         alt=""
