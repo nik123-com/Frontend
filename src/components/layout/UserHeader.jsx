@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
 import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNotificationApi } from "../server/Notification";
@@ -8,6 +8,7 @@ import socket from "../../socket";
 
 function UserHeader() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isLogin = sessionStorage.getItem("isLogin") === "true";
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
@@ -323,6 +324,14 @@ function UserHeader() {
                               className={`p-2 mb-2 rounded-3 border position-relative ${
                                 notif.status === "pending" ? "bg-light" : "bg-white"
                               }`}
+                              style={{ cursor: notif.productId ? "pointer" : "default" }}
+                              onClick={() => {
+                                if (notif.productId) {
+                                  const prodId = notif.productId._id || notif.productId;
+                                  navigate(`/ShopDetail/${prodId}`);
+                                  setShowNotifDropdown(false);
+                                }
+                              }}
                             >
                               <button
                                 type="button"
@@ -345,6 +354,8 @@ function UserHeader() {
                                         ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
                                         : notif.type === "wishlist_invite"
                                         ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
+                                        : notif.type === "review_reply"
+                                        ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
                                         : notif.type === "invite_accepted"
                                         ? "#10b981"
                                         : notif.type === "stock_available"
@@ -359,6 +370,8 @@ function UserHeader() {
                                         ? "fa-bullhorn"
                                         : notif.type === "wishlist_invite"
                                         ? "fa-user-plus"
+                                        : notif.type === "review_reply"
+                                        ? "fa-reply"
                                         : notif.type === "invite_accepted"
                                         ? "fa-circle-check"
                                         : notif.type === "stock_available"

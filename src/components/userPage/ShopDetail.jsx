@@ -364,41 +364,66 @@ export default function ShopDetail() {
                       aria-labelledby="nav-mission-tab"
                     >
                       {review?.map((el, index) => (
-                        <div key={index} className="d-flex mb-4 p-3 border rounded shadow-sm bg-white align-items-start">
-                          <div className="me-3" style={{ flexShrink: 0 }}>
-                            <img
-                              src="/assets/img/avatar.jpg"
-                              className="img-fluid rounded-circle"
-                              style={{ width: 60, height: 60, objectFit: "cover" }}
-                              alt="avatar"
-                            />
-                          </div>
-                          <div className="flex-grow-1">
-                            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-2">
-                              <div className="d-flex align-items-center gap-2 flex-wrap">
-                                <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: "16px" }}>{el?.userId?.name}</h5>
-                                <div className="d-flex align-items-center" style={{ pointerEvents: 'none', height: '24px' }}>
-                                  <ReactStars
-                                    count={5}
-                                    value={Number(el.rating)}
-                                    edit={false}
-                                    size={18}
-                                    color2={"#ffd700"}
-                                  />
-                                </div>
-                              </div>
-                              <span className="text-muted" style={{ fontSize: "13px" }}>
-                                {new Date(el.createdAt).toLocaleDateString("en-IN", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })}
-                              </span>
+                        <div key={index} className="mb-4 p-3 border rounded shadow-sm bg-white">
+                          <div className="d-flex align-items-start">
+                            <div className="me-3" style={{ flexShrink: 0 }}>
+                              <img
+                                src="/assets/img/avatar.jpg"
+                                className="img-fluid rounded-circle"
+                                style={{ width: 60, height: 60, objectFit: "cover" }}
+                                alt="avatar"
+                              />
                             </div>
-                            <p className="mb-0 text-secondary" style={{ fontSize: "14px", lineHeight: "1.5" }}>
-                              {el.comment}
-                            </p>
+                            <div className="flex-grow-1">
+                              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-2">
+                                <div className="d-flex align-items-center gap-2 flex-wrap">
+                                  <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: "16px" }}>{el?.userId?.name}</h5>
+                                  <div className="d-flex align-items-center" style={{ pointerEvents: 'none', height: '24px' }}>
+                                    <ReactStars
+                                      count={5}
+                                      value={Number(el.rating)}
+                                      edit={false}
+                                      size={18}
+                                      color2={"#ffd700"}
+                                    />
+                                  </div>
+                                </div>
+                                <span className="text-muted" style={{ fontSize: "13px" }}>
+                                  {new Date(el.createdAt).toLocaleDateString("en-IN", {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                              </div>
+                              <p className="mb-0 text-secondary" style={{ fontSize: "14px", lineHeight: "1.5" }}>
+                                {el.comment}
+                              </p>
+                            </div>
                           </div>
+
+                          {/* Vendor / Store Reply */}
+                          {el.reply && (
+                            <div className="mt-3 ms-md-5 p-3 rounded bg-light border-start border-4 border-success shadow-xs">
+                              <div className="d-flex justify-content-between align-items-center mb-1">
+                                <span className="fw-bold text-success" style={{ fontSize: "14px" }}>
+                                  <i className="fa-solid fa-store me-2"></i>Store Reply:
+                                </span>
+                                {el.repliedAt && (
+                                  <small className="text-muted" style={{ fontSize: "12px" }}>
+                                    {new Date(el.repliedAt).toLocaleDateString("en-IN", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
+                                  </small>
+                                )}
+                              </div>
+                              <p className="mb-0 text-dark fw-medium" style={{ fontSize: "14px", lineHeight: "1.5" }}>
+                                {el.reply}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

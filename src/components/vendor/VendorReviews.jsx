@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { baseUrl, vendor_all_reviews, vendor_reply_review } from "../endpoints";
+import { baseUrl, vendor_all_reviews, vendor_reply_review, vendor_ai_review_reply } from "../endpoints";
 
 export default function VendorReviews() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReview, setSelectedReview] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [generatingAi, setGeneratingAi] = useState(false);
 
   const fetchReviews = async () => {
     const token = sessionStorage.getItem("token");
@@ -36,6 +37,36 @@ export default function VendorReviews() {
   const handleOpenReply = (review) => {
     setSelectedReview(review);
     setReplyText(review.reply || "");
+  };
+
+  const handleGenerateAiReply = async () => {
+    if (!selectedReview || !selectedReview.comment) {
+      toast.error("No review text found to generate reply");
+      return;
+    }
+    setGeneratingAi(true);
+    const token = sessionStorage.getItem("token");
+    try {
+      const res = await axios.post(
+        baseUrl + vendor_ai_review_reply,
+        {
+          comment: selectedReview.comment,
+          rating: selectedReview.rating,
+          productName: selectedReview.productId?.name
+        },
+        { headers: { Authorization: token } }
+      );
+      if (res.data.success && res.data.reply) {
+        setReplyText(res.data.reply);
+        toast.success("AI reply generated successfully!");
+      } else {
+        toast.error(res.data.message || "Failed to generate AI reply");
+      }
+    } catch (err) {
+      toast.error("Error generating AI reply");
+    } finally {
+      setGeneratingAi(false);
+    }
   };
 
   const handleSendReply = async (e) => {
@@ -189,7 +220,26 @@ export default function VendorReviews() {
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">Your Official Response</label>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <label className="form-label fw-semibold mb-0">Your Official Response</label>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm"
+                        onClick={handleGenerateAiReply}
+                        disabled={generatingAi}
+                      >
+                        {generatingAi ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-wand-magic-sparkles me-1 text-success"></i> Auto-Generate with Gemini AI
+                          </>
+                        )}
+                      </button>
+                    </div>
                     <textarea
                       className="form-control"
                       rows="4"

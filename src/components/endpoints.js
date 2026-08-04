@@ -132,6 +132,7 @@ export const vendor_ai_description = "/vendor/ai/description";
 export const vendor_ai_seo = "/vendor/ai/seo";
 export const vendor_ai_caption = "/vendor/ai/caption";
 export const vendor_ai_price_suggest = "/vendor/ai/price-suggest";
+export const vendor_ai_review_reply = "/vendor/ai/review-reply";
 
 // Admin Vendor Management
 export const admin_all_vendors = "/api/vendor/all";
