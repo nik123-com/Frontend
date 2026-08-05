@@ -205,7 +205,7 @@ export default function VendorCoupons() {
                 <h5 className="modal-title fw-bold">Create Vendor Coupon</h5>
                 <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
               </div>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleCreateCoupon}>
                 <div className="modal-body p-4">
                   <div className="mb-3">
                     <label className="form-label fw-semibold">Coupon Code *</label>
