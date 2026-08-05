@@ -285,8 +285,9 @@ export default function MyChatBot() {
           width: 60px;
           height: 60px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #81c408, #6fa606);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+          background: linear-gradient(135deg, #a4e226, #81c408);
+          opacity: 0.75;
+          box-shadow: 0 4px 12px rgba(129, 196, 8, 0.3);
           border: none;
           cursor: pointer;
           z-index: 9999;
@@ -296,8 +297,11 @@ export default function MyChatBot() {
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .sana-chatbot-button:hover {
+          background: linear-gradient(135deg, #5b9309, #3f6602);
+          opacity: 1;
           transform: scale(1.08) translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+          z-index: 10005;
         }
         .sana-chatbot-button:active {
           transform: scale(0.95);
