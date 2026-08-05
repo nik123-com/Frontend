@@ -123,23 +123,7 @@ export default function VendorOrders() {
                         </td>
                         <td>
                           <div className="fw-semibold text-dark">{order.customerId?.name || "Customer"}</div>
-                          <div className="text-muted small mb-1">{order.customerId?.email}</div>
-                          {order.customerId?.rank && (
-                            <span
-                              className={`badge ${
-                                order.customerId.rank === "VIP Premium"
-                                  ? "bg-dark text-warning border border-warning"
-                                  : order.customerId.rank === "Platinum"
-                                  ? "bg-info-subtle text-info border border-info"
-                                  : order.customerId.rank === "Gold"
-                                  ? "bg-warning text-dark"
-                                  : "bg-light text-dark border"
-                              } px-2 py-0.5 rounded-pill small`}
-                              style={{ fontSize: "0.7rem" }}
-                            >
-                              <i className="fa-solid fa-trophy me-1"></i> {order.customerId.rank}
-                            </span>
-                          )}
+                          <small className="text-muted">{order.customerId?.email}</small>
                         </td>
                         <td>
                           {order.vendorItems?.map((item, idx) => (

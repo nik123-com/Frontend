@@ -148,16 +148,6 @@ export const customer_announcements = "/customer/announcement/all";
 export const vendor_announcements = "/vendor/announcement/all";
 export const ai_announcement_description = "/api/ai/announcement-description";
 
-// Customer Ranking & Activity APIs
-export const admin_update_customer_rank = "/api/customer/update-rank";
-export const admin_ai_rank_customer = "/api/customer/ai-evaluate-rank";
-export const admin_ai_rank_all = "/api/customer/ai-evaluate-all";
-export const admin_approve_ai_evaluation = "/api/customer/approve-ai-evaluation";
-export const admin_ai_vendor_activity = "/api/vendor/ai-evaluate-activity";
-export const admin_assign_reward_coupon = "/api/coupon/assign-reward";
-export const customer_rank_rewards = "/customer/customer/my-rank-rewards";
-export const vendor_customer_ranks = "/vendor/customer/rank-list";
-
 
 
 
