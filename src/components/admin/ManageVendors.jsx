@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { allVendor, approveVendor, rejectVendor, toggleBlockVendor } from "../server/Vendor";
+import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, aiEvaluateVendorActivity } from "../server/Vendor";
 
 export default function ManageVendors() {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [evaluatingVendorId, setEvaluatingVendorId] = useState(null);
 
   const fetchVendors = async () => {
     try {
@@ -21,6 +22,23 @@ export default function ManageVendors() {
       toast.error("Error fetching vendors list");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAiEvaluateVendor = async (vendorId) => {
+    setEvaluatingVendorId(vendorId);
+    try {
+      const res = await aiEvaluateVendorActivity({ vendorId });
+      if (res.data.success) {
+        toast.success(res.data.message || "Vendor AI activity evaluated!");
+        fetchVendors();
+      } else {
+        toast.error(res.data.message || "Evaluation failed");
+      }
+    } catch (err) {
+      toast.error("Error running AI vendor evaluation");
+    } finally {
+      setEvaluatingVendorId(null);
     }
   };
 
@@ -184,7 +202,8 @@ export default function ManageVendors() {
                       <th>Contact Info</th>
                       <th>GST & PAN</th>
                       <th>Bank Account</th>
-                      <th>Status</th>
+                      <th>Active Status</th>
+                      <th>Approval Status</th>
                       <th className="text-end pe-4">Admin Actions</th>
                     </tr>
                   </thead>
@@ -212,6 +231,32 @@ export default function ManageVendors() {
                           ) : (
                             <span className="text-muted">Not provided</span>
                           )}
+                        </td>
+                        <td>
+                          <span
+                            className={`badge px-2.5 py-1 rounded-pill small mb-1 ${
+                              v.activityStatus === "Highly Active"
+                                ? "bg-success"
+                                : v.activityStatus === "Moderately Active"
+                                ? "bg-warning text-dark"
+                                : "bg-secondary"
+                            }`}
+                          >
+                            <i className="fa-solid fa-bolt me-1"></i> {v.activityStatus || "Moderately Active"}
+                          </span>
+                          <button
+                            className="btn btn-sm btn-outline-primary rounded-pill d-block mt-1 py-0 px-2 shadow-sm"
+                            style={{ fontSize: "0.7rem" }}
+                            onClick={() => handleAiEvaluateVendor(v._id)}
+                            disabled={evaluatingVendorId === v._id}
+                            title="Run AI Vendor Activity Evaluation"
+                          >
+                            {evaluatingVendorId === v._id ? (
+                              <span className="spinner-border spinner-border-sm"></span>
+                            ) : (
+                              <>✨ AI Evaluate</>
+                            )}
+                          </button>
                         </td>
                         <td>
                           <span

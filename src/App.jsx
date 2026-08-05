@@ -67,6 +67,7 @@ const VendorReviews = lazy(() => import("./components/vendor/VendorReviews"));
 const VendorWallet = lazy(() => import("./components/vendor/VendorWallet"));
 const VendorSettings = lazy(() => import("./components/vendor/VendorSettings"));
 const VendorQueries = lazy(() => import("./components/vendor/VendorQueries"));
+const VendorCustomerRanks = lazy(() => import("./components/vendor/VendorCustomerRanks"));
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
@@ -130,6 +131,7 @@ function App() {
                 <Route path="reviews" element={<VendorReviews />} />
                 <Route path="wallet" element={<VendorWallet />} />
                 <Route path="queries" element={<VendorQueries />} />
+                <Route path="customer-ranks" element={<VendorCustomerRanks />} />
                 <Route path="settings" element={<VendorSettings />} />
               </Route>
 

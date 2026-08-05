@@ -5,6 +5,7 @@ import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNoti
 import { getCustomerAnnouncements } from "../server/Announcement";
 import { toast } from "react-toastify";
 import socket from "../../socket";
+import RewardCouponPopup from "../userPage/RewardCouponPopup";
 
 function UserHeader() {
   const location = useLocation();
@@ -14,6 +15,7 @@ function UserHeader() {
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
   const [cartCount, setCartCount] = useState(0);
+  const [showRewardModal, setShowRewardModal] = useState(false);
 
   // Notification state
   const [notifications, setNotifications] = useState([]);
@@ -263,6 +265,20 @@ function UserHeader() {
                   <i className="fas fa-search text-primary" />
                 </button>
 
+                {/* Customer AI Rewards Button */}
+                {isLogin && (
+                  <button
+                    type="button"
+                    className="btn btn-warning text-dark btn-sm rounded-pill me-3 d-flex align-items-center gap-1.5 fw-bold shadow-sm"
+                    onClick={() => setShowRewardModal(true)}
+                    title="View My AI Rank & Reward Coupons"
+                    style={{ fontSize: "0.85rem" }}
+                  >
+                    <i className="fa-solid fa-trophy text-dark"></i>
+                    <span>AI Rewards</span>
+                  </button>
+                )}
+
                 {/* Notifications Bell */}
                 {isLogin && (
                   <div className="position-relative me-4 my-auto">
@@ -324,9 +340,12 @@ function UserHeader() {
                               className={`p-2 mb-2 rounded-3 border position-relative ${
                                 notif.status === "pending" ? "bg-light" : "bg-white"
                               }`}
-                              style={{ cursor: notif.productId ? "pointer" : "default" }}
+                              style={{ cursor: (notif.productId || notif.type === "rank_reward") ? "pointer" : "default" }}
                               onClick={() => {
-                                if (notif.productId) {
+                                if (notif.type === "rank_reward") {
+                                  setShowRewardModal(true);
+                                  setShowNotifDropdown(false);
+                                } else if (notif.productId) {
                                   const prodId = notif.productId._id || notif.productId;
                                   navigate(`/ShopDetail/${prodId}`);
                                   setShowNotifDropdown(false);
@@ -510,6 +529,9 @@ function UserHeader() {
         </div>
       </div>
       {/* Modal Search End */}
+
+      {/* AI Customer Rank & Reward Coupon Popup Modal */}
+      <RewardCouponPopup showModal={showRewardModal} onClose={() => setShowRewardModal(false)} />
     </>
   )
 }
