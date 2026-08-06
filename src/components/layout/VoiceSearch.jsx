@@ -6,6 +6,7 @@ function VoiceSearch() {
   const [feedback, setFeedback] = useState({ message: "", type: "info" });
   const [listening, setListening] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
 
   const commandList = [
@@ -180,6 +181,14 @@ function VoiceSearch() {
     };
   };
 
+  const handleMicClick = () => {
+    setIsExpanded((prev) => !prev);
+    if (showGuide) {
+      setShowGuide(false);
+    }
+    startListening();
+  };
+
   return (
     <>
       <style>{`
@@ -221,6 +230,7 @@ function VoiceSearch() {
         }
 
         .voice-btn-group {
+          position: relative;
           display: flex;
           align-items: center;
           gap: 10px;
@@ -239,12 +249,27 @@ function VoiceSearch() {
           justify-content: center;
           font-size: 14px;
           box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-          transition: all 0.2s ease;
+          z-index: 1;
+          position: relative;
+          transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, background 0.2s ease;
         }
+
+        .voice-guide-trigger.collapsed {
+          transform: translateX(48px) scale(0.5);
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .voice-guide-trigger.expanded {
+          transform: translateX(0) scale(1);
+          opacity: 1;
+          pointer-events: auto;
+        }
+
         .voice-guide-trigger:hover {
           background: #a4e226;
           color: #0f172a;
-          transform: scale(1.1);
+          transform: translateX(0) scale(1.1);
         }
 
         .voice-search-button {
@@ -261,6 +286,8 @@ function VoiceSearch() {
           justify-content: center;
           font-size: 22px;
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          z-index: 2;
+          position: relative;
         }
         .voice-search-button:hover {
           background: linear-gradient(135deg, #5b9309, #3f6602);
@@ -321,15 +348,18 @@ function VoiceSearch() {
         {/* Buttons Group */}
         <div className="voice-btn-group">
           <button
-            onClick={() => setShowGuide(!showGuide)}
-            className="voice-guide-trigger"
+            onClick={() => {
+              setShowGuide(!showGuide);
+              if (!isExpanded) setIsExpanded(true);
+            }}
+            className={`voice-guide-trigger ${isExpanded ? "expanded" : "collapsed"}`}
             title="Voice Commands Help"
           >
             <i className="fas fa-question-circle"></i>
           </button>
 
           <button
-            onClick={startListening}
+            onClick={handleMicClick}
             className={`voice-search-button ${listening ? "listening" : ""}`}
             title="Click to speak a voice command"
           >
@@ -374,4 +404,4 @@ function VoiceSearch() {
   );
 }
 
-export default VoiceSearch;
+export default VoiceSearch;
