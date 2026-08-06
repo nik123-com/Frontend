@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -44,10 +44,11 @@ const customStyles = {
 export default function CardProduct() {
   const isLogin = sessionStorage.getItem("isLogin") === "true";
   const { category_id, brand_id } = useParams();
+  const [searchParams] = useSearchParams();
 
   const [data, setdata] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setsearch] = useState("");
+  const [search, setsearch] = useState(searchParams.get("q") || searchParams.get("search") || "");
   const [data1, setdata1] = useState([]);
   const [cart, setcart] = useState();
   const [isAdd, setisAdd] = useState(false);
@@ -59,6 +60,13 @@ export default function CardProduct() {
   const [addProductData, setaddProductData] = useState()
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("q") || searchParams.get("search");
+    if (urlQuery !== null) {
+      setsearch(urlQuery);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (category_id) {
