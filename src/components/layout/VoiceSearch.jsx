@@ -255,7 +255,7 @@ function VoiceSearch() {
         }
 
         .voice-guide-trigger.collapsed {
-          transform: translateX(48px) scale(0.5);
+          transform: translateX(58px) scale(0.4);
           opacity: 0;
           pointer-events: none;
         }
@@ -266,7 +266,7 @@ function VoiceSearch() {
           pointer-events: auto;
         }
 
-        .voice-guide-trigger:hover {
+        .voice-guide-trigger.expanded:hover {
           background: #a4e226;
           color: #0f172a;
           transform: translateX(0) scale(1.1);
