@@ -110,6 +110,8 @@ export const vendor_update_profile = "/vendor/update-profile";
 export const vendor_dashboard = "/vendor/dashboard";
 export const vendor_wallet = "/vendor/wallet";
 export const vendor_request_payout = "/vendor/request-payout";
+export const vendor_check_reward = "/vendor/checkReward";
+export const vendor_dismiss_reward = "/vendor/dismissReward";
 
 export const vendor_add_product = "/vendor/product/add";
 export const vendor_all_products = "/vendor/product/all";

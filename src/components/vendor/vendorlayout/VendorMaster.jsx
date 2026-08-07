@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { baseUrl, vendor_profile } from "../../endpoints";
 import VendorSidebar from "./VendorSidebar";
 import VendorHeader from "./VendorHeader";
+import VendorRewardNotifier from "./VendorRewardNotifier";
 
 export default function VendorMaster() {
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ export default function VendorMaster() {
 
   return (
     <div className="d-flex min-vh-100 bg-light">
+      <VendorRewardNotifier />
       <VendorSidebar vendor={vendor} />
       <div className="flex-grow-1 d-flex flex-column" style={{ minWidth: 0 }}>
         <VendorHeader vendor={vendor} />

@@ -108,39 +108,92 @@ export default function ManageVendors() {
   const handleAllotRank = (vendor) => {
     const currentRank = vendor.rank || 1;
     Swal.fire({
-      title: `Allot Rank for Store "${vendor.businessName}"`,
+      title: `Allot Rank for "${vendor.businessName}"`,
       html: `
         <div className="text-start fs-6 p-2">
-          <label className="form-label fw-bold small text-secondary mb-1">Numerical Rank:</label>
-          <input type="number" id="swal-vendor-rank" class="form-control" min="1" value="${currentRank}" placeholder="Enter rank number (e.g. 1, 2, 3)" />
+          <div className="mb-3">
+            <label className="form-label fw-bold small text-secondary">Numerical Rank:</label>
+            <input type="number" id="swal-vendor-rank" class="form-control" min="1" value="${currentRank}" placeholder="Enter rank number (e.g. 1, 2, 3)" />
+          </div>
+          <div id="swal-vendor-rank1-fields" style="display: ${currentRank === 1 ? 'block' : 'none'};" class="p-3 bg-light rounded-3 border border-success-subtle shadow-xs">
+            <h6 className="fw-bold text-success mb-2"><i className="fas fa-gift me-1"></i> Rank 1 Reward Coupon Details</h6>
+            <div className="mb-2">
+              <label className="form-label small mb-1 fw-semibold">Discount Value:</label>
+              <input type="number" id="swal-vendor-discount" class="form-control form-control-sm" value="20" placeholder="e.g. 20" />
+            </div>
+            <div className="mb-2">
+              <label className="form-label small mb-1 fw-semibold">Discount Type:</label>
+              <select id="swal-vendor-disctype" class="form-select form-select-sm">
+                <option value="Percentage">Percentage (%)</option>
+                <option value="Flat">Flat Amount (₹/$)</option>
+              </select>
+            </div>
+            <div className="mb-2">
+              <label className="form-label small mb-1 fw-semibold">Min Spend Amount:</label>
+              <input type="number" id="swal-vendor-minspend" class="form-control form-control-sm" value="0" placeholder="0" />
+            </div>
+          </div>
         </div>
       `,
+      focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: "Assign Rank",
       confirmButtonColor: "#81c408",
+      didOpen: () => {
+        const rankInput = document.getElementById("swal-vendor-rank");
+        const rank1Fields = document.getElementById("swal-vendor-rank1-fields");
+        if (rankInput && rank1Fields) {
+          rankInput.addEventListener("input", (e) => {
+            const val = parseInt(e.target.value, 10);
+            if (val === 1) {
+              rank1Fields.style.display = "block";
+            } else {
+              rank1Fields.style.display = "none";
+            }
+          });
+        }
+      },
       preConfirm: () => {
-        const val = document.getElementById("swal-vendor-rank")?.value;
-        if (!val || parseInt(val, 10) < 1) {
+        const rankVal = document.getElementById("swal-vendor-rank")?.value;
+        const discountVal = document.getElementById("swal-vendor-discount")?.value;
+        const discTypeVal = document.getElementById("swal-vendor-disctype")?.value;
+        const minSpendVal = document.getElementById("swal-vendor-minspend")?.value;
+
+        if (!rankVal || parseInt(rankVal, 10) < 1) {
           Swal.showValidationMessage("Please enter a valid positive rank number");
           return false;
         }
-        return parseInt(val, 10);
+
+        return {
+          rank: parseInt(rankVal, 10),
+          discount: discountVal || "20",
+          discountType: discTypeVal || "Percentage",
+          minAmoutSpend: minSpendVal || "0"
+        };
       }
     }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         try {
-          const res = await allotVendorRank({ vendorId: vendor._id, rank: result.value });
+          const res = await allotVendorRank({
+            vendorId: vendor._id,
+            rank: result.value.rank,
+            discount: result.value.discount,
+            discountType: result.value.discountType,
+            minAmoutSpend: result.value.minAmoutSpend
+          });
           if (res.data.success) {
+            const couponMsg = res.data.rewardCoupon ? `<p className="mt-2 mb-0 small text-success fw-bold"><i className="fas fa-gift me-1"></i> Exclusive Reward Coupon generated: '${res.data.rewardCoupon}'</p>` : '';
             Swal.fire({
               title: "Vendor Rank Allotted! 🎉",
               html: `
                 <div className="py-2 text-center">
-                  <p className="mb-2 fs-5">Vendor Store <strong>"${vendor.businessName}"</strong> has been allotted <span class="badge bg-success fs-6">Rank #${result.value}</span></p>
-                  <p className="text-muted small mt-3 mb-0">Popup will auto-close in 5 seconds.</p>
+                  <p className="mb-2 fs-5">Vendor Store <strong>"${vendor.businessName}"</strong> has been allotted <span class="badge bg-success fs-6">Rank #${result.value.rank}</span></p>
+                  ${couponMsg}
+                  <p className="text-muted small mt-3 mb-0">Popup notification will trigger when the vendor logs in.</p>
                 </div>
               `,
               icon: "success",
-              timer: 5000,
+              timer: 4000,
               timerProgressBar: true,
               showConfirmButton: true,
               confirmButtonText: "OK",
