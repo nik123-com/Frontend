@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { allVendor, approveVendor, rejectVendor, toggleBlockVendor } from "../server/Vendor";
+import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, allotVendorRank } from "../server/Vendor";
 
 export default function ManageVendors() {
   const [vendors, setVendors] = useState([]);
@@ -105,6 +105,58 @@ export default function ManageVendors() {
     });
   };
 
+  const handleAllotRank = (vendor) => {
+    const currentRank = vendor.rank || 1;
+    Swal.fire({
+      title: `Allot Rank for Store "${vendor.businessName}"`,
+      html: `
+        <div className="text-start fs-6 p-2">
+          <label className="form-label fw-bold small text-secondary mb-1">Numerical Rank:</label>
+          <input type="number" id="swal-vendor-rank" class="form-control" min="1" value="${currentRank}" placeholder="Enter rank number (e.g. 1, 2, 3)" />
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Assign Rank",
+      confirmButtonColor: "#81c408",
+      preConfirm: () => {
+        const val = document.getElementById("swal-vendor-rank")?.value;
+        if (!val || parseInt(val, 10) < 1) {
+          Swal.showValidationMessage("Please enter a valid positive rank number");
+          return false;
+        }
+        return parseInt(val, 10);
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value) {
+        try {
+          const res = await allotVendorRank({ vendorId: vendor._id, rank: result.value });
+          if (res.data.success) {
+            Swal.fire({
+              title: "Vendor Rank Allotted! 🎉",
+              html: `
+                <div className="py-2 text-center">
+                  <p className="mb-2 fs-5">Vendor Store <strong>"${vendor.businessName}"</strong> has been allotted <span class="badge bg-success fs-6">Rank #${result.value}</span></p>
+                  <p className="text-muted small mt-3 mb-0">Popup will auto-close in 5 seconds.</p>
+                </div>
+              `,
+              icon: "success",
+              timer: 5000,
+              timerProgressBar: true,
+              showConfirmButton: true,
+              confirmButtonText: "OK",
+              confirmButtonColor: "#81c408"
+            });
+            fetchVendors();
+          } else {
+            toast.error(res.data.message || "Failed to allot rank");
+          }
+        } catch (err) {
+          toast.error("Error allotting rank to vendor");
+        }
+      }
+    });
+  };
+
   const filtered = vendors.filter((v) => {
     const matchesStatus = filterStatus === "all" || v.status === filterStatus;
     const query = searchQuery.toLowerCase().trim();
@@ -181,6 +233,7 @@ export default function ManageVendors() {
                   <thead className="table-light">
                     <tr>
                       <th className="ps-4">Store Name & Owner</th>
+                      <th>Rank</th>
                       <th>Contact Info</th>
                       <th>GST & PAN</th>
                       <th>Bank Account</th>
@@ -194,6 +247,11 @@ export default function ManageVendors() {
                         <td className="ps-4">
                           <div className="fw-bold text-dark">{v.businessName}</div>
                           <small className="text-muted">Owner: {v.ownerName}</small>
+                        </td>
+                        <td>
+                          <span className={`badge ${v.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-success-subtle text-success border border-success'} px-2.5 py-1.5 rounded-pill fw-bold`}>
+                            <i className="fas fa-award me-1"></i>Rank #{v.rank || 1}
+                          </span>
                         </td>
                         <td>
                           <div className="fs-7">{v.email}</div>
@@ -249,12 +307,20 @@ export default function ManageVendors() {
 
                             {v.status === "Approved" && (
                               <button
-                                onClick={() => handleToggleBlock(v._id, false)}
-                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => handleToggleBlock(v._id, v.isBlocked)}
+                                className={`btn btn-sm ${v.isBlocked ? "btn-outline-success" : "btn-outline-danger"}`}
                               >
-                                Block Store
+                                {v.isBlocked ? "Unblock Store" : "Block Store"}
                               </button>
                             )}
+
+                            <button
+                              onClick={() => handleAllotRank(v)}
+                              className="btn btn-sm btn-outline-warning text-dark fw-semibold ms-1"
+                              title="Allot numerical rank to vendor"
+                            >
+                              <i className="fas fa-award me-1"></i>Allot Rank
+                            </button>
 
                             {v.status === "Blocked" && (
                               <button

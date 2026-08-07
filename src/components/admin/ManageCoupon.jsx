@@ -116,9 +116,16 @@ export default function ManageCoupon() {
                           <tr key={element._id}>
                             <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
                             <td>
-                              <span className="badge bg-primary-subtle text-primary border border-primary px-3 py-2 fs-6 fw-bold font-monospace">
-                                {element.code}
-                              </span>
+                              <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                                <span className="badge bg-primary-subtle text-primary border border-primary px-3 py-2 fs-6 fw-bold font-monospace">
+                                  {element.code}
+                                </span>
+                                {element.isReward && (
+                                  <span className="badge bg-warning text-dark border border-warning px-2 py-1 small shadow-sm" title="Rank 1 Achievement Reward Coupon">
+                                    <i className="fas fa-gift me-1"></i> Reward
+                                  </span>
+                                )}
+                              </div>
                             </td>
                             <td className="fw-bold text-success">{element.discount}</td>
                             <td className="text-capitalize">

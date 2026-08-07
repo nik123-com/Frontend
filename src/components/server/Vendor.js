@@ -4,6 +4,7 @@ import {
   admin_approve_vendor,
   admin_reject_vendor,
   admin_toggle_block_vendor,
+  admin_allot_vendor_rank,
   baseUrl
 } from "../endpoints";
 
@@ -26,4 +27,8 @@ export function rejectVendor(data) {
 
 export function toggleBlockVendor(data) {
   return axios.post(baseUrl + admin_toggle_block_vendor, data, getToken());
+}
+
+export function allotVendorRank(data) {
+  return axios.post(baseUrl + admin_allot_vendor_rank, data, getToken());
 }

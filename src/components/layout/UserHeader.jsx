@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { allCart } from "../server/Cart";
 import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNotificationApi } from "../server/Notification";
 import { getCustomerAnnouncements } from "../server/Announcement";
+import { checkRankReward } from "../server/Customer";
 import { toast } from "react-toastify";
 import socket from "../../socket";
 
@@ -19,6 +20,19 @@ function UserHeader() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [userRank, setUserRank] = useState(null);
+
+  useEffect(() => {
+    if (isLogin) {
+      checkRankReward()
+        .then((res) => {
+          if (res.data && res.data.success && res.data.rank) {
+            setUserRank(res.data.rank);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLogin]);
 
   const loadNotifications = () => {
     if (!isLogin) return;
@@ -352,6 +366,8 @@ function UserHeader() {
                                     background:
                                       notif.type === "announcement"
                                         ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
+                                        : notif.type === "rank_allotment"
+                                        ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
                                         : notif.type === "wishlist_invite"
                                         ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
                                         : notif.type === "review_reply"
@@ -368,6 +384,8 @@ function UserHeader() {
                                     className={`fa-solid ${
                                       notif.type === "announcement"
                                         ? "fa-bullhorn"
+                                        : notif.type === "rank_allotment"
+                                        ? "fa-award"
                                         : notif.type === "wishlist_invite"
                                         ? "fa-user-plus"
                                         : notif.type === "review_reply"
