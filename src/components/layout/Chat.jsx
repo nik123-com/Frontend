@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../endpoints";
+import { allProduct } from "../server/Product";
+import { useCart } from "../../context/CartContext";
 
 const blockedKeywords = [
   "hack",
@@ -33,59 +36,85 @@ function isBlocked(message) {
   return blockedKeywords.some(word => text.includes(word));
 }
 
-async function askSana(customerName, userMessage) {
+function findMatchingProducts(userMessage, products) {
+  if (!userMessage || !Array.isArray(products) || products.length === 0) {
+    return [];
+  }
+
+  const query = userMessage.toLowerCase().trim();
+
+  // Common stop words to exclude
+  const stopWords = new Set([
+    "provide", "me", "list", "of", "all", "the", "category", "categories", "and", "or",
+    "what", "is", "are", "show", "please", "products", "items", "available", "in", "for",
+    "can", "you", "give", "display", "get", "find", "looking", "want", "search", "a", "an",
+    "with", "under", "below", "above", "price", "store", "buy", "best", "some", "any", "which"
+  ]);
+
+  const rawTokens = query.replace(/[^\w\s]/gi, ' ').split(/\s+/);
+  const keywords = rawTokens.filter(token => token.length > 1 && !stopWords.has(token));
+
+  let matched = products.filter(product => {
+    const catName = (product.category_id?.name || "").toLowerCase();
+    const brandName = (product.brand_id?.name || "").toLowerCase();
+    const prodName = (product.name || "").toLowerCase();
+    const prodDesc = (product.description || "").toLowerCase();
+    const keywordsStr = (product.seoKeywords || "").toLowerCase();
+
+    // Check keyword match in category, name, brand, or description
+    if (keywords.some(kw => catName.includes(kw))) return true;
+    if (keywords.some(kw => prodName.includes(kw))) return true;
+    if (keywords.some(kw => brandName.includes(kw))) return true;
+    if (keywords.some(kw => keywordsStr.includes(kw))) return true;
+    if (keywords.some(kw => kw.length > 3 && prodDesc.includes(kw))) return true;
+
+    return false;
+  });
+
+  // Fallback: If customer asks for bakery/biscuit or product list and no exact product filter matched
+  const isProductQuery = query.includes("product") || query.includes("category") || query.includes("list") || query.includes("show") || query.includes("bakery") || query.includes("biscuit") || query.includes("gaming") || query.includes("laptop") || query.includes("phone") || query.includes("item");
+
+  if (matched.length === 0 && isProductQuery) {
+    matched = products.slice(0, 8);
+  }
+
+  return matched.slice(0, 10);
+}
+
+async function askSana(customerName, userMessage, matchedProducts = []) {
+  let productInfo = "";
+  if (matchedProducts.length > 0) {
+    productInfo = `
+Products Available in Store Matching Query:
+${matchedProducts.map(p => `- ${p.name} (Category: ${p.category_id?.name || 'General'}, Price: ₹${p.price})`).join("\n")}
+
+INSTRUCTION: Acknowledge that you have found these related products and let ${customerName} know that their product cards are displayed right below your message. Keep the message concise, warm, and helpful.
+`;
+  }
+
   const prompt = `
-You are Sana, a professional AI Shopping Assistant for an eCommerce platform similar to Amazon, Flipkart, Blinkit and Myntra.
+You are Sana, a professional AI Shopping Assistant for Aventra.
 
 Customer Name: ${customerName}
 
 Customer Message:
 ${userMessage}
+${productInfo}
 
 ROLE:
 - Act as a personal shopping assistant.
 - Help customers discover products.
 - Recommend products.
-- Compare products.
-- Suggest budget alternatives.
-- Explain features and benefits.
 - Assist with orders, shipping, returns and refunds.
 - Always address the customer by name.
 
 SECURITY POLICY:
-Never assist with:
-- Hacking
-- Exploiting the website
-- Free products
-- Payment bypassing
-- Coupon abuse
-- Refund abuse
-- Data theft
-- Scraping customer information
-- Fraud
-- Server attacks
-- Admin access
-- Security bypasses
-
-If asked, politely refuse and redirect to legitimate shopping assistance.
+Never assist with hacking, exploits, payment bypassing, coupon abuse, refund abuse, or fraud.
 
 RECOMMENDATION FORMAT:
+Hello ${customerName},
 
-Hello {Customer Name},
-
-Based on your requirements:
-
-🥇 Best Overall
-- Product
-- Why it is recommended
-
-💰 Best Value
-- Product
-- Why it is recommended
-
-⭐ Premium Choice
-- Product
-- Why it is recommended
+${matchedProducts.length > 0 ? "Certainly! Here are the products matching your request:" : "Certainly! How can I help you today?"}
 
 Keep responses professional and concise.
 `;
@@ -102,6 +131,10 @@ Keep responses professional and concise.
 }
 
 export default function MyChatBot() {
+  const navigate = useNavigate();
+  const { handleAddToCart } = useCart();
+
+  const [allProducts, setAllProducts] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(() => {
     const saved = sessionStorage.getItem("sana-chat-messages");
@@ -135,6 +168,19 @@ export default function MyChatBot() {
 
   const messagesEndRef = useRef(null);
 
+  // Fetch all products from store on component mount
+  useEffect(() => {
+    allProduct({})
+      .then((res) => {
+        if (res.data && res.data.success && Array.isArray(res.data.data)) {
+          setAllProducts(res.data.data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading products for Sana Chat:", err);
+      });
+  }, []);
+
   useEffect(() => {
     sessionStorage.setItem("sana-chat-messages", JSON.stringify(messages));
   }, [messages]);
@@ -157,11 +203,12 @@ export default function MyChatBot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSend = async (e) => {
+  const handleSend = async (e, customText) => {
     if (e) e.preventDefault();
-    if (!inputText.trim() || isTyping) return;
+    const textToSend = customText || inputText;
+    if (!textToSend.trim() || isTyping) return;
 
-    const userText = inputText.trim();
+    const userText = textToSend.trim();
     setInputText("");
 
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -195,7 +242,7 @@ export default function MyChatBot() {
           const capabilitiesMsg = {
             id: `bot-cap-${Date.now()}`,
             sender: "bot",
-            text: `I can help you with:\n\n📱 Smartphones\n💻 Laptops\n⌚ Smart Watches\n🎧 Headphones\n📺 Electronics\n👕 Fashion\n👟 Footwear\n🎮 Gaming\n🏠 Home Appliances\n\nWhat are you looking for today?`,
+            text: `I can help you discover products in categories like:\n\n🥐 Bakery & Biscuits\n📱 Smartphones\n💻 Laptops\n⌚ Smart Watches\n🎧 Headphones\n📺 Electronics\n👕 Fashion\n👟 Footwear\n🎮 Gaming\n🏠 Home Appliances\n\nWhat are you looking for today?`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
           setMessages((prev) => [...prev, capabilitiesMsg]);
@@ -222,11 +269,15 @@ export default function MyChatBot() {
       }
 
       try {
-        const responseText = await askSana(userName || "Customer", userText);
+        // Find matching products for query
+        const matchedProducts = findMatchingProducts(userText, allProducts);
+
+        const responseText = await askSana(userName || "Customer", userText, matchedProducts);
         const botMsg = {
           id: `bot-${Date.now()}`,
           sender: "bot",
           text: responseText,
+          products: matchedProducts,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages((prev) => [...prev, botMsg]);
@@ -273,6 +324,27 @@ export default function MyChatBot() {
     });
   };
 
+  const handleViewProduct = (productId) => {
+    if (productId) {
+      navigate(`/shopDetail/${productId}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleAddProductToCart = (e, product) => {
+    e.stopPropagation();
+    handleAddToCart(product, navigate);
+  };
+
+  const quickCategories = [
+    { label: "🥐 Bakery & Biscuits", query: "Provide me list of all the Bakery and Biscuit category ?" },
+    { label: "🎮 Gaming", query: "Show me Gaming products" },
+    { label: "📱 Smartphones", query: "Show me Smartphones category" },
+    { label: "💻 Laptops", query: "Show me Laptops" },
+    { label: "🏠 Home Appliances", query: "Show me Home Appliances" },
+    { label: "🎧 Headphones", query: "Show me Headphones" },
+  ];
+
   return (
     <>
       <style>{`
@@ -285,8 +357,8 @@ export default function MyChatBot() {
           height: 60px;
           border-radius: 50%;
           background: linear-gradient(135deg, #a4e226, #81c408);
-          opacity: 0.75;
-          box-shadow: 0 4px 12px rgba(129, 196, 8, 0.3);
+          opacity: 0.85;
+          box-shadow: 0 4px 14px rgba(129, 196, 8, 0.4);
           border: none;
           cursor: pointer;
           z-index: 9999;
@@ -310,11 +382,11 @@ export default function MyChatBot() {
           position: fixed;
           bottom: 96px;
           right: 24px;
-          width: 380px;
-          height: 550px;
+          width: 390px;
+          height: 570px;
           background: rgba(255, 255, 255, 0.98);
           border-radius: 20px;
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
           border: 1px solid rgba(0, 0, 0, 0.08);
           display: flex;
           flex-direction: column;
@@ -399,7 +471,7 @@ export default function MyChatBot() {
         }
         .sana-chat-subtitle {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.85);
           margin: 0;
         }
         .sana-chat-header-actions {
@@ -425,7 +497,7 @@ export default function MyChatBot() {
 
         .sana-chat-messages {
           flex: 1;
-          padding: 20px;
+          padding: 16px;
           overflow-y: auto;
           display: flex;
           flex-direction: column;
@@ -446,7 +518,7 @@ export default function MyChatBot() {
         .sana-message-wrapper {
           display: flex;
           flex-direction: column;
-          max-width: 80%;
+          max-width: 82%;
         }
         .sana-message-wrapper.bot {
           align-self: flex-start;
@@ -454,6 +526,11 @@ export default function MyChatBot() {
         .sana-message-wrapper.user {
           align-self: flex-end;
         }
+        .sana-message-wrapper.has-products {
+          max-width: 98% !important;
+          width: 98% !important;
+        }
+
         .sana-message-bubble {
           padding: 12px 16px;
           border-radius: 18px;
@@ -482,6 +559,208 @@ export default function MyChatBot() {
         .sana-message-wrapper.user .sana-message-time {
           align-self: flex-end;
           margin-right: 4px;
+        }
+
+        /* Product Cards Styling inside Chat */
+        .sana-products-wrapper {
+          margin-top: 10px;
+          width: 100%;
+        }
+
+        .sana-products-header {
+          font-size: 12px;
+          font-weight: 700;
+          color: #2e7d32;
+          margin-bottom: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 2px;
+        }
+
+        .sana-products-scroll {
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+          padding: 4px 2px 10px 2px;
+          scroll-snap-type: x mandatory;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .sana-products-scroll::-webkit-scrollbar {
+          height: 5px;
+        }
+
+        .sana-products-scroll::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 4px;
+        }
+
+        .sana-products-scroll::-webkit-scrollbar-thumb {
+          background: #81c408;
+          border-radius: 4px;
+        }
+
+        .sana-product-card {
+          flex: 0 0 165px;
+          width: 165px;
+          background: #ffffff;
+          border-radius: 14px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          scroll-snap-align: start;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .sana-product-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+          border-color: #81c408;
+        }
+
+        .sana-product-img-box {
+          width: 100%;
+          height: 100px;
+          position: relative;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #f8fafc;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .sana-product-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 4px;
+          transition: transform 0.3s ease;
+        }
+
+        .sana-product-card:hover .sana-product-img {
+          transform: scale(1.05);
+        }
+
+        .sana-product-cat-pill {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          background: #81c408;
+          color: white;
+          font-size: 8.5px;
+          font-weight: 700;
+          padding: 2px 6px;
+          border-radius: 20px;
+          max-width: 90%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .sana-product-details {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          justify-content: space-between;
+          margin-top: 8px;
+        }
+
+        .sana-product-name {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0 0 6px 0;
+          line-height: 1.3;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          height: 33px;
+          cursor: pointer;
+        }
+
+        .sana-product-name:hover {
+          color: #81c408;
+        }
+
+        .sana-product-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+
+        .sana-product-price {
+          font-size: 13.5px;
+          font-weight: 800;
+          color: #0c831f;
+        }
+
+        .sana-stock-badge {
+          font-size: 8.5px;
+          font-weight: 700;
+          padding: 2px 5px;
+          border-radius: 4px;
+          text-transform: uppercase;
+        }
+
+        .sana-stock-badge.in-stock {
+          background: #e8f5e9;
+          color: #2e7d32;
+        }
+
+        .sana-stock-badge.out-of-stock {
+          background: #ffebee;
+          color: #c62828;
+        }
+
+        .sana-product-actions {
+          display: flex;
+          gap: 6px;
+        }
+
+        .sana-card-btn {
+          flex: 1;
+          border: none;
+          border-radius: 8px;
+          padding: 6px 0;
+          font-size: 11px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          outline: none;
+        }
+
+        .sana-card-btn.view-btn {
+          background: #f1f5f9;
+          color: #475569;
+        }
+
+        .sana-card-btn.view-btn:hover {
+          background: #e2e8f0;
+          color: #0f172a;
+        }
+
+        .sana-card-btn.cart-btn {
+          background: #81c408;
+          color: #ffffff;
+          box-shadow: 0 2px 6px rgba(129, 196, 8, 0.3);
+        }
+
+        .sana-card-btn.cart-btn:hover {
+          background: #6fa606;
+          box-shadow: 0 4px 10px rgba(111, 166, 6, 0.4);
         }
 
         .sana-typing-container {
@@ -514,13 +793,41 @@ export default function MyChatBot() {
         }
 
         .sana-chat-footer {
-          padding: 12px 16px;
+          padding: 10px 14px;
           background: white;
           border-top: 1px solid rgba(0, 0, 0, 0.05);
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 6px;
         }
+
+        /* Quick Category Chips */
+        .sana-quick-chips {
+          display: flex;
+          gap: 6px;
+          overflow-x: auto;
+          padding: 2px 0 6px 0;
+        }
+        .sana-quick-chips::-webkit-scrollbar {
+          display: none;
+        }
+        .sana-chip {
+          background: #f4fce3;
+          border: 1px solid #81c408;
+          color: #558b2f;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 16px;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .sana-chip:hover {
+          background: #81c408;
+          color: white;
+        }
+
         .sana-input-container {
           display: flex;
           align-items: center;
@@ -600,12 +907,12 @@ export default function MyChatBot() {
         title="Chat with Sana"
       >
         {isOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ color: "white" }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "white" }}>
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ color: "white" }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "white" }}>
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
         )}
@@ -641,7 +948,7 @@ export default function MyChatBot() {
                 onClick={handleReset}
                 title="Reset Chat"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
                 </svg>
               </button>
@@ -650,7 +957,7 @@ export default function MyChatBot() {
                 onClick={() => setIsOpen(false)}
                 title="Minimize"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -660,14 +967,92 @@ export default function MyChatBot() {
 
           {/* Messages List */}
           <div className="sana-chat-messages">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`sana-message-wrapper ${msg.sender}`}>
-                <div className="sana-message-bubble">
-                  {msg.text}
+            {messages.map((msg) => {
+              const hasProducts = msg.sender === "bot" && Array.isArray(msg.products) && msg.products.length > 0;
+
+              return (
+                <div key={msg.id} className={`sana-message-wrapper ${msg.sender} ${hasProducts ? 'has-products' : ''}`}>
+                  <div className="sana-message-bubble">
+                    {msg.text}
+                  </div>
+
+                  {/* Render Product Cards inside Bot Message */}
+                  {hasProducts && (
+                    <div className="sana-products-wrapper">
+                      <div className="sana-products-header">
+                        <span>🛍️ Matching Products ({msg.products.length})</span>
+                      </div>
+                      <div className="sana-products-scroll">
+                        {msg.products.map((product) => {
+                          const imageSrc = Array.isArray(product.image) && product.image.length > 0
+                            ? product.image[0]
+                            : (typeof product.image === "string" && product.image ? product.image : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80");
+
+                          return (
+                            <div key={product._id} className="sana-product-card">
+                              <div className="sana-product-img-box" onClick={() => handleViewProduct(product._id)}>
+                                <img
+                                  src={imageSrc}
+                                  alt={product.name}
+                                  className="sana-product-img"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80";
+                                  }}
+                                />
+                                {product.category_id?.name && (
+                                  <span className="sana-product-cat-pill">
+                                    {product.category_id.name}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="sana-product-details">
+                                <h4
+                                  className="sana-product-name"
+                                  title={product.name}
+                                  onClick={() => handleViewProduct(product._id)}
+                                >
+                                  {product.name}
+                                </h4>
+
+                                <div className="sana-product-meta">
+                                  <span className="sana-product-price">
+                                    ₹{product.price}
+                                  </span>
+                                  <span className={`sana-stock-badge ${product.status !== false ? 'in-stock' : 'out-of-stock'}`}>
+                                    {product.status !== false ? 'In Stock' : 'Out'}
+                                  </span>
+                                </div>
+
+                                <div className="sana-product-actions">
+                                  <button
+                                    type="button"
+                                    className="sana-card-btn view-btn"
+                                    onClick={() => handleViewProduct(product._id)}
+                                  >
+                                    View
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="sana-card-btn cart-btn"
+                                    onClick={(e) => handleAddProductToCart(e, product)}
+                                  >
+                                    Add
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <span className="sana-message-time">{msg.timestamp}</span>
                 </div>
-                <span className="sana-message-time">{msg.timestamp}</span>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Typing Indicator */}
             {isTyping && (
@@ -683,7 +1068,22 @@ export default function MyChatBot() {
           </div>
 
           {/* Footer Input Area */}
-          <form className="sana-chat-footer" onSubmit={handleSend}>
+          <form className="sana-chat-footer" onSubmit={(e) => handleSend(e)}>
+            {step === "chat" && (
+              <div className="sana-quick-chips">
+                {quickCategories.map((cat, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="sana-chip"
+                    onClick={() => handleSend(null, cat.query)}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="sana-input-container">
               <input
                 type="text"
@@ -698,7 +1098,7 @@ export default function MyChatBot() {
                 className="sana-send-btn"
                 disabled={!inputText.trim() || isTyping}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>

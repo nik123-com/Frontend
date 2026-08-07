@@ -157,8 +157,8 @@ function App() {
             </Routes>
           </Suspense>
           <VoiceSearch />
+          <MyChatBot />
         </BrowserRouter>
-        <MyChatBot />
         <ToastContainer icon={false} />
       </CartProvider>
     </LoadingProvider>
