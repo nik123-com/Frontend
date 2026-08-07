@@ -51,20 +51,12 @@ export default function RewardNotifier() {
           ` : '';
 
           Swal.fire({
-            title: `
-              <div class="d-flex flex-column align-items-center justify-content-center pt-2 gap-2">
-                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #81c408 0%, #6fa606 100%); border-radius: 50%; box-shadow: 0 8px 20px rgba(129, 196, 8, 0.4);" class="d-flex align-items-center justify-content-center text-white mb-1">
-                  <i class="fas fa-award fa-2x"></i>
-                </div>
-                <h4 class="fw-bold mb-0" style="color: #1e293b; font-size: 1.4rem;">Customer Rank & Reward 🎉</h4>
-              </div>
-            `,
             html: `
               <div class="py-2 text-center">
-                <p class="mb-3 text-secondary" style="font-size: 1rem;">
-                  Hello <strong>${customerName}</strong>! Admin has allotted your customer profile status.
+                <p class="mb-3" style="font-size: 1.05rem; color: #d97706;">
+                  Hello <strong style="color: #ea580c;">${customerName}</strong>! Admin has allotted your customer profile status.
                 </p>
-                <div class="d-inline-flex align-items-center px-4 py-2.5 rounded-pill shadow-xs" style="background: rgba(129, 196, 8, 0.12); border: 1.5px solid #81c408;">
+                <div class="d-inline-flex align-items-center px-4 py-2 rounded-pill shadow-xs" style="background: rgba(129, 196, 8, 0.12); border: 1.5px solid #81c408;">
                   <i class="fas fa-trophy text-success me-2 fs-4"></i>
                   <span class="fw-bold fs-5 text-dark">
                     Your Current Status: <span class="badge fs-6 ms-2 px-3 py-1.5" style="background: linear-gradient(135deg, #81c408 0%, #6fa606 100%); color: #fff; border-radius: 30px;">Rank #${rank}</span>

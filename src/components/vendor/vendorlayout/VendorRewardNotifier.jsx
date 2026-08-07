@@ -52,20 +52,12 @@ export default function VendorRewardNotifier() {
           ` : '';
 
           Swal.fire({
-            title: `
-              <div class="d-flex flex-column align-items-center justify-content-center pt-2 gap-2">
-                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #81c408 0%, #6fa606 100%); border-radius: 50%; box-shadow: 0 8px 20px rgba(129, 196, 8, 0.4);" class="d-flex align-items-center justify-content-center text-white mb-1">
-                  <i class="fas fa-trophy fa-2x"></i>
-                </div>
-                <h4 class="fw-bold mb-0" style="color: #1e293b; font-size: 1.4rem;">Store Ranking Allotted! 🎉</h4>
-              </div>
-            `,
             html: `
               <div class="py-2 text-center">
-                <p class="mb-3 text-secondary" style="font-size: 1rem;">
-                  Congratulations <strong>${ownerName || businessName}</strong>! Admin has updated your store rank status.
+                <p class="mb-3" style="font-size: 1.05rem; color: #d97706;">
+                  Congratulations <strong style="color: #ea580c;">${ownerName || businessName}</strong>! Admin has updated your store rank status.
                 </p>
-                <div class="d-inline-flex align-items-center px-4 py-2.5 rounded-pill shadow-xs" style="background: rgba(129, 196, 8, 0.12); border: 1.5px solid #81c408;">
+                <div class="d-inline-flex align-items-center px-4 py-2 rounded-pill shadow-xs" style="background: rgba(129, 196, 8, 0.12); border: 1.5px solid #81c408;">
                   <i class="fas fa-award text-success me-2 fs-4"></i>
                   <span class="fw-bold fs-5 text-dark">
                     Store Status: <span class="badge fs-6 ms-2 px-3 py-1.5" style="background: linear-gradient(135deg, #81c408 0%, #6fa606 100%); color: #fff; border-radius: 30px;">Rank #${rank}</span>
@@ -73,7 +65,6 @@ export default function VendorRewardNotifier() {
                 </div>
 
                 ${couponSectionHtml}
-                <p class="text-muted small mt-3 mb-0">Higher ranked vendor stores get highlighted visibility across customer storefront searches!</p>
               </div>
             `,
             confirmButtonText: '<i class="fas fa-check-circle me-1.5"></i> Got It & Thank You!',
