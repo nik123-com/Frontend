@@ -137,6 +137,9 @@ export default function ManageVendors() {
       `,
       focusConfirm: false,
       showCancelButton: true,
+      showDenyButton: Boolean(vendor.rank),
+      denyButtonText: "Revoke Rank",
+      denyButtonColor: "#dc3545",
       confirmButtonText: vendor.rank ? "Update Rank" : "Assign Rank",
       confirmButtonColor: "#81c408",
       didOpen: () => {
@@ -219,6 +222,8 @@ export default function ManageVendors() {
         } catch (err) {
           toast.error("Error allotting rank to vendor");
         }
+      } else if (result.isDenied) {
+        handleRevokeRank(vendor);
       }
     });
   };
@@ -350,14 +355,8 @@ export default function ManageVendors() {
                                   : "btn-success text-white shadow-sm"
                                 : "btn-outline-secondary"
                             } rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1 fw-semibold`}
-                            onClick={() => {
-                              if (v.rank) {
-                                handleRevokeRank(v);
-                              } else {
-                                handleAllotRank(v);
-                              }
-                            }}
-                            title={v.rank ? `Rank #${v.rank} allotted. Click to revoke rank.` : "Click to allot rank"}
+                            onClick={() => handleAllotRank(v)}
+                            title={v.rank ? `Rank #${v.rank} allotted. Click to edit rank.` : "Click to allot rank"}
                           >
                             <i className={`fas fa-award ${v.rank === 1 ? "text-dark" : v.rank ? "text-warning" : "text-muted"}`}></i>
                             <span>{v.rank ? `Rank #${v.rank}` : "Allot Rank"}</span>

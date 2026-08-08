@@ -110,6 +110,9 @@ export default function ManageCustomer() {
       `,
       focusConfirm: false,
       showCancelButton: true,
+      showDenyButton: Boolean(customer.rank),
+      denyButtonText: "Revoke Rank",
+      denyButtonColor: "#dc3545",
       confirmButtonText: customer.rank ? "Update Rank" : "Assign Rank",
       confirmButtonColor: "#81c408",
       didOpen: () => {
@@ -197,6 +200,8 @@ export default function ManageCustomer() {
           .finally(() => {
             setLoading(false);
           });
+      } else if (result.isDenied) {
+        handleRevokeRank(customer);
       }
     });
   };
@@ -335,14 +340,8 @@ export default function ManageCustomer() {
                                       : "btn-success text-white shadow-sm"
                                     : "btn-outline-secondary"
                                 } rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1 fw-semibold`}
-                                onClick={() => {
-                                  if (element.rank) {
-                                    handleRevokeRank(element);
-                                  } else {
-                                    handleAllotRank(element);
-                                  }
-                                }}
-                                title={element.rank ? `Rank #${element.rank} allotted. Click to revoke rank.` : "Click to allot rank"}
+                                onClick={() => handleAllotRank(element)}
+                                title={element.rank ? `Rank #${element.rank} allotted. Click to edit rank.` : "Click to allot rank"}
                               >
                                 <i className={`fas fa-award ${element.rank === 1 ? "text-dark" : element.rank ? "text-warning" : "text-muted"}`}></i>
                                 <span>{element.rank ? `Rank #${element.rank}` : "Allot Rank"}</span>
