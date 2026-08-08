@@ -349,7 +349,7 @@ export default function ManageVendors() {
                                   ? "btn-warning text-dark border-warning shadow-sm"
                                   : "btn-success text-white shadow-sm"
                                 : "btn-outline-secondary"
-                            } rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-semibold`}
+                            } rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1 fw-semibold`}
                             onClick={() => {
                               if (v.rank) {
                                 handleRevokeRank(v);
@@ -361,7 +361,6 @@ export default function ManageVendors() {
                           >
                             <i className={`fas fa-award ${v.rank === 1 ? "text-dark" : v.rank ? "text-warning" : "text-muted"}`}></i>
                             <span>{v.rank ? `Rank #${v.rank}` : "Allot Rank"}</span>
-                            <i className={`fas ${v.rank ? "fa-toggle-on text-white fs-6" : "fa-toggle-off text-muted fs-6"}`}></i>
                           </button>
                         </td>
                         <td>

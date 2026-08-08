@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Switch from "react-switch";
 import { HashLoader } from "react-spinners";
 import Swal from "sweetalert2";
 import { allCustomer, toggleBlockCustomer, allotCustomerRank, revokeCustomerRank } from "../server/Customer";
@@ -275,7 +274,7 @@ export default function ManageCustomer() {
                     Manage Customers
                   </h1>
                   <p className="text-muted small">
-                    Monitor customer accounts, allot numerical ranks, inspect government evidence proofs, toggle listing visibility, and restrict login block access.
+                    Monitor customer accounts, allot numerical ranks, inspect identity proofs, and manage account access status.
                   </p>
                 </div>
 
@@ -306,7 +305,7 @@ export default function ManageCustomer() {
                         <th scope="col">Contact & Address</th>
                         <th scope="col">Identity Proof</th>
                         <th scope="col">Registered On</th>
-                        <th scope="col" className="text-center" style={{ width: "200px" }}>Actions & Access</th>
+                        <th scope="col" className="text-center" style={{ width: "180px" }}>Actions & Access</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -335,7 +334,7 @@ export default function ManageCustomer() {
                                       ? "btn-warning text-dark border-warning shadow-sm"
                                       : "btn-success text-white shadow-sm"
                                     : "btn-outline-secondary"
-                                } rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-semibold`}
+                                } rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1 fw-semibold`}
                                 onClick={() => {
                                   if (element.rank) {
                                     handleRevokeRank(element);
@@ -347,7 +346,6 @@ export default function ManageCustomer() {
                               >
                                 <i className={`fas fa-award ${element.rank === 1 ? "text-dark" : element.rank ? "text-warning" : "text-muted"}`}></i>
                                 <span>{element.rank ? `Rank #${element.rank}` : "Allot Rank"}</span>
-                                <i className={`fas ${element.rank ? "fa-toggle-on text-white fs-6" : "fa-toggle-off text-muted fs-6"}`}></i>
                               </button>
                             </td>
                             <td>
@@ -366,26 +364,27 @@ export default function ManageCustomer() {
                             </td>
                             <td className="small text-muted">{formatDate(element.created_at)}</td>
                             <td className="text-center">
-                              <div className="d-flex flex-column align-items-center gap-2">
-                                <div className="d-flex align-items-center gap-1.5">
-                                  <span className={`badge ${element.userId?.isBlocked ? "bg-danger text-white" : "bg-success-subtle text-success border border-success"} px-2 py-1 rounded-pill small`}>
-                                    {element.userId?.isBlocked ? "Blocked" : "Allowed"}
-                                  </span>
-                                  <Switch
-                                    onChange={() => handleBlockToggle(element.userId?._id, element.userId?.isBlocked, element.name)}
-                                    checked={element.userId?.isBlocked || false}
-                                    onColor="#dc3545"
-                                    offColor="#81c408"
-                                    checkedIcon={false}
-                                    uncheckedIcon={false}
-                                    height={18}
-                                    width={36}
-                                    handleDiameter={14}
-                                    disabled={!element.userId}
-                                    title={!element.userId ? "Linked user account not found" : ""}
-                                  />
-                                </div>
-                              </div>
+                              {element.userId?.isBlocked ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-semibold"
+                                  onClick={() => handleBlockToggle(element.userId?._id, true, element.name)}
+                                  disabled={!element.userId}
+                                  title={!element.userId ? "Linked user account not found" : "Click to unblock customer"}
+                                >
+                                  <i className="fas fa-user-check me-1.5"></i>Unblock
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold"
+                                  onClick={() => handleBlockToggle(element.userId?._id, false, element.name)}
+                                  disabled={!element.userId}
+                                  title={!element.userId ? "Linked user account not found" : "Click to block customer"}
+                                >
+                                  <i className="fas fa-user-slash me-1.5"></i>Block
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
