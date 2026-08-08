@@ -144,9 +144,13 @@ export default function ManageCoupon() {
                                 <span className="badge bg-info-subtle text-info border border-info px-2 py-1">
                                   <i className="fa-solid fa-store me-1"></i> Vendor ({element.vendorId.businessName || element.vendorId.ownerName || "Vendor"})
                                 </span>
+                              ) : element.customerId ? (
+                                <span className="badge bg-primary-subtle text-primary border border-primary px-2 py-1">
+                                  <i className="fa-solid fa-user me-1"></i> Customer ({element.customerId.name || "Customer"})
+                                </span>
                               ) : (
                                 <span className="badge bg-warning-subtle text-warning border border-warning px-2 py-1">
-                                  <i className="fa-solid fa-user-shield me-1"></i> Admin
+                                  <i className="fa-solid fa-user-shield me-1"></i> Public / Admin
                                 </span>
                               )}
                             </td>
