@@ -327,33 +327,28 @@ export default function ManageCustomer() {
                               <div className="text-muted small">{element.email}</div>
                             </td>
                             <td>
-                              <div className="d-flex align-items-center gap-2">
-                                <Switch
-                                  onChange={(checked) => {
-                                    if (checked) {
-                                      handleAllotRank(element);
-                                    } else {
-                                      handleRevokeRank(element);
-                                    }
-                                  }}
-                                  checked={!!element.rank}
-                                  onColor="#81c408"
-                                  offColor="#d1d5db"
-                                  checkedIcon={false}
-                                  uncheckedIcon={false}
-                                  height={18}
-                                  width={36}
-                                  handleDiameter={14}
-                                  title={element.rank ? `Rank #${element.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
-                                />
-                                {element.rank ? (
-                                  <span className={`badge ${element.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-primary-subtle text-primary border border-primary'} px-2.5 py-1.5 rounded-pill fw-bold`}>
-                                    <i className="fas fa-award me-1"></i>Rank #{element.rank}
-                                  </span>
-                                ) : (
-                                  <span className="text-muted small fw-semibold">No Rank</span>
-                                )}
-                              </div>
+                              <button
+                                type="button"
+                                className={`btn btn-sm ${
+                                  element.rank
+                                    ? element.rank === 1
+                                      ? "btn-warning text-dark border-warning shadow-sm"
+                                      : "btn-success text-white shadow-sm"
+                                    : "btn-outline-secondary"
+                                } rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-semibold`}
+                                onClick={() => {
+                                  if (element.rank) {
+                                    handleRevokeRank(element);
+                                  } else {
+                                    handleAllotRank(element);
+                                  }
+                                }}
+                                title={element.rank ? `Rank #${element.rank} allotted. Click to revoke rank.` : "Click to allot rank"}
+                              >
+                                <i className={`fas fa-award ${element.rank === 1 ? "text-dark" : element.rank ? "text-warning" : "text-muted"}`}></i>
+                                <span>{element.rank ? `Rank #${element.rank}` : "Allot Rank"}</span>
+                                <i className={`fas ${element.rank ? "fa-toggle-on text-white fs-6" : "fa-toggle-off text-muted fs-6"}`}></i>
+                              </button>
                             </td>
                             <td>
                               <div className="text-dark small"><i className="fa-solid fa-phone text-muted me-1.5 small"></i>{element.Contact || "N/A"}</div>
@@ -372,34 +367,7 @@ export default function ManageCustomer() {
                             <td className="small text-muted">{formatDate(element.created_at)}</td>
                             <td className="text-center">
                               <div className="d-flex flex-column align-items-center gap-2">
-                                <div className="d-flex align-items-center justify-content-center gap-1.5 flex-wrap">
-                                  <div className="d-flex align-items-center gap-1.5 p-1 px-2.5 bg-light rounded-pill border shadow-xs">
-                                    <span className="small fw-semibold text-secondary">Rank Toggle:</span>
-                                    <Switch
-                                      onChange={(checked) => {
-                                        if (checked) {
-                                          handleAllotRank(element);
-                                        } else {
-                                          handleRevokeRank(element);
-                                        }
-                                      }}
-                                      checked={!!element.rank}
-                                      onColor="#81c408"
-                                      offColor="#d1d5db"
-                                      checkedIcon={false}
-                                      uncheckedIcon={false}
-                                      height={18}
-                                      width={36}
-                                      handleDiameter={14}
-                                      title={element.rank ? `Rank #${element.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
-                                    />
-                                    <span className={`badge ${element.rank ? "bg-success text-white" : "bg-secondary-subtle text-secondary"} px-2 py-0.5 rounded-pill small fw-bold`}>
-                                      {element.rank ? `Rank #${element.rank}` : "Revoked"}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="d-flex align-items-center gap-1.5 mt-1">
+                                <div className="d-flex align-items-center gap-1.5">
                                   <span className={`badge ${element.userId?.isBlocked ? "bg-danger text-white" : "bg-success-subtle text-success border border-success"} px-2 py-1 rounded-pill small`}>
                                     {element.userId?.isBlocked ? "Blocked" : "Allowed"}
                                   </span>

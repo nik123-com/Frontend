@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, allotVendorRank, revokeVendorRank } from "../server/Vendor";
-import Switch from "react-switch";
 
 export default function ManageVendors() {
   const [vendors, setVendors] = useState([]);
@@ -342,33 +341,28 @@ export default function ManageVendors() {
                           <small className="text-muted">Owner: {v.ownerName}</small>
                         </td>
                         <td>
-                          <div className="d-flex align-items-center gap-2">
-                            <Switch
-                              onChange={(checked) => {
-                                if (checked) {
-                                  handleAllotRank(v);
-                                } else {
-                                  handleRevokeRank(v);
-                                }
-                              }}
-                              checked={!!v.rank}
-                              onColor="#81c408"
-                              offColor="#d1d5db"
-                              checkedIcon={false}
-                              uncheckedIcon={false}
-                              height={18}
-                              width={36}
-                              handleDiameter={14}
-                              title={v.rank ? `Rank #${v.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
-                            />
-                            {v.rank ? (
-                              <span className={`badge ${v.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-success-subtle text-success border border-success'} px-2.5 py-1.5 rounded-pill fw-bold`}>
-                                <i className="fas fa-award me-1"></i>Rank #{v.rank}
-                              </span>
-                            ) : (
-                              <span className="text-muted small fw-semibold">No Rank</span>
-                            )}
-                          </div>
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${
+                              v.rank
+                                ? v.rank === 1
+                                  ? "btn-warning text-dark border-warning shadow-sm"
+                                  : "btn-success text-white shadow-sm"
+                                : "btn-outline-secondary"
+                            } rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-semibold`}
+                            onClick={() => {
+                              if (v.rank) {
+                                handleRevokeRank(v);
+                              } else {
+                                handleAllotRank(v);
+                              }
+                            }}
+                            title={v.rank ? `Rank #${v.rank} allotted. Click to revoke rank.` : "Click to allot rank"}
+                          >
+                            <i className={`fas fa-award ${v.rank === 1 ? "text-dark" : v.rank ? "text-warning" : "text-muted"}`}></i>
+                            <span>{v.rank ? `Rank #${v.rank}` : "Allot Rank"}</span>
+                            <i className={`fas ${v.rank ? "fa-toggle-on text-white fs-6" : "fa-toggle-off text-muted fs-6"}`}></i>
+                          </button>
                         </td>
                         <td>
                           <div className="fs-7">{v.email}</div>
@@ -430,31 +424,6 @@ export default function ManageVendors() {
                                 {v.isBlocked ? "Unblock Store" : "Block Store"}
                               </button>
                             )}
-
-                            <div className="d-inline-flex align-items-center gap-1.5 p-1 px-2.5 bg-light rounded-pill border ms-2 shadow-xs">
-                              <small className="fw-semibold text-secondary">Rank Toggle:</small>
-                              <Switch
-                                onChange={(checked) => {
-                                  if (checked) {
-                                    handleAllotRank(v);
-                                  } else {
-                                    handleRevokeRank(v);
-                                  }
-                                }}
-                                checked={!!v.rank}
-                                onColor="#81c408"
-                                offColor="#d1d5db"
-                                checkedIcon={false}
-                                uncheckedIcon={false}
-                                height={18}
-                                width={36}
-                                handleDiameter={14}
-                                title={v.rank ? `Rank #${v.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
-                              />
-                              <span className={`badge ${v.rank ? "bg-success text-white" : "bg-secondary-subtle text-secondary"} px-2 py-0.5 rounded-pill small fw-bold`}>
-                                {v.rank ? `Rank #${v.rank}` : "Revoked"}
-                              </span>
-                            </div>
 
                             {v.status === "Blocked" && (
                               <button
