@@ -108,7 +108,7 @@ export default function ManageVendors() {
   const handleAllotRank = (vendor) => {
     const currentRank = vendor.rank || 1;
     Swal.fire({
-      title: `Allot Rank for "${vendor.businessName}"`,
+      title: vendor.rank ? `Update Rank for "${vendor.businessName}"` : `Allot Rank for "${vendor.businessName}"`,
       html: `
         <div className="text-start fs-6 p-2">
           <div className="mb-3">
@@ -137,7 +137,7 @@ export default function ManageVendors() {
       `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Assign Rank",
+      confirmButtonText: vendor.rank ? "Update Rank" : "Assign Rank",
       confirmButtonColor: "#81c408",
       didOpen: () => {
         const rankInput = document.getElementById("swal-vendor-rank");
@@ -161,6 +161,19 @@ export default function ManageVendors() {
 
         if (!rankVal || parseInt(rankVal, 10) < 1) {
           Swal.showValidationMessage("Please enter a valid positive rank number");
+          return false;
+        }
+
+        const numericRankVal = parseInt(rankVal, 10);
+        const existingVendorWithRank = vendors.find(
+          (v) => v.rank === numericRankVal && v._id !== vendor._id
+        );
+        if (existingVendorWithRank) {
+          const vName = existingVendorWithRank.businessName || existingVendorWithRank.ownerName || "another vendor";
+          const msg = numericRankVal === 1
+            ? `Rank 1 is already allotted to vendor "${vName}". Please revoke Rank 1 from "${vName}" first!`
+            : `Rank #${numericRankVal} is already allotted to "${vName}".`;
+          Swal.showValidationMessage(msg);
           return false;
         }
 
@@ -397,23 +410,32 @@ export default function ManageVendors() {
                               </button>
                             )}
 
-                            <button
-                              onClick={() => handleAllotRank(v)}
-                              className="btn btn-sm btn-outline-warning text-dark fw-semibold ms-1"
-                              title="Allot numerical rank to vendor"
-                            >
-                              <i className="fas fa-award me-1"></i>Allot Rank
-                            </button>
-
-                            {v.rank ? (
-                              <button
-                                onClick={() => handleRevokeRank(v)}
-                                className="btn btn-sm btn-outline-danger ms-1"
-                                title="Revoke rank from vendor"
-                              >
-                                <i className="fas fa-ban me-1"></i>Revoke Rank
-                              </button>
-                            ) : null}
+                             {v.rank ? (
+                               <>
+                                 <button
+                                   onClick={() => handleRevokeRank(v)}
+                                   className="btn btn-sm btn-outline-danger fw-semibold ms-1"
+                                   title="Revoke rank from vendor"
+                                 >
+                                   <i className="fas fa-ban me-1"></i>Revoke Rank
+                                 </button>
+                                 <button
+                                   onClick={() => handleAllotRank(v)}
+                                   className="btn btn-sm btn-outline-warning text-dark fw-semibold ms-1"
+                                   title="Edit vendor rank"
+                                 >
+                                   <i className="fas fa-award me-1"></i>Edit Rank
+                                 </button>
+                               </>
+                             ) : (
+                               <button
+                                 onClick={() => handleAllotRank(v)}
+                                 className="btn btn-sm btn-outline-warning text-dark fw-semibold ms-1"
+                                 title="Allot numerical rank to vendor"
+                               >
+                                 <i className="fas fa-award me-1"></i>Allot Rank
+                               </button>
+                             )}
 
                             {v.status === "Blocked" && (
                               <button

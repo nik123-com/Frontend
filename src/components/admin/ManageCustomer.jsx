@@ -82,7 +82,7 @@ export default function ManageCustomer() {
   const handleAllotRank = (customer) => {
     const currentRank = customer.rank || 1;
     Swal.fire({
-      title: `Allot Rank for ${customer.name}`,
+      title: customer.rank ? `Update Rank for ${customer.name}` : `Allot Rank for ${customer.name}`,
       html: `
         <div className="text-start fs-6 p-2">
           <div className="mb-3">
@@ -111,7 +111,7 @@ export default function ManageCustomer() {
       `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Assign Rank",
+      confirmButtonText: customer.rank ? "Update Rank" : "Assign Rank",
       confirmButtonColor: "#81c408",
       didOpen: () => {
         const rankInput = document.getElementById("swal-input-rank");
@@ -135,6 +135,18 @@ export default function ManageCustomer() {
 
         if (!rankVal || parseInt(rankVal, 10) < 1) {
           Swal.showValidationMessage("Please enter a valid positive rank number");
+          return false;
+        }
+
+        const numericRankVal = parseInt(rankVal, 10);
+        const existingCustomerWithRank = data.find(
+          (c) => c.rank === numericRankVal && c._id !== customer._id
+        );
+        if (existingCustomerWithRank) {
+          const msg = numericRankVal === 1
+            ? `Rank 1 is already allotted to customer "${existingCustomerWithRank.name}". Please revoke Rank 1 from "${existingCustomerWithRank.name}" first!`
+            : `Rank #${numericRankVal} is already allotted to "${existingCustomerWithRank.name}".`;
+          Swal.showValidationMessage(msg);
           return false;
         }
 
@@ -188,6 +200,8 @@ export default function ManageCustomer() {
           });
       }
     });
+  };
+
   const handleRevokeRank = (customer) => {
     Swal.fire({
       title: "Revoke Customer Rank?",
@@ -339,22 +353,32 @@ export default function ManageCustomer() {
                             <td className="text-center">
                               <div className="d-flex flex-column align-items-center gap-2">
                                 <div className="d-flex align-items-center justify-content-center gap-1.5 flex-wrap">
-                                  <button
-                                    className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2.5 py-1 rounded-2"
-                                    onClick={() => handleAllotRank(element)}
-                                    title="Allot Rank to customer"
-                                  >
-                                    <i className="fas fa-award me-1"></i>Allot Rank
-                                  </button>
                                   {element.rank ? (
+                                    <>
+                                      <button
+                                        className="btn btn-sm btn-outline-danger fw-semibold px-2.5 py-1 rounded-2"
+                                        onClick={() => handleRevokeRank(element)}
+                                        title="Revoke Rank from customer"
+                                      >
+                                        <i className="fas fa-ban me-1"></i>Revoke Rank
+                                      </button>
+                                      <button
+                                        className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2 py-1 rounded-2"
+                                        onClick={() => handleAllotRank(element)}
+                                        title="Edit Rank for customer"
+                                      >
+                                        <i className="fas fa-award me-1"></i>Edit Rank
+                                      </button>
+                                    </>
+                                  ) : (
                                     <button
-                                      className="btn btn-sm btn-outline-danger fw-semibold px-2 py-1 rounded-2"
-                                      onClick={() => handleRevokeRank(element)}
-                                      title="Revoke Rank from customer"
+                                      className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2.5 py-1 rounded-2"
+                                      onClick={() => handleAllotRank(element)}
+                                      title="Allot Rank to customer"
                                     >
-                                      <i className="fas fa-ban me-1"></i>Revoke Rank
+                                      <i className="fas fa-award me-1"></i>Allot Rank
                                     </button>
-                                  ) : null}
+                                  )}
                                 </div>
 
                                 <div className="d-flex align-items-center gap-1.5 mt-1">
