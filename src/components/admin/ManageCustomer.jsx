@@ -327,13 +327,33 @@ export default function ManageCustomer() {
                               <div className="text-muted small">{element.email}</div>
                             </td>
                             <td>
-                              {element.rank ? (
-                                <span className={`badge ${element.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-primary-subtle text-primary border border-primary'} px-2.5 py-1.5 rounded-pill fw-bold`}>
-                                  <i className="fas fa-award me-1"></i>Rank #{element.rank}
-                                </span>
-                              ) : (
-                                <span className="text-muted small fw-semibold">—</span>
-                              )}
+                              <div className="d-flex align-items-center gap-2">
+                                <Switch
+                                  onChange={(checked) => {
+                                    if (checked) {
+                                      handleAllotRank(element);
+                                    } else {
+                                      handleRevokeRank(element);
+                                    }
+                                  }}
+                                  checked={!!element.rank}
+                                  onColor="#81c408"
+                                  offColor="#d1d5db"
+                                  checkedIcon={false}
+                                  uncheckedIcon={false}
+                                  height={18}
+                                  width={36}
+                                  handleDiameter={14}
+                                  title={element.rank ? `Rank #${element.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
+                                />
+                                {element.rank ? (
+                                  <span className={`badge ${element.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-primary-subtle text-primary border border-primary'} px-2.5 py-1.5 rounded-pill fw-bold`}>
+                                    <i className="fas fa-award me-1"></i>Rank #{element.rank}
+                                  </span>
+                                ) : (
+                                  <span className="text-muted small fw-semibold">No Rank</span>
+                                )}
+                              </div>
                             </td>
                             <td>
                               <div className="text-dark small"><i className="fa-solid fa-phone text-muted me-1.5 small"></i>{element.Contact || "N/A"}</div>
@@ -353,32 +373,30 @@ export default function ManageCustomer() {
                             <td className="text-center">
                               <div className="d-flex flex-column align-items-center gap-2">
                                 <div className="d-flex align-items-center justify-content-center gap-1.5 flex-wrap">
-                                  {element.rank ? (
-                                    <>
-                                      <button
-                                        className="btn btn-sm btn-outline-danger fw-semibold px-2.5 py-1 rounded-2"
-                                        onClick={() => handleRevokeRank(element)}
-                                        title="Revoke Rank from customer"
-                                      >
-                                        <i className="fas fa-ban me-1"></i>Revoke Rank
-                                      </button>
-                                      <button
-                                        className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2 py-1 rounded-2"
-                                        onClick={() => handleAllotRank(element)}
-                                        title="Edit Rank for customer"
-                                      >
-                                        <i className="fas fa-award me-1"></i>Edit Rank
-                                      </button>
-                                    </>
-                                  ) : (
-                                    <button
-                                      className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2.5 py-1 rounded-2"
-                                      onClick={() => handleAllotRank(element)}
-                                      title="Allot Rank to customer"
-                                    >
-                                      <i className="fas fa-award me-1"></i>Allot Rank
-                                    </button>
-                                  )}
+                                  <div className="d-flex align-items-center gap-1.5 p-1 px-2.5 bg-light rounded-pill border shadow-xs">
+                                    <span className="small fw-semibold text-secondary">Rank Toggle:</span>
+                                    <Switch
+                                      onChange={(checked) => {
+                                        if (checked) {
+                                          handleAllotRank(element);
+                                        } else {
+                                          handleRevokeRank(element);
+                                        }
+                                      }}
+                                      checked={!!element.rank}
+                                      onColor="#81c408"
+                                      offColor="#d1d5db"
+                                      checkedIcon={false}
+                                      uncheckedIcon={false}
+                                      height={18}
+                                      width={36}
+                                      handleDiameter={14}
+                                      title={element.rank ? `Rank #${element.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
+                                    />
+                                    <span className={`badge ${element.rank ? "bg-success text-white" : "bg-secondary-subtle text-secondary"} px-2 py-0.5 rounded-pill small fw-bold`}>
+                                      {element.rank ? `Rank #${element.rank}` : "Revoked"}
+                                    </span>
+                                  </div>
                                 </div>
 
                                 <div className="d-flex align-items-center gap-1.5 mt-1">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, allotVendorRank, revokeVendorRank } from "../server/Vendor";
+import Switch from "react-switch";
 
 export default function ManageVendors() {
   const [vendors, setVendors] = useState([]);
@@ -341,13 +342,33 @@ export default function ManageVendors() {
                           <small className="text-muted">Owner: {v.ownerName}</small>
                         </td>
                         <td>
-                          {v.rank ? (
-                            <span className={`badge ${v.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-success-subtle text-success border border-success'} px-2.5 py-1.5 rounded-pill fw-bold`}>
-                              <i className="fas fa-award me-1"></i>Rank #{v.rank}
-                            </span>
-                          ) : (
-                            <span className="text-muted small fw-semibold">—</span>
-                          )}
+                          <div className="d-flex align-items-center gap-2">
+                            <Switch
+                              onChange={(checked) => {
+                                if (checked) {
+                                  handleAllotRank(v);
+                                } else {
+                                  handleRevokeRank(v);
+                                }
+                              }}
+                              checked={!!v.rank}
+                              onColor="#81c408"
+                              offColor="#d1d5db"
+                              checkedIcon={false}
+                              uncheckedIcon={false}
+                              height={18}
+                              width={36}
+                              handleDiameter={14}
+                              title={v.rank ? `Rank #${v.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
+                            />
+                            {v.rank ? (
+                              <span className={`badge ${v.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-success-subtle text-success border border-success'} px-2.5 py-1.5 rounded-pill fw-bold`}>
+                                <i className="fas fa-award me-1"></i>Rank #{v.rank}
+                              </span>
+                            ) : (
+                              <span className="text-muted small fw-semibold">No Rank</span>
+                            )}
+                          </div>
                         </td>
                         <td>
                           <div className="fs-7">{v.email}</div>
@@ -383,7 +404,7 @@ export default function ManageVendors() {
                           </span>
                         </td>
                         <td className="text-end pe-4">
-                          <div className="btn-group">
+                          <div className="btn-group align-items-center">
                             {v.status === "Pending" && (
                               <>
                                 <button
@@ -410,32 +431,30 @@ export default function ManageVendors() {
                               </button>
                             )}
 
-                             {v.rank ? (
-                               <>
-                                 <button
-                                   onClick={() => handleRevokeRank(v)}
-                                   className="btn btn-sm btn-outline-danger fw-semibold ms-1"
-                                   title="Revoke rank from vendor"
-                                 >
-                                   <i className="fas fa-ban me-1"></i>Revoke Rank
-                                 </button>
-                                 <button
-                                   onClick={() => handleAllotRank(v)}
-                                   className="btn btn-sm btn-outline-warning text-dark fw-semibold ms-1"
-                                   title="Edit vendor rank"
-                                 >
-                                   <i className="fas fa-award me-1"></i>Edit Rank
-                                 </button>
-                               </>
-                             ) : (
-                               <button
-                                 onClick={() => handleAllotRank(v)}
-                                 className="btn btn-sm btn-outline-warning text-dark fw-semibold ms-1"
-                                 title="Allot numerical rank to vendor"
-                               >
-                                 <i className="fas fa-award me-1"></i>Allot Rank
-                               </button>
-                             )}
+                            <div className="d-inline-flex align-items-center gap-1.5 p-1 px-2.5 bg-light rounded-pill border ms-2 shadow-xs">
+                              <small className="fw-semibold text-secondary">Rank Toggle:</small>
+                              <Switch
+                                onChange={(checked) => {
+                                  if (checked) {
+                                    handleAllotRank(v);
+                                  } else {
+                                    handleRevokeRank(v);
+                                  }
+                                }}
+                                checked={!!v.rank}
+                                onColor="#81c408"
+                                offColor="#d1d5db"
+                                checkedIcon={false}
+                                uncheckedIcon={false}
+                                height={18}
+                                width={36}
+                                handleDiameter={14}
+                                title={v.rank ? `Rank #${v.rank} allotted. Toggle OFF to Revoke.` : "Toggle ON to Allot Rank"}
+                              />
+                              <span className={`badge ${v.rank ? "bg-success text-white" : "bg-secondary-subtle text-secondary"} px-2 py-0.5 rounded-pill small fw-bold`}>
+                                {v.rank ? `Rank #${v.rank}` : "Revoked"}
+                              </span>
+                            </div>
 
                             {v.status === "Blocked" && (
                               <button
