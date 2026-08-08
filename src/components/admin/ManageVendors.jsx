@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, allotVendorRank } from "../server/Vendor";
+import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, allotVendorRank, revokeVendorRank } from "../server/Vendor";
 
 export default function ManageVendors() {
   const [vendors, setVendors] = useState([]);
@@ -210,6 +210,32 @@ export default function ManageVendors() {
     });
   };
 
+  const handleRevokeRank = (vendor) => {
+    Swal.fire({
+      title: "Revoke Store Rank?",
+      text: `Are you sure you want to revoke rank from store "${vendor.businessName}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, Revoke Rank!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await revokeVendorRank({ vendorId: vendor._id });
+          if (res.data.success) {
+            toast.success(res.data.message || "Vendor rank revoked successfully");
+            fetchVendors();
+          } else {
+            toast.error(res.data.message || "Failed to revoke vendor rank");
+          }
+        } catch (err) {
+          toast.error("Error revoking rank from vendor");
+        }
+      }
+    });
+  };
+
   const filtered = vendors.filter((v) => {
     const matchesStatus = filterStatus === "all" || v.status === filterStatus;
     const query = searchQuery.toLowerCase().trim();
@@ -302,9 +328,13 @@ export default function ManageVendors() {
                           <small className="text-muted">Owner: {v.ownerName}</small>
                         </td>
                         <td>
-                          <span className={`badge ${v.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-success-subtle text-success border border-success'} px-2.5 py-1.5 rounded-pill fw-bold`}>
-                            <i className="fas fa-award me-1"></i>Rank #{v.rank || 1}
-                          </span>
+                          {v.rank ? (
+                            <span className={`badge ${v.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-success-subtle text-success border border-success'} px-2.5 py-1.5 rounded-pill fw-bold`}>
+                              <i className="fas fa-award me-1"></i>Rank #{v.rank}
+                            </span>
+                          ) : (
+                            <span className="text-muted small fw-semibold">—</span>
+                          )}
                         </td>
                         <td>
                           <div className="fs-7">{v.email}</div>
@@ -374,6 +404,16 @@ export default function ManageVendors() {
                             >
                               <i className="fas fa-award me-1"></i>Allot Rank
                             </button>
+
+                            {v.rank ? (
+                              <button
+                                onClick={() => handleRevokeRank(v)}
+                                className="btn btn-sm btn-outline-danger ms-1"
+                                title="Revoke rank from vendor"
+                              >
+                                <i className="fas fa-ban me-1"></i>Revoke Rank
+                              </button>
+                            ) : null}
 
                             {v.status === "Blocked" && (
                               <button

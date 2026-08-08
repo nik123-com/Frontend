@@ -5,6 +5,7 @@ import {
   softDelete_Customer,
   toggle_block_customer,
   admin_allot_customer_rank,
+  admin_revoke_customer_rank,
   customer_check_reward,
   customer_dismiss_reward
 } from "../endpoints";
@@ -28,6 +29,9 @@ export function toggleBlockCustomer(data){
 }
 export function allotCustomerRank(data){
     return axios.post ( baseUrl + admin_allot_customer_rank ,data,getToken());
+}
+export function revokeCustomerRank(data){
+    return axios.post ( baseUrl + admin_revoke_customer_rank ,data,getToken());
 }
 export function checkRankReward(data = {}){
     return axios.post ( baseUrl + customer_check_reward ,data,getToken());

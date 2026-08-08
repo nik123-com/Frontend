@@ -5,6 +5,7 @@ import {
   admin_reject_vendor,
   admin_toggle_block_vendor,
   admin_allot_vendor_rank,
+  admin_revoke_vendor_rank,
   vendor_check_reward,
   vendor_dismiss_reward,
   baseUrl
@@ -33,6 +34,10 @@ export function toggleBlockVendor(data) {
 
 export function allotVendorRank(data) {
   return axios.post(baseUrl + admin_allot_vendor_rank, data, getToken());
+}
+
+export function revokeVendorRank(data) {
+  return axios.post(baseUrl + admin_revoke_vendor_rank, data, getToken());
 }
 
 export function checkVendorRankReward(data = {}) {

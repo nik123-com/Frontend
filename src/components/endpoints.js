@@ -47,6 +47,7 @@ export const all_Customer = "/api/customer/all";
 export const softDelete_Customer = "/api/customer/softDelete";
 export const change_password = "/api/changePassword";
 export const admin_allot_customer_rank = "/api/customer/allotRank";
+export const admin_revoke_customer_rank = "/api/customer/revokeRank";
 export const customer_check_reward = "/customer/checkReward";
 export const customer_dismiss_reward = "/customer/dismissReward";
 
@@ -146,6 +147,7 @@ export const admin_approve_vendor = "/api/vendor/approve";
 export const admin_reject_vendor = "/api/vendor/reject";
 export const admin_toggle_block_vendor = "/api/vendor/toggleBlock";
 export const admin_allot_vendor_rank = "/api/vendor/allotRank";
+export const admin_revoke_vendor_rank = "/api/vendor/revokeRank";
 
 // Announcements
 export const admin_add_announcement = "/api/announcement/add";

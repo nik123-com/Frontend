@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { login } from "../server/auth";
@@ -8,105 +8,10 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // CAPTCHA STATE
-  const [captchaText, setCaptchaText] = useState("");
-  const [captchaInput, setCaptchaInput] = useState("");
-
   const nav = useNavigate();
 
   const ChangeEmail = (e) => setEmail(e.target.value);
   const ChangePassword = (e) => setPassword(e.target.value);
-
-  // ================= CAPTCHA LOGIC =================
-
-  function randomText() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let text = "";
-    for (let i = 0; i < 6; i++) {
-      text += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return text;
-  }
-
-  function drawCaptcha(text) {
-    const canvas = document.getElementById("captchaCanvas");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Light background matching design
-    ctx.fillStyle = "#eef2f5";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Noise lines
-    const lineColors = ["#e53e3e", "#dd6b20", "#319795", "#3182ce", "#805ad5", "#d53f8c", "#38a169"];
-    for (let i = 0; i < 7; i++) {
-      ctx.strokeStyle = lineColors[Math.floor(Math.random() * lineColors.length)];
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-      ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-      ctx.stroke();
-    }
-
-    // Text styling
-    ctx.font = "bold 26px Arial, sans-serif";
-    ctx.textBaseline = "middle";
-
-    const totalWidth = canvas.width;
-    const startX = 20;
-    const spacing = (totalWidth - 40) / text.length;
-
-    for (let i = 0; i < text.length; i++) {
-      let x = startX + i * spacing;
-      let y = canvas.height / 2 + (Math.random() * 6 - 3);
-      let angle = Math.random() * 0.4 - 0.2;
-
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      ctx.fillStyle = randomDarkColor();
-      ctx.fillText(text[i], 0, 0);
-      ctx.restore();
-    }
-
-    // Noise dots
-    for (let i = 0; i < 35; i++) {
-      ctx.fillStyle = randomColor();
-      ctx.beginPath();
-      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  function randomColor() {
-    return `rgb(${rand(0, 255)},${rand(0, 255)},${rand(0, 255)})`;
-  }
-
-  function randomDarkColor() {
-    return `rgb(${rand(0, 150)},${rand(0, 150)},${rand(0, 150)})`;
-  }
-
-  function rand(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-  }
-
-  function generateCaptcha() {
-    const newCaptcha = randomText();
-    setCaptchaText(newCaptcha);
-    // Timeout ensures canvas node is rendered before drawing
-    setTimeout(() => drawCaptcha(newCaptcha), 10);
-  }
-
-  function validateCaptcha() {
-    return captchaInput.trim().toUpperCase() === captchaText.toUpperCase();
-  }
-
-  useEffect(() => {
-    generateCaptcha();
-  }, []);
 
   // Form Submission
   const handleForm = (e) => {
@@ -118,17 +23,6 @@ export default function Login() {
     }
     if (!password.trim()) {
       toast.error("Please Enter Password");
-      return;
-    }
-    if (!captchaInput.trim()) {
-      toast.error("Please enter captcha to proceed");
-      return;
-    }
-    if (!validateCaptcha()) {
-      toast.error("Wrong Captcha");
-      generateCaptcha();
-      setPassword("");
-      setCaptchaInput("");
       return;
     }
 
@@ -239,65 +133,6 @@ export default function Login() {
                     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.03)"
                   }}
                 />
-              </div>
-
-              {/* Captcha Box */}
-              <div className="d-flex justify-content-center mb-4">
-                <div
-                  className="card shadow-sm p-4 text-center"
-                  style={{
-                    borderRadius: "16px",
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e5e7eb",
-                    width: "320px",
-                    maxWidth: "100%"
-                  }}
-                >
-                  <div className="d-flex justify-content-center mb-3">
-                    <canvas
-                      id="captchaCanvas"
-                      width={210}
-                      height={55}
-                      style={{
-                        borderRadius: "10px",
-                        display: "block"
-                      }}
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <button
-                      type="button"
-                      className="btn fw-bold px-4 py-2"
-                      style={{
-                        backgroundColor: "#ffaa00",
-                        color: "#000000",
-                        borderRadius: "50px",
-                        border: "none",
-                        fontSize: "14px",
-                        boxShadow: "0 2px 4px rgba(255, 170, 0, 0.2)"
-                      }}
-                      onClick={generateCaptcha}
-                    >
-                      Refresh Captcha
-                    </button>
-                  </div>
-
-                  <div>
-                    <input
-                      type="text"
-                      className="form-control text-center py-2"
-                      placeholder="Enter Captcha"
-                      value={captchaInput}
-                      onChange={(e) => setCaptchaInput(e.target.value)}
-                      style={{
-                        borderRadius: "10px",
-                        border: "1px solid #d1d5db",
-                        fontSize: "14px"
-                      }}
-                    />
-                  </div>
-                </div>
               </div>
 
               {/* Forgot Password Link */}

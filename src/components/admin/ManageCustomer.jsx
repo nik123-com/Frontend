@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import Switch from "react-switch";
 import { HashLoader } from "react-spinners";
 import Swal from "sweetalert2";
-import { allCustomer, toggleBlockCustomer, allotCustomerRank } from "../server/Customer";
+import { allCustomer, toggleBlockCustomer, allotCustomerRank, revokeCustomerRank } from "../server/Customer";
 import ResponsivePagination from "react-responsive-pagination";
 
 export default function ManageCustomer() {
@@ -188,6 +188,36 @@ export default function ManageCustomer() {
           });
       }
     });
+  const handleRevokeRank = (customer) => {
+    Swal.fire({
+      title: "Revoke Customer Rank?",
+      text: `Are you sure you want to revoke the rank from customer "${customer.name}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, Revoke Rank!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setLoading(true);
+        revokeCustomerRank({ customerId: customer._id })
+          .then((res) => {
+            if (res.data.success) {
+              toast.success(res.data.message || "Rank revoked successfully");
+              fetchCustomers();
+            } else {
+              toast.error(res.data.message || "Failed to revoke rank");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error("Error revoking rank from customer");
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+    });
   };
 
   // Search filtering
@@ -283,9 +313,13 @@ export default function ManageCustomer() {
                               <div className="text-muted small">{element.email}</div>
                             </td>
                             <td>
-                              <span className={`badge ${element.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-primary-subtle text-primary border border-primary'} px-2.5 py-1.5 rounded-pill fw-bold`}>
-                                <i className="fas fa-award me-1"></i>Rank #{element.rank || 1}
-                              </span>
+                              {element.rank ? (
+                                <span className={`badge ${element.rank === 1 ? 'bg-warning text-dark border border-warning' : 'bg-primary-subtle text-primary border border-primary'} px-2.5 py-1.5 rounded-pill fw-bold`}>
+                                  <i className="fas fa-award me-1"></i>Rank #{element.rank}
+                                </span>
+                              ) : (
+                                <span className="text-muted small fw-semibold">—</span>
+                              )}
                             </td>
                             <td>
                               <div className="text-dark small"><i className="fa-solid fa-phone text-muted me-1.5 small"></i>{element.Contact || "N/A"}</div>
@@ -304,13 +338,24 @@ export default function ManageCustomer() {
                             <td className="small text-muted">{formatDate(element.created_at)}</td>
                             <td className="text-center">
                               <div className="d-flex flex-column align-items-center gap-2">
-                                <button
-                                  className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2.5 py-1 rounded-2"
-                                  onClick={() => handleAllotRank(element)}
-                                  title="Allot Rank to customer"
-                                >
-                                  <i className="fas fa-award me-1"></i>Allot Rank
-                                </button>
+                                <div className="d-flex align-items-center justify-content-center gap-1.5 flex-wrap">
+                                  <button
+                                    className="btn btn-sm btn-outline-warning text-dark fw-semibold px-2.5 py-1 rounded-2"
+                                    onClick={() => handleAllotRank(element)}
+                                    title="Allot Rank to customer"
+                                  >
+                                    <i className="fas fa-award me-1"></i>Allot Rank
+                                  </button>
+                                  {element.rank ? (
+                                    <button
+                                      className="btn btn-sm btn-outline-danger fw-semibold px-2 py-1 rounded-2"
+                                      onClick={() => handleRevokeRank(element)}
+                                      title="Revoke Rank from customer"
+                                    >
+                                      <i className="fas fa-ban me-1"></i>Revoke Rank
+                                    </button>
+                                  ) : null}
+                                </div>
 
                                 <div className="d-flex align-items-center gap-1.5 mt-1">
                                   <span className={`badge ${element.userId?.isBlocked ? "bg-danger text-white" : "bg-success-subtle text-success border border-success"} px-2 py-1 rounded-pill small`}>
