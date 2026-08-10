@@ -66,7 +66,7 @@ export default function Checkout() {
           userId,
           shipingAddress: selectedAddress,
           paymentMethod: "COD",
-          paymentStatus: "Pending",
+          paymentStatus: "COD",
           totalAmount: grandTotal
         };
         const res = await addOrder(orderData);

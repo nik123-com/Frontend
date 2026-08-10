@@ -183,7 +183,7 @@ export default function ManageOrder() {
                         <p className="mb-0">
                           <strong>Status:</strong>{" "}
                           <span className={`badge ${selectedOrder.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
-                            {selectedOrder.paymentStatus}
+                            {selectedOrder.paymentStatus === "Paid" ? "Paid" : "COD"}
                           </span>
                         </p>
                       </div>
@@ -261,7 +261,7 @@ export default function ManageOrder() {
                               <td className="fw-bold">₹{(order.grandTotal || 0).toLocaleString("en-IN")}</td>
                               <td>
                                 <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
-                                  {order.paymentStatus}
+                                  {order.paymentStatus === "Paid" ? "Paid" : "COD"}
                                 </span>
                               </td>
                               <td>

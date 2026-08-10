@@ -230,7 +230,7 @@ export default function DeliveryTracker({ order, onClose }) {
                   </span>
                 </div>
                 <small className="text-muted d-block mt-1">
-                  Status: {order.paymentStatus || "Pending"}
+                  Status: {order.paymentStatus === "Paid" ? "Paid" : "COD"}
                 </small>
               </div>
             </div>

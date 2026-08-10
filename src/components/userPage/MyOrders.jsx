@@ -137,7 +137,7 @@ export default function MyOrders() {
                         </td>
                         <td>
                           <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
-                            {order.paymentStatus}
+                            {order.paymentStatus === "Paid" ? "Paid" : "COD"}
                           </span>
                         </td>
                         <td>

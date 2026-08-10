@@ -78,8 +78,10 @@ export default function Admindashboard() {
   const activeCustomers = customers.filter((c) => c.status !== false && !c.userId?.isBlocked).length;
   const activeVendors = vendors.filter((v) => v.status === "Approved" && !v.isBlocked).length;
 
-  // Helper formatting for Revenue
-  const totalRevenue = orders.reduce((acc, order) => acc + (Number(order.grandTotal) || 0), 0);
+  // Helper formatting for Revenue (Only Delivered Orders)
+  const totalRevenue = orders
+    .filter((order) => order.orderStatus?.toLowerCase() === "delivered")
+    .reduce((acc, order) => acc + (Number(order.grandTotal) || 0), 0);
   const formatRevenue = (value) => {
     if (value >= 100000) {
       return `₹${(value / 100000).toFixed(2)}L`;
@@ -125,7 +127,7 @@ export default function Admindashboard() {
     ],
   };
 
-  // 2. Revenue Analytics by Month (Last 6 Months)
+  // 2. Revenue Analytics by Month (Last 6 Months - Only Delivered Orders)
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const revenueByMonth = [];
   for (let i = 5; i >= 0; i--) {
@@ -140,7 +142,7 @@ export default function Admindashboard() {
   }
 
   orders.forEach((order) => {
-    if (order.orderStatus?.toLowerCase() !== "cancelled") {
+    if (order.orderStatus?.toLowerCase() === "delivered") {
       const orderDate = new Date(order.createdAt);
       const oMonth = orderDate.getMonth();
       const oYear = orderDate.getFullYear();

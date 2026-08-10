@@ -104,6 +104,7 @@ export default function VendorOrders() {
                     <th>Customer</th>
                     <th>Your Products</th>
                     <th>Vendor Subtotal</th>
+                    <th>Payment</th>
                     <th>Status</th>
                     <th className="text-end pe-4">Fulfillment Actions</th>
                   </tr>
@@ -147,6 +148,11 @@ export default function VendorOrders() {
                         </td>
                         <td className="fw-bold text-dark">
                           ₹{Number(order.vendorSubtotal || 0).toLocaleString()}
+                        </td>
+                        <td>
+                          <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
+                            {order.paymentStatus === "Paid" ? "Paid" : "COD"}
+                          </span>
                         </td>
                         <td>
                           <span
