@@ -28,23 +28,23 @@ function AdminHeader() {
     <>
       {/* Navbar start */}
       <div className="container-fluid fixed-top">
-        <div className="container topbar bg-primary d-none d-lg-block">
+        <div className="container topbar bg-primary d-none d-lg-block" style={{ borderRadius: "45px 0 45px 45px" }}>
           <div className="d-flex justify-content-between">
-            <div className="top-info ps-2">
-              <small className="me-3">
+            <div className="top-info ps-3">
+              <small className="me-4">
                 <i className="fas fa-map-marker-alt me-2 text-secondary" />{" "}
                 <a href="#" className="text-white text-decoration-none">
                   123 Model Town,Jalandhar
                 </a>
               </small>
-              <small className="me-3">
+              <small className="me-4">
                 <i className="fas fa-envelope me-2 text-secondary" />
                 <a href="#" className="text-white text-decoration-none">
                   admin@gmail.com
                 </a>
               </small>
             </div>
-            <div className="top-link pe-2">
+            <div className="top-link pe-3">
               <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
                 <small className="text-white mx-2">Privacy Policy</small>/
               </a>
@@ -60,7 +60,7 @@ function AdminHeader() {
 
         <div className="container px-0">
           <nav className="navbar navbar-light bg-white navbar-expand-xl">
-            <Link to="/admin" className="navbar-brand d-flex align-items-center" onClick={closeNav}>
+            <Link to="/admin" className="navbar-brand d-flex align-items-center me-3 me-xxl-4" onClick={closeNav}>
               <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
               <h1 className="text-primary display-6 mb-0">Aventra</h1>
             </Link>
@@ -73,8 +73,9 @@ function AdminHeader() {
               <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
             <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
-              <div className="navbar-nav mx-auto">
-                <Link to="/admin" className={`nav-item nav-link ${location.pathname === '/admin' ? 'active' : ''}`} onClick={closeNav}>
+              {/* Navigation links shifted to the LEFT side */}
+              <div className="navbar-nav me-auto py-2 py-xl-0 align-items-center text-nowrap gap-1">
+                <Link to="/admin" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin' ? 'active' : ''}`} onClick={closeNav}>
                   Home
                 </Link>
                 
@@ -82,7 +83,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'category' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle ${location.pathname.toLowerCase().includes('category') ? 'active' : ''}`}
+                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('category') ? 'active' : ''}`}
                     onClick={(e) => toggleDropdown('category', e)}
                   >
                     Category
@@ -101,7 +102,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'product' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle ${location.pathname.toLowerCase().includes('product') ? 'active' : ''}`}
+                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('product') ? 'active' : ''}`}
                     onClick={(e) => toggleDropdown('product', e)}
                   >
                     Product
@@ -117,7 +118,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'brand' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle ${location.pathname.toLowerCase().includes('brand') ? 'active' : ''}`}
+                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('brand') ? 'active' : ''}`}
                     onClick={(e) => toggleDropdown('brand', e)}
                   >
                     Brand
@@ -132,15 +133,15 @@ function AdminHeader() {
                   </div>
                 </div>
 
-                <Link to="/admin/customermanage" className={`nav-item nav-link ${location.pathname === '/admin/customermanage' ? 'active' : ''}`} onClick={closeNav}>
+                <Link to="/admin/customermanage" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/customermanage' ? 'active' : ''}`} onClick={closeNav}>
                   Customers
                 </Link>
 
-                <Link to="/admin/managevendors" className={`nav-item nav-link ${location.pathname === '/admin/managevendors' ? 'active' : ''}`} onClick={closeNav}>
+                <Link to="/admin/managevendors" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/managevendors' ? 'active' : ''}`} onClick={closeNav}>
                   Vendors
                 </Link>
 
-                <Link to="/admin/managesettlements" className={`nav-item nav-link ${location.pathname === '/admin/managesettlements' ? 'active' : ''}`} onClick={closeNav}>
+                <Link to="/admin/managesettlements" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/managesettlements' ? 'active' : ''}`} onClick={closeNav}>
                   Settlements
                 </Link>
 
@@ -148,7 +149,7 @@ function AdminHeader() {
                 <div className={`nav-item dropdown ${openDropdown === 'coupon' ? 'show' : ''}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle ${location.pathname.toLowerCase().includes('coupon') ? 'active' : ''}`}
+                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('coupon') ? 'active' : ''}`}
                     onClick={(e) => toggleDropdown('coupon', e)}
                   >
                     Coupon
@@ -163,13 +164,13 @@ function AdminHeader() {
                   </div>
                 </div>
 
-                <Link to="/admin/manageorder" className={`nav-item nav-link ${location.pathname === '/admin/manageorder' ? 'active' : ''}`} onClick={closeNav}>
+                <Link to="/admin/manageorder" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/manageorder' ? 'active' : ''}`} onClick={closeNav}>
                   Orders
                 </Link>
-                <Link to="/admin/managequeries" className={`nav-item nav-link ${location.pathname === '/admin/managequeries' ? 'active' : ''}`} onClick={closeNav}>
+                <Link to="/admin/managequeries" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/managequeries' ? 'active' : ''}`} onClick={closeNav}>
                   Queries
                 </Link>
-                <Link to="/admin/announcements" className={`nav-item nav-link ${location.pathname === '/admin/announcements' ? 'active' : ''}`} onClick={closeNav}>
+                <Link to="/admin/announcements" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/announcements' ? 'active' : ''}`} onClick={closeNav}>
                   Announcements
                 </Link>
               </div>
