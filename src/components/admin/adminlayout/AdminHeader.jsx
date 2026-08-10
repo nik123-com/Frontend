@@ -141,10 +141,6 @@ function AdminHeader() {
                   Vendors
                 </Link>
 
-                <Link to="/admin/managesettlements" className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/managesettlements' ? 'active' : ''}`} onClick={closeNav}>
-                  Settlements
-                </Link>
-
                 {/* Coupon Dropdown */}
                 <div className={`nav-item dropdown ${openDropdown === 'coupon' ? 'show' : ''}`}>
                   <a
