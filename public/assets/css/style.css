@@ -85,7 +85,8 @@
 
 .topbar {
     padding: 8px 24px;
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 20px 20px !important;
+    background-color: #81c408 !important;
 }
 
 .topbar .top-info {
@@ -107,26 +108,17 @@
 }
 
 .topbar .top-link a small:hover {
-    color: var(--bs-secondary) !important;
+    color: #ffc107 !important;
     transition: 0.3s;
 }
 
 .topbar .top-link a small:hover i {
-    color: var(--bs-primary) !important;
+    color: #ffffff !important;
 }
 
 /*** Topbar End ***/
 
 /*** Navbar Start ***/
-.navbar .navbar-nav .nav-link {
-    padding: 8px 12px;
-    font-size: 14.5px;
-    font-weight: 500;
-    color: #475569;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-}
-
 .navbar {
     min-height: 64px;
     height: auto;
@@ -134,13 +126,36 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.navbar .navbar-brand h1 {
+    color: #81c408 !important;
+    font-weight: 700 !important;
+}
+
+.navbar .navbar-nav .nav-link {
+    padding: 8px 14px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: #475569;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
 .navbar .navbar-nav .nav-link:hover,
 .navbar .navbar-nav .nav-link.active,
 .fixed-top.bg-white .navbar .navbar-nav .nav-link:hover,
 .fixed-top.bg-white .navbar .navbar-nav .nav-link.active {
-    color: var(--bs-primary) !important;
-    background-color: rgba(129, 196, 8, 0.1);
+    color: #81c408 !important;
+    background-color: #eef9e0 !important;
     font-weight: 600;
+}
+
+.btn-search {
+    border-color: #ffc107 !important;
+    color: #ffc107 !important;
+}
+
+.btn-search:hover {
+    background-color: #fff9e6 !important;
 }
 
 .navbar .dropdown-toggle::after {

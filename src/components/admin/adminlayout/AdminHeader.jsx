@@ -28,41 +28,41 @@ function AdminHeader() {
     <>
       {/* Navbar start */}
       <div className="container-fluid fixed-top">
-        <div className="container topbar bg-primary d-none d-lg-block" style={{ borderRadius: "45px 0 45px 45px" }}>
-          <div className="d-flex justify-content-between">
-            <div className="top-info ps-3">
-              <small className="me-4">
-                <i className="fas fa-map-marker-alt me-2 text-secondary" />{" "}
-                <a href="#" className="text-white text-decoration-none">
+        <div className="container topbar bg-primary d-none d-lg-block" style={{ borderRadius: "0 0 20px 20px" }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="top-info ps-3 d-flex align-items-center">
+              <small className="me-4 d-flex align-items-center">
+                <i className="fas fa-map-marker-alt me-2 text-warning" style={{ color: "#ffc107" }} />{" "}
+                <a href="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
                   123 Model Town,Jalandhar
                 </a>
               </small>
-              <small className="me-4">
-                <i className="fas fa-envelope me-2 text-secondary" />
-                <a href="#" className="text-white text-decoration-none">
+              <small className="me-4 d-flex align-items-center">
+                <i className="fas fa-envelope me-2 text-warning" style={{ color: "#ffc107" }} />
+                <a href="mailto:admin@gmail.com" className="text-white text-decoration-none">
                   admin@gmail.com
                 </a>
               </small>
             </div>
-            <div className="top-link pe-3">
+            <div className="top-link pe-3 d-flex align-items-center">
               <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
-                <small className="text-white mx-2">Privacy Policy</small>/
+                <small className="text-white mx-1">Privacy Policy</small> /
               </a>
               <a href="/assets/Terms of use/Terms of Use.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
-                <small className="text-white mx-2">Terms of Use</small>/
+                <small className="text-white mx-1">Terms of Use</small> /
               </a>
               <a href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
-                <small className="text-white ms-2">Sales and Refunds</small>
+                <small className="text-white ms-1">Sales and Refunds</small>
               </a>
             </div>
           </div>
         </div>
 
         <div className="container px-0">
-          <nav className="navbar navbar-light bg-white navbar-expand-xl">
+          <nav className="navbar navbar-light bg-white navbar-expand-xl py-2">
             <Link to="/admin" className="navbar-brand d-flex align-items-center me-3 me-xxl-4" onClick={closeNav}>
               <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
-              <h1 className="text-primary display-6 mb-0">Aventra</h1>
+              <h1 className="text-primary display-6 mb-0 fw-bold" style={{ color: "#81c408" }}>Aventra</h1>
             </Link>
             <button
               className="navbar-toggler py-2 px-3"
@@ -108,6 +108,9 @@ function AdminHeader() {
                     Product
                   </a>
                   <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow ${openDropdown === 'product' ? 'show d-block' : ''}`}>
+                    <Link to="/admin/addproduct" className="dropdown-item py-2 px-3" onClick={closeNav}>
+                      <i className="fa-solid fa-plus me-2 text-muted small"></i>Add Product
+                    </Link>
                     <Link to="/admin/productmanage" className="dropdown-item py-2 px-3" onClick={closeNav}>
                       <i className="fa-solid fa-boxes-stacked me-2 text-muted small"></i>Manage Product
                     </Link>
@@ -173,21 +176,22 @@ function AdminHeader() {
 
               <div className="d-flex m-3 me-0 align-items-center position-relative">
                 <button
-                  className="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
+                  className="btn-search btn border border-warning btn-md-square rounded-circle bg-white me-4"
                   data-bs-toggle="modal"
                   data-bs-target="#searchModal"
                   onClick={closeNav}
                 >
-                  <i className="fas fa-search text-primary" />
+                  <i className="fas fa-search text-warning" style={{ color: "#ffc107" }} />
                 </button>
 
                 <Link to="/admin/manageorder" className="position-relative me-4 my-auto" onClick={closeNav} title="Manage Orders">
-                  <i className="fa fa-shopping-bag fa-2x text-primary" />
+                  <i className="fa fa-shopping-bag fa-2x text-primary" style={{ color: "#81c408" }} />
                 </Link>
 
                 {sessionStorage.getItem("isLogin") === "true" ? (
                   <button
-                    className="btn btn-primary text-light m-1 rounded-pill px-4 py-2 fw-bold"
+                    className="btn btn-primary text-white m-1 rounded-pill px-4 py-2 fw-bold shadow-sm"
+                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
                     onClick={handleLogout}
                   >
                     Logout
@@ -195,7 +199,8 @@ function AdminHeader() {
                 ) : (
                   <Link
                     to="/Login"
-                    className="btn btn-primary text-light m-1 rounded-pill px-4 py-2 fw-bold text-decoration-none"
+                    className="btn btn-primary text-white m-1 rounded-pill px-4 py-2 fw-bold text-decoration-none shadow-sm"
+                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
                     onClick={closeNav}
                   >
                     Login

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { allCart } from "../server/Cart";
 import { fetchNotifications, respondInviteApi, markNotificationsRead, deleteNotificationApi } from "../server/Notification";
 import { getCustomerAnnouncements } from "../server/Announcement";
@@ -21,6 +21,7 @@ function UserHeader() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [userRank, setUserRank] = useState(null);
+  const notifRef = useRef(null);
 
   useEffect(() => {
     if (isLogin) {
@@ -193,44 +194,67 @@ function UserHeader() {
     };
   }, [location, isLogin]);
 
+  // Auto-close notification dropdown when user scrolls down the page or clicks outside
+  useEffect(() => {
+    if (!showNotifDropdown) return;
+
+    const handleScroll = () => {
+      setShowNotifDropdown(false);
+    };
+
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setShowNotifDropdown(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifDropdown]);
+
   return (
     <>
       {/* Navbar start */}
       <div className="container-fluid fixed-top">
-        <div className="container topbar bg-primary d-none d-lg-block">
-          <div className="d-flex justify-content-between">
-            <div className="top-info ps-2">
-              <small className="me-3">
-                <i className="fas fa-map-marker-alt me-2 text-secondary" />{" "}
-                <a href ="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" className="text-white">
+        <div className="container topbar bg-primary d-none d-lg-block" style={{ borderRadius: "0 0 20px 20px" }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="top-info ps-3 d-flex align-items-center">
+              <small className="me-4 d-flex align-items-center">
+                <i className="fas fa-map-marker-alt me-2 text-warning" style={{ color: "#ffc107" }} />{" "}
+                <a href="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
                   123 Model Town,Jalandhar
                 </a>
               </small>
-              <small className="me-3">
-                <i className="fas fa-envelope me-2 text-secondary" />
-                <a href="https://mail.google.com/mail/u/0/#inbox?compose=SxfkdhjZRgnwdBcsvDBxswDtmtmbnXwwPlsBkBqwXJqZbwVhrPtPMGjvgTndqkrMPPQXfXnWDXnLNfxFLZqMRZxNrncnmQWcXmTLTDdSZXmlMVQDlFg" className="text-white">
+              <small className="me-4 d-flex align-items-center">
+                <i className="fas fa-envelope me-2 text-warning" style={{ color: "#ffc107" }} />
+                <a href="mailto:admin@gmail.com" className="text-white text-decoration-none">
                   admin@gmail.com
                 </a>
               </small>
             </div>
-            <div className="top-link pe-2">
-              <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" className="text-white">
-                <small className="text-white mx-2">Privacy Policy</small>/
+            <div className="top-link pe-3 d-flex align-items-center">
+              <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <small className="text-white mx-1">Privacy Policy</small> /
               </a>
-              <a href="/assets/Terms of use/Terms of Use.pdf" className="text-white">
-                <small className="text-white mx-2">Terms of Use</small>/
+              <a href="/assets/Terms of use/Terms of Use.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <small className="text-white mx-1">Terms of Use</small> /
               </a>
-              <a href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf" className="text-white">
-                <small className="text-white ms-2">Sales and Refunds</small>
+              <a href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <small className="text-white ms-1">Sales and Refunds</small>
               </a>
             </div>
           </div>
         </div>
         <div className="container px-0">
-          <nav className="navbar navbar-light bg-white navbar-expand-xl">
+          <nav className="navbar navbar-light bg-white navbar-expand-xl py-2">
             <Link to="/" className="navbar-brand d-flex align-items-center" onClick={() => setIsNavCollapsed(true)}>
               <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
-              <h1 className="text-primary display-6 mb-0">Aventra</h1>
+              <h1 className="text-primary display-6 mb-0 fw-bold" style={{ color: "#81c408" }}>Aventra</h1>
             </Link>
             <button
               className="navbar-toggler py-2 px-3"
@@ -241,45 +265,45 @@ function UserHeader() {
               <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
             <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
-              <div className="navbar-nav mx-auto">
-                <Link to="/" className={`nav-item nav-link ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+              <div className="navbar-nav mx-auto align-items-center gap-1 gap-xl-2">
+                <Link to="/" className={`nav-item nav-link px-3 py-2 ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Home
                 </Link>
-                <Link to="/CardCategory" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('cardcategory') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/CardCategory" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('cardcategory') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Category
                 </Link>
-                <Link to="/cardProduct" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('cardproduct') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/cardProduct" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('cardproduct') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Product
                 </Link>
-                <Link to="/cardBrand" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('cardbrand') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/cardBrand" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('cardbrand') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Brand
                 </Link>
-                <Link to="/Contact" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('contact') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/Contact" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('contact') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Contact
                 </Link>
-                <Link to="/viewWishlist" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('wishlist') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/viewWishlist" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('wishlist') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   View WishList
                 </Link>
-                <Link to="/myorders" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('myorders') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/myorders" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('myorders') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   My Orders
                 </Link>
-                <Link to="/queries" className={`nav-item nav-link ${location.pathname.toLowerCase().includes('queries') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                <Link to="/queries" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('queries') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Queries
                 </Link>
               </div>
               <div className="d-flex m-3 me-0 align-items-center position-relative">
                 <button
-                  className="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
+                  className="btn-search btn border border-warning btn-md-square rounded-circle bg-white me-4"
                   data-bs-toggle="modal"
                   data-bs-target="#searchModal"
                   onClick={() => setIsNavCollapsed(true)}
                 >
-                  <i className="fas fa-search text-primary" />
+                  <i className="fas fa-search text-warning" style={{ color: "#ffc107" }} />
                 </button>
 
                 {/* Notifications Bell */}
                 {isLogin && (
-                  <div className="position-relative me-4 my-auto">
+                  <div className="position-relative me-4 my-auto" ref={notifRef}>
                     <button
                       className="btn p-0 border-0 bg-transparent position-relative"
                       onClick={() => {
@@ -457,7 +481,7 @@ function UserHeader() {
                 )}
 
                 <Link to="/cart" className="position-relative me-4 my-auto" onClick={() => setIsNavCollapsed(true)}>
-                  <i className="fa fa-shopping-bag fa-2x text-primary" />
+                  <i className="fa fa-shopping-bag fa-2x text-primary" style={{ color: "#81c408" }} />
                   {isLogin && (
                     <span
                       className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
@@ -470,7 +494,8 @@ function UserHeader() {
 
                 {isLogin ? (
                   <button
-                    className="btn btn-primary text-light m-1"
+                    className="btn btn-primary text-white m-1 rounded-pill px-4 py-2 fw-bold shadow-sm"
+                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
                     onClick={() => {
                       sessionStorage.clear();
                       window.location.reload();
@@ -479,7 +504,12 @@ function UserHeader() {
                     Logout
                   </button>
                 ) : (
-                  <Link className="btn btn-primary text-light m-1" to="/Login" onClick={() => setIsNavCollapsed(true)}>
+                  <Link
+                    className="btn btn-primary text-white m-1 rounded-pill px-4 py-2 fw-bold text-decoration-none shadow-sm"
+                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
+                    to="/Login"
+                    onClick={() => setIsNavCollapsed(true)}
+                  >
                     Login
                   </Link>
                 )}
