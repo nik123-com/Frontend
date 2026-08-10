@@ -86,6 +86,10 @@ body {
   padding-top: 95px;
 }
 
+.admin-page-content-offset {
+  padding-top: 80px;
+}
+
 .hero-header,
 .page-header {
   margin-top: 0 !important;
