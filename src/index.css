@@ -87,7 +87,7 @@ body {
 }
 
 .admin-page-content-offset {
-  padding-top: 80px;
+  padding-top: 95px;
 }
 
 .hero-header,
@@ -96,7 +96,8 @@ body {
 }
 
 @media (max-width: 1199.98px) {
-  .page-content-offset {
+  .page-content-offset,
+  .admin-page-content-offset {
     padding-top: 80px;
   }
 

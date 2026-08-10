@@ -40,6 +40,37 @@ function AdminHeader() {
     <>
       {/* Navbar start */}
       <div className="container-fluid fixed-top px-0" ref={navRef}>
+        {/* Topbar */}
+        <div className="container topbar bg-primary d-none d-lg-block" style={{ borderRadius: "0 0 20px 20px" }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="top-info ps-3 d-flex align-items-center">
+              <small className="me-4 d-flex align-items-center">
+                <i className="fas fa-map-marker-alt me-2 text-warning" style={{ color: "#ffc107" }} />{" "}
+                <a href="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                  123 Model Town,Jalandhar
+                </a>
+              </small>
+              <small className="me-4 d-flex align-items-center">
+                <i className="fas fa-envelope me-2 text-warning" style={{ color: "#ffc107" }} />
+                <a href="mailto:admin@gmail.com" className="text-white text-decoration-none">
+                  admin@gmail.com
+                </a>
+              </small>
+            </div>
+            <div className="top-link pe-3 d-flex align-items-center">
+              <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <small className="text-white mx-1">Privacy Policy</small> /
+              </a>
+              <a href="/assets/Terms of use/Terms of Use.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <small className="text-white mx-1">Terms of Use</small> /
+              </a>
+              <a href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <small className="text-white ms-1">Sales and Refunds</small>
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Main Navbar */}
         <div className="container-fluid px-3 px-xl-4">
           <nav className="navbar navbar-light bg-white navbar-expand-xl py-2">
