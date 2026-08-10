@@ -22,7 +22,7 @@ function AdminHeader() {
     <>
       {/* Navbar start */}
       <div className="container-fluid fixed-top">
-        <div className="container topbar bg-primary d-none d-lg-block">
+        <div className="container-fluid topbar bg-primary d-none d-lg-block px-4">
           <div className="d-flex justify-content-between">
             <div className="top-info ps-2">
               <small className="me-3">
@@ -51,9 +51,9 @@ function AdminHeader() {
             </div>
           </div>
         </div>
-        <div className="container px-0">
+        <div className="container-fluid px-3 px-md-4">
           <nav className="navbar navbar-light bg-white navbar-expand-xl">
-            <Link to="/admin" className="navbar-brand d-flex align-items-center" onClick={closeNav}>
+            <Link to="/admin" className="navbar-brand d-flex align-items-center me-auto me-xl-3" onClick={closeNav}>
               <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
               <h1 className="text-primary display-6 mb-0">Aventra</h1>
             </Link>
@@ -65,7 +65,7 @@ function AdminHeader() {
             >
               <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
-            <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
+            <div className={`collapse navbar-collapse justify-content-end bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
               <div className="navbar-nav ms-auto py-2 py-xl-0 align-items-center text-nowrap gap-1 gap-xl-2">
                 <Link to="/admin" className={`nav-item nav-link px-2 ${location.pathname === '/admin' ? 'active text-primary fw-bold' : ''}`} onClick={closeNav}>
                   Dashboard
