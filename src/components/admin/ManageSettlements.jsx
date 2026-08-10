@@ -131,8 +131,8 @@ export default function ManageSettlements() {
       filterStatus === "all"
         ? true
         : filterStatus === "rejected"
-        ? item.status === "rejected" || item.status === "cancelled"
-        : item.status === filterStatus;
+          ? item.status === "rejected" || item.status === "cancelled"
+          : item.status === filterStatus;
 
     const matchesSearch =
       (item.businessName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -144,224 +144,226 @@ export default function ManageSettlements() {
   });
 
   return (
-    <div className="container-fluid py-4 px-4">
-      {/* Header section */}
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-          <h3 className="fw-bold text-dark mb-1">
-            <i className="fa-solid fa-money-check-dollar text-primary me-2"></i>
-            Vendor Settlement & Payout Authority
-          </h3>
-          <p className="text-muted mb-0">Review, approve, and process vendor payout requests and track disbursement history.</p>
+    <><br /><br /><br />
+      <div className="container-fluid py-4 px-4">
+        {/* Header section */}
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h3 className="fw-bold text-dark mb-1">
+              <i className="fa-solid fa-money-check-dollar text-primary me-2"></i>
+              Vendor Settlement & Payout Authority
+            </h3>
+            <p className="text-muted mb-0">Review, approve, and process vendor payout requests and track disbursement history.</p>
+          </div>
+          <button className="btn btn-outline-primary fw-bold" onClick={fetchSettlements}>
+            <i className="fa-solid fa-rotate me-2"></i> Refresh Data
+          </button>
         </div>
-        <button className="btn btn-outline-primary fw-bold" onClick={fetchSettlements}>
-          <i className="fa-solid fa-rotate me-2"></i> Refresh Data
-        </button>
+
+        {/* Summary Cards */}
+        <div className="row g-3 mb-4">
+          <div className="col-md-4">
+            <div className="card border-0 shadow-sm p-4 bg-warning text-white rounded-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <span className="text-white text-opacity-90 fw-bold small text-uppercase" style={{ letterSpacing: "0.5px" }}>Pending Approvals</span>
+                  <h2 className="fw-bold text-white mb-0 mt-1">₹{totalPendingAmount.toLocaleString()}</h2>
+                  <small className="text-white text-opacity-90 fw-medium">{pendingItems.length} payout request(s) queued</small>
+                </div>
+                <div className="bg-white text-warning p-3 rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: "54px", height: "54px" }}>
+                  <i className="fa-solid fa-clock fa-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="card border-0 shadow-sm p-4 bg-success text-white rounded-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <span className="text-white text-opacity-90 fw-bold small text-uppercase" style={{ letterSpacing: "0.5px" }}>Total Disbursed</span>
+                  <h2 className="fw-bold text-white mb-0 mt-1">₹{totalCompletedAmount.toLocaleString()}</h2>
+                  <small className="text-white text-opacity-90 fw-medium">{completedItems.length} completed payout(s)</small>
+                </div>
+                <div className="bg-white text-success p-3 rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: "54px", height: "54px" }}>
+                  <i className="fa-solid fa-circle-check fa-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="card border-0 shadow-sm p-4 bg-danger text-white rounded-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <span className="text-white text-opacity-90 fw-bold small text-uppercase" style={{ letterSpacing: "0.5px" }}>Rejected Requests</span>
+                  <h2 className="fw-bold text-white mb-0 mt-1">{rejectedItems.length}</h2>
+                  <small className="text-white text-opacity-90 fw-medium">Requests returned to vendor wallet</small>
+                </div>
+                <div className="bg-white text-danger p-3 rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: "54px", height: "54px" }}>
+                  <i className="fa-solid fa-circle-xmark fa-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Table Card */}
+        <div className="card border-0 shadow-sm bg-white rounded-3">
+          <div className="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            {/* Status Tabs */}
+            <div className="btn-group" role="group">
+              <button
+                type="button"
+                className={`btn btn-sm ${filterStatus === "pending" ? "btn-warning text-dark fw-bold" : "btn-outline-secondary"}`}
+                onClick={() => setFilterStatus("pending")}
+              >
+                Pending ({pendingItems.length})
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${filterStatus === "completed" ? "btn-success fw-bold" : "btn-outline-secondary"}`}
+                onClick={() => setFilterStatus("completed")}
+              >
+                Completed ({completedItems.length})
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${filterStatus === "rejected" ? "btn-danger fw-bold" : "btn-outline-secondary"}`}
+                onClick={() => setFilterStatus("rejected")}
+              >
+                Rejected ({rejectedItems.length})
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${filterStatus === "all" ? "btn-primary fw-bold" : "btn-outline-secondary"}`}
+                onClick={() => setFilterStatus("all")}
+              >
+                All Requests ({settlements.length})
+              </button>
+            </div>
+
+            {/* Search Box */}
+            <div className="input-group" style={{ maxWidth: "300px" }}>
+              <span className="input-group-text bg-light border-end-0">
+                <i className="fa-solid fa-magnifying-glass text-muted"></i>
+              </span>
+              <input
+                type="text"
+                className="form-control border-start-0 bg-light"
+                placeholder="Search vendor or remarks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="card-body p-0">
+            {loading ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status"></div>
+                <p className="mt-2 text-muted">Loading settlement requests...</p>
+              </div>
+            ) : filteredSettlements.length === 0 ? (
+              <div className="text-center py-5">
+                <i className="fa-solid fa-receipt fa-3x text-muted mb-3 opacity-50"></i>
+                <h5 className="text-secondary fw-semibold">No Settlement Requests Found</h5>
+                <p className="text-muted small">There are no records matching your current filter criteria.</p>
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-hover align-middle mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="ps-4">Request Date</th>
+                      <th>Vendor Store</th>
+                      <th>Bank Details</th>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th className="text-end pe-4">Actions / Authority</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSettlements.map((item, idx) => {
+                      const isPending = item.status === "pending";
+                      const isCompleted = item.status === "completed";
+                      const isRejected = item.status === "rejected" || item.status === "cancelled";
+
+                      return (
+                        <tr key={idx}>
+                          <td className="ps-4 text-muted small">
+                            {new Date(item.createdAt).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </td>
+                          <td>
+                            <div className="fw-bold text-dark">{item.businessName}</div>
+                            <small className="text-muted d-block">{item.ownerName} ({item.phone || item.email})</small>
+                          </td>
+                          <td>
+                            {item.bankAccountNo !== "N/A" ? (
+                              <small className="d-block text-dark">
+                                <i className="fa-solid fa-building-columns text-secondary me-1"></i>
+                                {item.bankName} - A/C: <strong>{item.bankAccountNo}</strong> <br />
+                                IFSC: <code>{item.bankIfsc}</code>
+                              </small>
+                            ) : (
+                              <span className="badge bg-light text-muted">Bank Details Pending</span>
+                            )}
+                          </td>
+                          <td>
+                            <span className="text-dark small fw-medium">{item.description}</span>
+                            {item.remarks && (
+                              <small className="d-block text-info mt-1">
+                                <i className="fa-solid fa-circle-info me-1"></i>Remarks: {item.remarks}
+                              </small>
+                            )}
+                          </td>
+                          <td>
+                            <span className="fw-bold text-dark fs-6">₹{Number(item.amount).toLocaleString()}</span>
+                          </td>
+                          <td>
+                            {isPending && <span className="badge bg-warning text-dark"><i className="fa-solid fa-clock me-1"></i>Pending Admin</span>}
+                            {isCompleted && <span className="badge bg-success"><i className="fa-solid fa-circle-check me-1"></i>Disbursed</span>}
+                            {isRejected && <span className="badge bg-danger"><i className="fa-solid fa-circle-xmark me-1"></i>Rejected</span>}
+                          </td>
+                          <td className="text-end pe-4">
+                            {isPending ? (
+                              <div className="btn-group">
+                                <button
+                                  className="btn btn-sm btn-success fw-semibold me-1 rounded"
+                                  title="Approve & Disburse Funds"
+                                  onClick={() => handleApprove(item)}
+                                >
+                                  <i className="fa-solid fa-check me-1"></i> Approve
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-outline-danger fw-semibold rounded"
+                                  title="Reject Payout Request"
+                                  onClick={() => handleReject(item)}
+                                >
+                                  <i className="fa-solid fa-xmark me-1"></i> Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-muted small">Processed</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-
-      {/* Summary Cards */}
-      <div className="row g-3 mb-4">
-        <div className="col-md-4">
-          <div className="card border-0 shadow-sm p-4 bg-warning bg-opacity-10 border-start border-warning border-4 rounded-3">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <span className="text-muted fw-semibold small text-uppercase">Pending Approvals</span>
-                <h2 className="fw-bold text-warning mb-0 mt-1">₹{totalPendingAmount.toLocaleString()}</h2>
-                <small className="text-muted">{pendingItems.length} payout request(s) queued</small>
-              </div>
-              <div className="bg-warning text-white p-3 rounded-circle">
-                <i className="fa-solid fa-clock fa-2x"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card border-0 shadow-sm p-4 bg-success bg-opacity-10 border-start border-success border-4 rounded-3">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <span className="text-muted fw-semibold small text-uppercase">Total Disbursed</span>
-                <h2 className="fw-bold text-success mb-0 mt-1">₹{totalCompletedAmount.toLocaleString()}</h2>
-                <small className="text-muted">{completedItems.length} completed payout(s)</small>
-              </div>
-              <div className="bg-success text-white p-3 rounded-circle">
-                <i className="fa-solid fa-circle-check fa-2x"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card border-0 shadow-sm p-4 bg-danger bg-opacity-10 border-start border-danger border-4 rounded-3">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <span className="text-muted fw-semibold small text-uppercase">Rejected Requests</span>
-                <h2 className="fw-bold text-danger mb-0 mt-1">{rejectedItems.length}</h2>
-                <small className="text-muted">Requests returned to vendor wallet</small>
-              </div>
-              <div className="bg-danger text-white p-3 rounded-circle">
-                <i className="fa-solid fa-circle-xmark fa-2x"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Table Card */}
-      <div className="card border-0 shadow-sm bg-white rounded-3">
-        <div className="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
-          {/* Status Tabs */}
-          <div className="btn-group" role="group">
-            <button
-              type="button"
-              className={`btn btn-sm ${filterStatus === "pending" ? "btn-warning text-dark fw-bold" : "btn-outline-secondary"}`}
-              onClick={() => setFilterStatus("pending")}
-            >
-              Pending ({pendingItems.length})
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${filterStatus === "completed" ? "btn-success fw-bold" : "btn-outline-secondary"}`}
-              onClick={() => setFilterStatus("completed")}
-            >
-              Completed ({completedItems.length})
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${filterStatus === "rejected" ? "btn-danger fw-bold" : "btn-outline-secondary"}`}
-              onClick={() => setFilterStatus("rejected")}
-            >
-              Rejected ({rejectedItems.length})
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${filterStatus === "all" ? "btn-primary fw-bold" : "btn-outline-secondary"}`}
-              onClick={() => setFilterStatus("all")}
-            >
-              All Requests ({settlements.length})
-            </button>
-          </div>
-
-          {/* Search Box */}
-          <div className="input-group" style={{ maxWidth: "300px" }}>
-            <span className="input-group-text bg-light border-end-0">
-              <i className="fa-solid fa-magnifying-glass text-muted"></i>
-            </span>
-            <input
-              type="text"
-              className="form-control border-start-0 bg-light"
-              placeholder="Search vendor or remarks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="card-body p-0">
-          {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status"></div>
-              <p className="mt-2 text-muted">Loading settlement requests...</p>
-            </div>
-          ) : filteredSettlements.length === 0 ? (
-            <div className="text-center py-5">
-              <i className="fa-solid fa-receipt fa-3x text-muted mb-3 opacity-50"></i>
-              <h5 className="text-secondary fw-semibold">No Settlement Requests Found</h5>
-              <p className="text-muted small">There are no records matching your current filter criteria.</p>
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th className="ps-4">Request Date</th>
-                    <th>Vendor Store</th>
-                    <th>Bank Details</th>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th className="text-end pe-4">Actions / Authority</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredSettlements.map((item, idx) => {
-                    const isPending = item.status === "pending";
-                    const isCompleted = item.status === "completed";
-                    const isRejected = item.status === "rejected" || item.status === "cancelled";
-
-                    return (
-                      <tr key={idx}>
-                        <td className="ps-4 text-muted small">
-                          {new Date(item.createdAt).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })}
-                        </td>
-                        <td>
-                          <div className="fw-bold text-dark">{item.businessName}</div>
-                          <small className="text-muted d-block">{item.ownerName} ({item.phone || item.email})</small>
-                        </td>
-                        <td>
-                          {item.bankAccountNo !== "N/A" ? (
-                            <small className="d-block text-dark">
-                              <i className="fa-solid fa-building-columns text-secondary me-1"></i>
-                              {item.bankName} - A/C: <strong>{item.bankAccountNo}</strong> <br />
-                              IFSC: <code>{item.bankIfsc}</code>
-                            </small>
-                          ) : (
-                            <span className="badge bg-light text-muted">Bank Details Pending</span>
-                          )}
-                        </td>
-                        <td>
-                          <span className="text-dark small fw-medium">{item.description}</span>
-                          {item.remarks && (
-                            <small className="d-block text-info mt-1">
-                              <i className="fa-solid fa-circle-info me-1"></i>Remarks: {item.remarks}
-                            </small>
-                          )}
-                        </td>
-                        <td>
-                          <span className="fw-bold text-dark fs-6">₹{Number(item.amount).toLocaleString()}</span>
-                        </td>
-                        <td>
-                          {isPending && <span className="badge bg-warning text-dark"><i className="fa-solid fa-clock me-1"></i>Pending Admin</span>}
-                          {isCompleted && <span className="badge bg-success"><i className="fa-solid fa-circle-check me-1"></i>Disbursed</span>}
-                          {isRejected && <span className="badge bg-danger"><i className="fa-solid fa-circle-xmark me-1"></i>Rejected</span>}
-                        </td>
-                        <td className="text-end pe-4">
-                          {isPending ? (
-                            <div className="btn-group">
-                              <button
-                                className="btn btn-sm btn-success fw-semibold me-1 rounded"
-                                title="Approve & Disburse Funds"
-                                onClick={() => handleApprove(item)}
-                              >
-                                <i className="fa-solid fa-check me-1"></i> Approve
-                              </button>
-                              <button
-                                className="btn btn-sm btn-outline-danger fw-semibold rounded"
-                                title="Reject Payout Request"
-                                onClick={() => handleReject(item)}
-                              >
-                                <i className="fa-solid fa-xmark me-1"></i> Reject
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="text-muted small">Processed</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
