@@ -138,19 +138,25 @@ export default function VendorWallet() {
                   {wallet.history.map((tx, idx) => (
                     <tr key={idx}>
                       <td className="ps-4 text-muted">
-                        {new Date(tx.createdAt || Date.now()).toLocaleDateString()}
+                        {new Date(tx.createdAt || Date.now()).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric"
+                        })}
                       </td>
                       <td className="fw-semibold text-dark">{tx.description || "Settlement / Earnings"}</td>
                       <td>
                         <span
                           className={`badge ${
-                            tx.type === "credit" ? "bg-success-subtle text-success" : "bg-primary-subtle text-primary"
+                            tx.type === "credit" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"
                           }`}
                         >
                           {tx.type === "credit" ? "+ Credit" : "- Debit"}
                         </span>
                       </td>
-                      <td className="fw-bold text-dark">₹{tx.amount?.toLocaleString()}</td>
+                      <td className={`fw-bold ${tx.type === "credit" ? "text-success" : "text-danger"}`}>
+                        {tx.type === "credit" ? "+" : "-"}₹{(tx.amount || 0).toLocaleString("en-IN")}
+                      </td>
                       <td className="text-end pe-4">
                         <span
                           className={`badge text-capitalize px-3 py-2 ${
