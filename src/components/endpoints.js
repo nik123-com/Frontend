@@ -148,6 +148,8 @@ export const admin_reject_vendor = "/api/vendor/reject";
 export const admin_toggle_block_vendor = "/api/vendor/toggleBlock";
 export const admin_allot_vendor_rank = "/api/vendor/allotRank";
 export const admin_revoke_vendor_rank = "/api/vendor/revokeRank";
+export const admin_all_settlements = "/api/vendor/settlements/all";
+export const admin_update_settlement_status = "/api/vendor/settlements/update-status";
 
 // Announcements
 export const admin_add_announcement = "/api/announcement/add";

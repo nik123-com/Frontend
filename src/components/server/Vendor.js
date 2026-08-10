@@ -6,6 +6,8 @@ import {
   admin_toggle_block_vendor,
   admin_allot_vendor_rank,
   admin_revoke_vendor_rank,
+  admin_all_settlements,
+  admin_update_settlement_status,
   vendor_check_reward,
   vendor_dismiss_reward,
   baseUrl
@@ -46,4 +48,12 @@ export function checkVendorRankReward(data = {}) {
 
 export function dismissVendorRewardPopup(data = {}) {
   return axios.post(baseUrl + vendor_dismiss_reward, data, getToken());
+}
+
+export function allSettlements(data = {}) {
+  return axios.post(baseUrl + admin_all_settlements, data, getToken());
+}
+
+export function updateSettlementStatus(data) {
+  return axios.post(baseUrl + admin_update_settlement_status, data, getToken());
 }

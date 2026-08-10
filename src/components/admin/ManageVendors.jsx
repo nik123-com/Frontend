@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { allVendor, approveVendor, rejectVendor, toggleBlockVendor, allotVendorRank, revokeVendorRank } from "../server/Vendor";
@@ -278,6 +279,9 @@ export default function ManageVendors() {
             <h3 className="fw-bold text-success mb-0">Manage Vendor Partners</h3>
             <p className="text-muted mb-0">Review vendor registration applications, GST/PAN compliance, and manage store access.</p>
           </div>
+          <Link to="/admin/managesettlements" className="btn btn-warning fw-bold text-dark px-3 py-2 shadow-sm">
+            <i className="fa-solid fa-money-check-dollar me-2"></i> Manage Vendor Settlements
+          </Link>
         </div>
 
         {/* Filter and Search Bar */}

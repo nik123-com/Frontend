@@ -376,6 +376,12 @@ export default function Admindashboard() {
                 >
                   Manage Vendors
                 </button>
+                <button
+                  className="btn btn-success text-white"
+                  onClick={() => navigate("/admin/managesettlements")}
+                >
+                  Manage Settlements
+                </button>
               </div>
             </div>
           </div>
