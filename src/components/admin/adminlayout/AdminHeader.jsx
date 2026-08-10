@@ -41,9 +41,9 @@ function AdminHeader() {
       {/* Navbar start */}
       <div className="container-fluid fixed-top px-0" ref={navRef}>
         {/* Main Navbar */}
-        <div className="container px-0">
+        <div className="container-fluid px-3 px-xl-4">
           <nav className="navbar navbar-light bg-white navbar-expand-xl py-2">
-            <Link to="/admin" className="navbar-brand d-flex align-items-center me-3 me-xxl-4" onClick={closeNav}>
+            <Link to="/admin" className="navbar-brand d-flex align-items-center me-3 me-xxl-4 flex-shrink-0" onClick={closeNav}>
               <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
               <h1 className="text-primary display-6 mb-0 fw-bold" style={{ color: "#81c408" }}>Aventra</h1>
             </Link>
@@ -186,9 +186,9 @@ function AdminHeader() {
               </div>
 
               {/* Action Icons & Logout */}
-              <div className="d-flex m-3 me-0 align-items-center position-relative">
+              <div className="d-flex my-2 my-xl-0 ms-auto align-items-center position-relative flex-shrink-0">
                 <button
-                  className="btn-search btn border border-warning btn-md-square rounded-circle bg-white me-4"
+                  className="btn-search btn border border-warning btn-md-square rounded-circle bg-white me-3 me-xl-4"
                   data-bs-toggle="modal"
                   data-bs-target="#searchModal"
                   onClick={closeNav}
@@ -197,13 +197,13 @@ function AdminHeader() {
                   <i className="fas fa-search text-warning" style={{ color: "#ffc107" }} />
                 </button>
 
-                <Link to="/admin/manageorder" className="position-relative me-4 my-auto" onClick={closeNav} title="Manage Orders">
+                <Link to="/admin/manageorder" className="position-relative me-3 me-xl-4 my-auto" onClick={closeNav} title="Manage Orders">
                   <i className="fa fa-shopping-bag fa-2x text-primary" style={{ color: "#81c408" }} />
                 </Link>
 
                 {sessionStorage.getItem("isLogin") === "true" ? (
                   <button
-                    className="btn btn-primary text-white m-1 rounded-pill px-4 py-2 fw-bold shadow-sm"
+                    className="btn btn-primary text-white m-1 rounded-pill px-3 px-xl-4 py-2 fw-bold text-nowrap flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
                     onClick={handleLogout}
                   >
@@ -212,7 +212,7 @@ function AdminHeader() {
                 ) : (
                   <Link
                     to="/Login"
-                    className="btn btn-primary text-white m-1 rounded-pill px-4 py-2 fw-bold text-decoration-none shadow-sm"
+                    className="btn btn-primary text-white m-1 rounded-pill px-3 px-xl-4 py-2 fw-bold text-decoration-none text-nowrap flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
                     onClick={closeNav}
                   >
