@@ -1,11 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 function AdminHeader() {
   const location = useLocation();
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const navRef = useRef(null);
 
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
@@ -25,46 +24,65 @@ function AdminHeader() {
     window.location.href = "/Login";
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (navRef.current && !navRef.current.contains(e.target)) {
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <>
       {/* Navbar start */}
-      <div className="container-fluid fixed-top px-0" ref={navRef}>
+      <div className="container-fluid fixed-top px-0 bg-white shadow-sm">
         {/* Topbar */}
-        <div className="container topbar bg-primary d-none d-lg-block" style={{ borderRadius: "0 0 20px 20px" }}>
+        <div
+          className="container topbar d-none d-lg-block"
+          style={{
+            backgroundColor: "#81c408",
+            borderRadius: "0 0 20px 20px",
+            padding: "8px 24px"
+          }}
+        >
           <div className="d-flex justify-content-between align-items-center">
-            <div className="top-info ps-3 d-flex align-items-center">
+            <div className="top-info d-flex align-items-center">
               <small className="me-4 d-flex align-items-center">
-                <i className="fas fa-map-marker-alt me-2 text-warning" style={{ color: "#ffc107" }} />{" "}
-                <a href="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+                <i className="fas fa-map-marker-alt me-2" style={{ color: "#ffc107" }} />
+                <a
+                  href="https://maps.app.goo.gl/J85uiPMzs2s3Vfu1A"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white text-decoration-none fw-medium"
+                >
                   123 Model Town,Jalandhar
                 </a>
               </small>
               <small className="me-4 d-flex align-items-center">
-                <i className="fas fa-envelope me-2 text-warning" style={{ color: "#ffc107" }} />
-                <a href="mailto:admin@gmail.com" className="text-white text-decoration-none">
+                <i className="fas fa-envelope me-2" style={{ color: "#ffc107" }} />
+                <a
+                  href="mailto:admin@gmail.com"
+                  className="text-white text-decoration-none fw-medium"
+                >
                   admin@gmail.com
                 </a>
               </small>
             </div>
-            <div className="top-link pe-3 d-flex align-items-center">
-              <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+            <div className="top-link d-flex align-items-center">
+              <a
+                href="/assets/privacyPolicy/Privacy.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white text-decoration-none"
+              >
                 <small className="text-white mx-1">Privacy Policy</small> /
               </a>
-              <a href="/assets/Terms of use/Terms of Use.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+              <a
+                href="/assets/Terms of use/Terms of Use.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white text-decoration-none"
+              >
                 <small className="text-white mx-1">Terms of Use</small> /
               </a>
-              <a href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">
+              <a
+                href="/assets/Sales and Refunds/Sales and Refunds Policy.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white text-decoration-none"
+              >
                 <small className="text-white ms-1">Sales and Refunds</small>
               </a>
             </div>
@@ -72,43 +90,46 @@ function AdminHeader() {
         </div>
 
         {/* Main Navbar */}
-        <div className="container-fluid px-3 px-xl-4">
-          <nav className="navbar navbar-light bg-white navbar-expand-xl py-2">
-            <Link to="/admin" className="navbar-brand d-flex align-items-center me-3 me-xxl-4 flex-shrink-0" onClick={closeNav}>
-              <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "45px", marginRight: "10px" }} />
-              <h1 className="text-primary display-6 mb-0 fw-bold" style={{ color: "#81c408" }}>Aventra</h1>
+        <div className="container px-0">
+          <nav className="navbar navbar-light bg-white navbar-expand-xl py-2 px-3 px-lg-0">
+            {/* Brand Logo & Title */}
+            <Link to="/admin" className="navbar-brand d-flex align-items-center me-3 me-xxl-4" onClick={closeNav}>
+              <img src="/assets/img/Logo.png" alt="Aventra Logo" style={{ height: "42px", marginRight: "10px" }} />
+              <h1 className="display-6 mb-0 fw-bold" style={{ color: "#81c408", letterSpacing: "-0.5px" }}>
+                Aventra
+              </h1>
             </Link>
 
             <button
-              className="navbar-toggler py-2 px-3"
+              className="navbar-toggler py-2 px-3 border-0"
               type="button"
               onClick={handleNavCollapse}
               aria-label="Toggle navigation"
             >
-              <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
+              <span className={`fa ${isNavCollapsed ? "fa-bars" : "fa-times"}`} style={{ color: "#81c408", fontSize: "1.3rem" }} />
             </button>
 
-            <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
-              {/* Navigation links on LEFT side */}
+            <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? "" : "show"}`} id="navbarCollapse">
+              {/* Navigation links */}
               <div className="navbar-nav me-auto py-2 py-xl-0 align-items-center text-nowrap gap-1">
                 <Link
                   to="/admin"
-                  className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin' ? 'active' : ''}`}
+                  className={`nav-item nav-link px-3 py-2 ${location.pathname === "/admin" || location.pathname === "/admin/" ? "active" : ""}`}
                   onClick={closeNav}
                 >
                   Home
                 </Link>
 
                 {/* Category Dropdown */}
-                <div className={`nav-item dropdown ${openDropdown === 'category' ? 'show' : ''}`}>
+                <div className={`nav-item dropdown ${openDropdown === "category" ? "show" : ""}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('category') ? 'active' : ''}`}
-                    onClick={(e) => toggleDropdown('category', e)}
+                    className={`nav-link dropdown-toggle px-3 py-2 d-flex align-items-center ${location.pathname.toLowerCase().includes("category") ? "active" : ""}`}
+                    onClick={(e) => toggleDropdown("category", e)}
                   >
                     Category
                   </a>
-                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow ${openDropdown === 'category' ? 'show d-block' : ''}`}>
+                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow-lg ${openDropdown === "category" ? "show d-block" : ""}`}>
                     <Link to="/admin/addcategory" className="dropdown-item py-2 px-3" onClick={closeNav}>
                       <i className="fa-solid fa-plus me-2 text-muted small"></i>Add Category
                     </Link>
@@ -119,15 +140,15 @@ function AdminHeader() {
                 </div>
 
                 {/* Product Dropdown */}
-                <div className={`nav-item dropdown ${openDropdown === 'product' ? 'show' : ''}`}>
+                <div className={`nav-item dropdown ${openDropdown === "product" ? "show" : ""}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('product') ? 'active' : ''}`}
-                    onClick={(e) => toggleDropdown('product', e)}
+                    className={`nav-link dropdown-toggle px-3 py-2 d-flex align-items-center ${location.pathname.toLowerCase().includes("product") ? "active" : ""}`}
+                    onClick={(e) => toggleDropdown("product", e)}
                   >
                     Product
                   </a>
-                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow ${openDropdown === 'product' ? 'show d-block' : ''}`}>
+                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow-lg ${openDropdown === "product" ? "show d-block" : ""}`}>
                     <Link to="/admin/addproduct" className="dropdown-item py-2 px-3" onClick={closeNav}>
                       <i className="fa-solid fa-plus me-2 text-muted small"></i>Add Product
                     </Link>
@@ -138,15 +159,15 @@ function AdminHeader() {
                 </div>
 
                 {/* Brand Dropdown */}
-                <div className={`nav-item dropdown ${openDropdown === 'brand' ? 'show' : ''}`}>
+                <div className={`nav-item dropdown ${openDropdown === "brand" ? "show" : ""}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('brand') ? 'active' : ''}`}
-                    onClick={(e) => toggleDropdown('brand', e)}
+                    className={`nav-link dropdown-toggle px-3 py-2 d-flex align-items-center ${location.pathname.toLowerCase().includes("brand") ? "active" : ""}`}
+                    onClick={(e) => toggleDropdown("brand", e)}
                   >
                     Brand
                   </a>
-                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow ${openDropdown === 'brand' ? 'show d-block' : ''}`}>
+                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow-lg ${openDropdown === "brand" ? "show d-block" : ""}`}>
                     <Link to="/admin/addbrand" className="dropdown-item py-2 px-3" onClick={closeNav}>
                       <i className="fa-solid fa-plus me-2 text-muted small"></i>Add Brand
                     </Link>
@@ -158,7 +179,7 @@ function AdminHeader() {
 
                 <Link
                   to="/admin/customermanage"
-                  className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/customermanage' ? 'active' : ''}`}
+                  className={`nav-item nav-link px-3 py-2 ${location.pathname === "/admin/customermanage" ? "active" : ""}`}
                   onClick={closeNav}
                 >
                   Customers
@@ -166,22 +187,22 @@ function AdminHeader() {
 
                 <Link
                   to="/admin/managevendors"
-                  className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/managevendors' ? 'active' : ''}`}
+                  className={`nav-item nav-link px-3 py-2 ${location.pathname === "/admin/managevendors" ? "active" : ""}`}
                   onClick={closeNav}
                 >
                   Vendors
                 </Link>
 
                 {/* Coupon Dropdown */}
-                <div className={`nav-item dropdown ${openDropdown === 'coupon' ? 'show' : ''}`}>
+                <div className={`nav-item dropdown ${openDropdown === "coupon" ? "show" : ""}`}>
                   <a
                     href="#"
-                    className={`nav-link dropdown-toggle px-2 px-xxl-3 ${location.pathname.toLowerCase().includes('coupon') ? 'active' : ''}`}
-                    onClick={(e) => toggleDropdown('coupon', e)}
+                    className={`nav-link dropdown-toggle px-3 py-2 d-flex align-items-center ${location.pathname.toLowerCase().includes("coupon") ? "active" : ""}`}
+                    onClick={(e) => toggleDropdown("coupon", e)}
                   >
                     Coupon
                   </a>
-                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow ${openDropdown === 'coupon' ? 'show d-block' : ''}`}>
+                  <div className={`dropdown-menu m-0 border-0 bg-white rounded-3 shadow-lg ${openDropdown === "coupon" ? "show d-block" : ""}`}>
                     <Link to="/admin/addCoupon" className="dropdown-item py-2 px-3" onClick={closeNav}>
                       <i className="fa-solid fa-plus me-2 text-muted small"></i>Add Coupon
                     </Link>
@@ -193,23 +214,21 @@ function AdminHeader() {
 
                 <Link
                   to="/admin/manageorder"
-                  className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/manageorder' ? 'active' : ''}`}
+                  className={`nav-item nav-link px-3 py-2 ${location.pathname === "/admin/manageorder" ? "active" : ""}`}
                   onClick={closeNav}
                 >
                   Orders
                 </Link>
-
                 <Link
                   to="/admin/managequeries"
-                  className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/managequeries' ? 'active' : ''}`}
+                  className={`nav-item nav-link px-3 py-2 ${location.pathname === "/admin/managequeries" ? "active" : ""}`}
                   onClick={closeNav}
                 >
                   Queries
                 </Link>
-
                 <Link
                   to="/admin/announcements"
-                  className={`nav-item nav-link px-2 px-xxl-3 ${location.pathname === '/admin/announcements' ? 'active' : ''}`}
+                  className={`nav-item nav-link px-3 py-2 ${location.pathname === "/admin/announcements" ? "active" : ""}`}
                   onClick={closeNav}
                 >
                   Announcements
@@ -217,25 +236,36 @@ function AdminHeader() {
               </div>
 
               {/* Action Icons & Logout */}
-              <div className="d-flex my-2 my-xl-0 ms-auto align-items-center position-relative flex-shrink-0">
+              <div className="d-flex align-items-center position-relative my-2 my-xl-0 ms-xl-2">
                 <button
-                  className="btn-search btn border border-warning btn-md-square rounded-circle bg-white me-3 me-xl-4"
+                  className="btn btn-md-square rounded-circle bg-white me-3 d-flex align-items-center justify-content-center shadow-sm"
+                  style={{
+                    width: "42px",
+                    height: "42px",
+                    border: "1.5px solid #ffc107",
+                    cursor: "pointer"
+                  }}
                   data-bs-toggle="modal"
                   data-bs-target="#searchModal"
                   onClick={closeNav}
                   title="Search"
                 >
-                  <i className="fas fa-search text-warning" style={{ color: "#ffc107" }} />
+                  <i className="fas fa-search" style={{ color: "#ffc107", fontSize: "1rem" }} />
                 </button>
 
-                <Link to="/admin/manageorder" className="position-relative me-3 me-xl-4 my-auto" onClick={closeNav} title="Manage Orders">
-                  <i className="fa fa-shopping-bag fa-2x text-primary" style={{ color: "#81c408" }} />
+                <Link
+                  to="/admin/manageorder"
+                  className="position-relative me-3 my-auto d-flex align-items-center text-decoration-none"
+                  onClick={closeNav}
+                  title="Manage Orders"
+                >
+                  <i className="fa fa-shopping-bag" style={{ color: "#81c408", fontSize: "1.65rem" }} />
                 </Link>
 
                 {sessionStorage.getItem("isLogin") === "true" ? (
                   <button
-                    className="btn btn-primary text-white m-1 rounded-pill px-3 px-xl-4 py-2 fw-bold text-nowrap flex-shrink-0 shadow-sm"
-                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
+                    className="btn text-white rounded-pill px-4 py-2 fw-bold shadow-sm"
+                    style={{ backgroundColor: "#81c408", borderColor: "#81c408", fontSize: "0.95rem" }}
                     onClick={handleLogout}
                   >
                     Logout
@@ -243,11 +273,11 @@ function AdminHeader() {
                 ) : (
                   <Link
                     to="/Login"
-                    className="btn btn-primary text-white m-1 rounded-pill px-3 px-xl-4 py-2 fw-bold text-decoration-none text-nowrap flex-shrink-0 shadow-sm"
-                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
+                    className="btn text-white rounded-pill px-4 py-2 fw-bold text-decoration-none shadow-sm"
+                    style={{ backgroundColor: "#81c408", borderColor: "#81c408", fontSize: "0.95rem" }}
                     onClick={closeNav}
                   >
-                    Login
+                    Logout
                   </Link>
                 )}
               </div>
@@ -257,7 +287,6 @@ function AdminHeader() {
       </div>
       {/* Navbar End */}
 
-      {/* Modal Search */}
       <div
         className="modal fade"
         id="searchModal"

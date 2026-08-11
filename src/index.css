@@ -83,11 +83,11 @@ body {
 
 /* Responsive main content offset for fixed header */
 .page-content-offset {
-  padding-top: 95px;
+  padding-top: 115px;
 }
 
 .admin-page-content-offset {
-  padding-top: 95px;
+  padding-top: 115px;
 }
 
 .hero-header,
