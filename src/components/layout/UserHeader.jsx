@@ -194,26 +194,19 @@ function UserHeader() {
     };
   }, [location, isLogin]);
 
-  // Auto-close notification dropdown when user scrolls down the page or clicks outside
+  // Auto-close notification drawer on escape key press
   useEffect(() => {
     if (!showNotifDropdown) return;
 
-    const handleScroll = () => {
-      setShowNotifDropdown(false);
-    };
-
-    const handleClickOutside = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
         setShowNotifDropdown(false);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    document.addEventListener("mousedown", handleClickOutside);
-
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [showNotifDropdown]);
 
@@ -328,154 +321,229 @@ function UserHeader() {
                       )}
                     </button>
 
-                    {/* Dropdown Popup */}
+                    {/* Slide-In Left Notification Drawer & Backdrop Overlay */}
                     {showNotifDropdown && (
-                      <div
-                        className="position-absolute bg-white rounded-4 shadow-lg border p-3 mt-2"
-                        style={{
-                          right: 0,
-                          top: "100%",
-                          width: "340px",
-                          maxHeight: "420px",
-                          overflowY: "auto",
-                          zIndex: 1100
-                        }}
-                      >
-                        <div className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                          <h6 className="fw-bold mb-0 text-dark">Notifications</h6>
-                          {notifications.length > 0 && (
-                            <button
-                              type="button"
-                              className="btn btn-link btn-sm p-0 text-danger text-decoration-none fw-semibold"
-                              style={{ fontSize: "0.8rem" }}
-                              onClick={() => handleClearNotification(null)}
-                            >
-                              Clear All
-                            </button>
-                          )}
-                        </div>
+                      <>
+                        <style>{`
+                          @keyframes notifSlideInLeft {
+                            from { transform: translateX(-100%); }
+                            to { transform: translateX(0); }
+                          }
+                          @keyframes notifFadeIn {
+                            from { opacity: 0; }
+                            to { opacity: 1; }
+                          }
+                          .notif-drawer-scroll::-webkit-scrollbar {
+                            width: 5px;
+                          }
+                          .notif-drawer-scroll::-webkit-scrollbar-thumb {
+                            background: #cbd5e1;
+                            border-radius: 4px;
+                          }
+                          .notif-item-card {
+                            transition: all 0.2s ease-in-out;
+                          }
+                          .notif-item-card:hover {
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+                          }
+                        `}</style>
 
-                        {notifications.length > 0 ? (
-                          notifications.map((notif) => (
-                            <div
-                              key={notif._id}
-                              className={`p-2 mb-2 rounded-3 border position-relative ${
-                                notif.status === "pending" ? "bg-light" : "bg-white"
-                              }`}
-                              style={{ cursor: notif.productId ? "pointer" : "default" }}
-                              onClick={() => {
-                                if (notif.productId) {
-                                  const prodId = notif.productId._id || notif.productId;
-                                  navigate(`/ShopDetail/${prodId}`);
-                                  setShowNotifDropdown(false);
-                                }
-                              }}
-                            >
-                              <button
-                                type="button"
-                                className="btn-close position-absolute"
-                                style={{ top: "8px", right: "8px", fontSize: "0.65rem" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleClearNotification(notif._id, notif.type);
-                                }}
-                                title="Clear notification"
-                              />
-                              <div className="d-flex align-items-start gap-2 pe-3">
-                                <div
-                                  className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 mt-1"
-                                  style={{
-                                    width: "30px",
-                                    height: "30px",
-                                    background:
-                                      notif.type === "announcement"
-                                        ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
-                                        : notif.type === "rank_allotment"
-                                        ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
-                                        : notif.type === "wishlist_invite"
-                                        ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
-                                        : notif.type === "review_reply"
-                                        ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-                                        : notif.type === "invite_accepted"
-                                        ? "#10b981"
-                                        : notif.type === "stock_available"
-                                        ? "#0c831f"
-                                        : "#ef4444",
-                                    fontSize: "0.8rem"
-                                  }}
-                                >
-                                  <i
-                                    className={`fa-solid ${
-                                      notif.type === "announcement"
-                                        ? "fa-bullhorn"
-                                        : notif.type === "rank_allotment"
-                                        ? "fa-award"
-                                        : notif.type === "wishlist_invite"
-                                        ? "fa-user-plus"
-                                        : notif.type === "review_reply"
-                                        ? "fa-reply"
-                                        : notif.type === "invite_accepted"
-                                        ? "fa-circle-check"
-                                        : notif.type === "stock_available"
-                                        ? "fa-box-open"
-                                        : "fa-circle-xmark"
-                                    }`}
-                                  ></i>
-                                </div>
-                                <div className="flex-grow-1">
-                                  <p className="small mb-1 text-dark fw-medium" style={{ lineHeight: "1.3" }}>
-                                    {notif.message}
-                                  </p>
-                                  <small className="text-muted d-block mb-2" style={{ fontSize: "0.75rem" }}>
-                                    {new Date(notif.createdAt).toLocaleDateString()}{" "}
-                                    {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                  </small>
+                        {/* Backdrop */}
+                        <div
+                          className="position-fixed top-0 start-0 w-100 h-100"
+                          style={{
+                            backgroundColor: "rgba(15, 23, 42, 0.45)",
+                            backdropFilter: "blur(4px)",
+                            zIndex: 1200,
+                            animation: "notifFadeIn 0.25s ease-out"
+                          }}
+                          onClick={() => setShowNotifDropdown(false)}
+                        />
 
-                                  {/* Actions for Wishlist Invites */}
-                                  {notif.type === "wishlist_invite" && notif.status === "pending" && (
-                                    <div className="d-flex gap-2 mt-1">
-                                      <button
-                                        className="btn btn-sm text-white rounded-pill px-3 py-1 fw-semibold shadow-sm"
-                                        style={{ 
-                                          background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
-                                          fontSize: "0.8rem",
-                                          border: "none"
-                                        }}
-                                        onClick={() => handleRespond(notif._id, "accept")}
-                                      >
-                                        Accept
-                                      </button>
-                                      <button
-                                        className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold"
-                                        style={{ fontSize: "0.8rem" }}
-                                        onClick={() => handleRespond(notif._id, "reject")}
-                                      >
-                                        Reject
-                                      </button>
-                                    </div>
-                                  )}
-
-                                  {notif.status !== "pending" && (
-                                    <span
-                                      className={`badge ${
-                                        notif.status === "accepted" ? "bg-success" : "bg-secondary"
-                                      } rounded-pill px-2 py-1`}
-                                      style={{ fontSize: "0.7rem" }}
-                                    >
-                                      {notif.status.toUpperCase()}
-                                    </span>
-                                  )}
-                                </div>
+                        {/* Offcanvas Left Drawer Panel */}
+                        <div
+                          className="position-fixed top-0 start-0 h-100 bg-white shadow-lg d-flex flex-column"
+                          style={{
+                            width: "380px",
+                            maxWidth: "88vw",
+                            zIndex: 1201,
+                            animation: "notifSlideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                            borderRight: "1px solid #e2e8f0"
+                          }}
+                        >
+                          {/* Drawer Header */}
+                          <div className="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
+                            <div className="d-flex align-items-center gap-2">
+                              <div
+                                className="rounded-circle d-flex align-items-center justify-content-center text-white"
+                                style={{ width: "36px", height: "36px", backgroundColor: "#81c408" }}
+                              >
+                                <i className="fa-solid fa-bell fs-5"></i>
+                              </div>
+                              <div>
+                                <h6 className="fw-bold mb-0 text-dark">Notifications</h6>
+                                <small className="text-muted" style={{ fontSize: "0.75rem" }}>
+                                  {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
+                                </small>
                               </div>
                             </div>
-                          ))
-                        ) : (
-                          <div className="d-flex flex-column align-items-center justify-content-center py-4 text-muted text-center w-100">
-                            <i className="fa-regular fa-bell-slash fs-2 mb-2 d-block text-secondary"></i>
-                            <p className="small mb-0 text-muted fw-medium">No notifications found</p>
+
+                            <div className="d-flex align-items-center gap-2">
+                              {notifications.length > 0 && (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-danger rounded-pill px-2.5 py-1 text-decoration-none fw-semibold"
+                                  style={{ fontSize: "0.75rem" }}
+                                  onClick={() => handleClearNotification(null)}
+                                >
+                                  Clear All
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="btn-close ms-1"
+                                aria-label="Close"
+                                onClick={() => setShowNotifDropdown(false)}
+                              />
+                            </div>
                           </div>
-                        )}
-                      </div>
+
+                          {/* Drawer Body - Notification List */}
+                          <div className="p-3 flex-grow-1 overflow-auto notif-drawer-scroll">
+                            {notifications.length > 0 ? (
+                              notifications.map((notif) => (
+                                <div
+                                  key={notif._id}
+                                  className={`p-3 mb-2.5 rounded-3 border position-relative notif-item-card ${
+                                    notif.status === "pending" ? "bg-light border-success-subtle" : "bg-white"
+                                  }`}
+                                  style={{ cursor: notif.productId ? "pointer" : "default" }}
+                                  onClick={() => {
+                                    if (notif.productId) {
+                                      const prodId = notif.productId._id || notif.productId;
+                                      navigate(`/ShopDetail/${prodId}`);
+                                      setShowNotifDropdown(false);
+                                    }
+                                  }}
+                                >
+                                  <button
+                                    type="button"
+                                    className="btn-close position-absolute"
+                                    style={{ top: "10px", right: "10px", fontSize: "0.65rem" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleClearNotification(notif._id, notif.type);
+                                    }}
+                                    title="Clear notification"
+                                  />
+                                  <div className="d-flex align-items-start gap-2.5 pe-3">
+                                    <div
+                                      className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 mt-0.5"
+                                      style={{
+                                        width: "32px",
+                                        height: "32px",
+                                        background:
+                                          notif.type === "announcement"
+                                            ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
+                                            : notif.type === "rank_allotment"
+                                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                                            : notif.type === "wishlist_invite"
+                                            ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
+                                            : notif.type === "review_reply"
+                                            ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                                            : notif.type === "invite_accepted"
+                                            ? "#10b981"
+                                            : notif.type === "stock_available"
+                                            ? "#0c831f"
+                                            : "#ef4444",
+                                        fontSize: "0.85rem"
+                                      }}
+                                    >
+                                      <i
+                                        className={`fa-solid ${
+                                          notif.type === "announcement"
+                                            ? "fa-bullhorn"
+                                            : notif.type === "rank_allotment"
+                                            ? "fa-award"
+                                            : notif.type === "wishlist_invite"
+                                            ? "fa-user-plus"
+                                            : notif.type === "review_reply"
+                                            ? "fa-reply"
+                                            : notif.type === "invite_accepted"
+                                            ? "fa-circle-check"
+                                            : notif.type === "stock_available"
+                                            ? "fa-box-open"
+                                            : "fa-circle-xmark"
+                                        }`}
+                                      ></i>
+                                    </div>
+                                    <div className="flex-grow-1">
+                                      <p className="small mb-1 text-dark fw-medium" style={{ lineHeight: "1.35", fontSize: "0.85rem" }}>
+                                        {notif.message}
+                                      </p>
+                                      <small className="text-muted d-block mb-2" style={{ fontSize: "0.72rem" }}>
+                                        {new Date(notif.createdAt).toLocaleDateString()}{" "}
+                                        {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                      </small>
+
+                                      {/* Actions for Wishlist Invites */}
+                                      {notif.type === "wishlist_invite" && notif.status === "pending" && (
+                                        <div className="d-flex gap-2 mt-1">
+                                          <button
+                                            className="btn btn-sm text-white rounded-pill px-3 py-1 fw-semibold shadow-sm"
+                                            style={{ 
+                                              background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
+                                              fontSize: "0.78rem",
+                                              border: "none"
+                                            }}
+                                            onClick={() => handleRespond(notif._id, "accept")}
+                                          >
+                                            Accept
+                                          </button>
+                                          <button
+                                            className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold"
+                                            style={{ fontSize: "0.78rem" }}
+                                            onClick={() => handleRespond(notif._id, "reject")}
+                                          >
+                                            Reject
+                                          </button>
+                                        </div>
+                                      )}
+
+                                      {notif.status !== "pending" && (
+                                        <span
+                                          className={`badge ${
+                                            notif.status === "accepted" ? "bg-success" : "bg-secondary"
+                                          } rounded-pill px-2 py-1`}
+                                          style={{ fontSize: "0.7rem" }}
+                                        >
+                                          {notif.status.toUpperCase()}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="d-flex flex-column align-items-center justify-content-center py-5 text-muted text-center w-100 h-100">
+                                <div className="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style={{ width: "60px", height: "60px" }}>
+                                  <i className="fa-regular fa-bell-slash fs-2 text-secondary"></i>
+                                </div>
+                                <h6 className="fw-semibold text-dark mb-1">No notifications</h6>
+                                <p className="small mb-0 text-muted" style={{ fontSize: "0.8rem" }}>When you receive notifications, they will appear here.</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Drawer Footer */}
+                          <div className="p-2 border-top bg-light text-center">
+                            <small className="text-muted" style={{ fontSize: "0.75rem" }}>
+                              Showing {notifications.length} notification{notifications.length === 1 ? "" : "s"}
+                            </small>
+                          </div>
+                        </div>
+                      </>
                     )}
                   </div>
                 )}

@@ -145,7 +145,7 @@ export default function ManageSettlements() {
 
   return (
     <>
-    <br /><br /><br />
+      <br /><br /><br />
       <div className="container-fluid py-4 px-4">
         {/* Header section */}
         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
