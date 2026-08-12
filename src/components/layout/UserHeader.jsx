@@ -265,7 +265,7 @@ function UserHeader() {
               <span className={`fa ${isNavCollapsed ? 'fa-bars' : 'fa-times'} text-primary`} />
             </button>
             <div className={`collapse navbar-collapse bg-white ${isNavCollapsed ? '' : 'show'}`} id="navbarCollapse">
-              <div className="navbar-nav mx-auto align-items-center gap-1 gap-xl-2">
+              <div className="navbar-nav me-auto ms-3 ms-xl-4 align-items-center gap-1 gap-xl-2">
                 <Link to="/" className={`nav-item nav-link px-3 py-2 ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Home
                 </Link>

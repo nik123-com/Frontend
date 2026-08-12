@@ -132,12 +132,20 @@
 }
 
 .navbar .navbar-nav .nav-link {
-    padding: 8px 14px;
-    font-size: 14.5px;
+    padding: 6px 10px;
+    font-size: 13.5px;
     font-weight: 500;
     color: #475569;
-    border-radius: 10px;
+    border-radius: 8px;
+    white-space: nowrap;
     transition: all 0.2s ease-in-out;
+}
+
+@media (min-width: 1400px) {
+    .navbar .navbar-nav .nav-link {
+        padding: 8px 12px;
+        font-size: 14.5px;
+    }
 }
 
 .navbar .navbar-nav .nav-link:hover,
@@ -150,22 +158,59 @@
 }
 
 .btn-search {
-    border-color: #ffc107 !important;
+    border: 1.5px solid #ffc107 !important;
     color: #ffc107 !important;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50% !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-search:hover {
     background-color: #fff9e6 !important;
+    transform: scale(1.05);
+}
+
+.btn-logout {
+    background-color: #81c408 !important;
+    border-color: #81c408 !important;
+    color: #ffffff !important;
+    border-radius: 50px !important;
+    font-weight: 700 !important;
+    padding: 7px 20px !important;
+    font-size: 0.9rem;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 12px rgba(129, 196, 8, 0.25);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-logout:hover {
+    background-color: #71ae07 !important;
+    border-color: #71ae07 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(129, 196, 8, 0.35);
+    transform: translateY(-1px);
 }
 
 .navbar .dropdown-toggle::after {
-    border: none;
-    content: "\f107";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 700;
+    border: none !important;
+    content: "\f107" !important;
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif !important;
+    font-weight: 900 !important;
     vertical-align: middle;
-    margin-left: 6px;
-    font-size: 0.8rem;
+    margin-left: 5px;
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.dropdown.show .dropdown-toggle::after,
+.dropdown:hover .dropdown-toggle::after {
+    transform: rotate(180deg);
 }
 
 @media (min-width: 1200px) {
@@ -606,43 +651,46 @@
 
 /* Green Modal & White Text Utility Classes */
 .placeholder-white::placeholder {
-  color: rgba(255, 255, 255, 0.75) !important;
-  opacity: 1 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    opacity: 1 !important;
 }
+
 .modal-green-input {
-  background-color: #619504 !important;
-  color: #ffffff !important;
-  border: 2px solid #ffffff !important;
+    background-color: #619504 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
 }
+
 .modal-green-input:focus {
-  background-color: #538103 !important;
-  color: #ffffff !important;
-  border-color: #ffffff !important;
-  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.4) !important;
+    background-color: #538103 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Force ReactModal outer card box to Green */
-.green-modal-box, .ReactModal__Content {
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  margin-right: -50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: 90% !important;
-  max-width: 620px !important;
-  border-radius: 20px !important;
-  padding: 30px !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
-  background-color: #81c408 !important;
-  background: #81c408 !important;
-  color: #ffffff !important;
-  border: 3px solid #ffffff !important;
-  outline: none !important;
+.green-modal-box,
+.ReactModal__Content {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin-right: -50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 620px !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+    background-color: #81c408 !important;
+    background: #81c408 !important;
+    color: #ffffff !important;
+    border: 3px solid #ffffff !important;
+    outline: none !important;
 }
 
 .ReactModal__Overlay {
-  background-color: rgba(0, 0, 0, 0.75) !important;
-  z-index: 1050 !important;
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    z-index: 1050 !important;
 }
