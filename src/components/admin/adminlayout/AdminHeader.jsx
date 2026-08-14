@@ -1,8 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 function AdminHeader() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
 
@@ -21,7 +23,8 @@ function AdminHeader() {
   const handleLogout = () => {
     sessionStorage.clear();
     closeNav();
-    window.location.href = "/Login";
+    toast.info("Logged out successfully");
+    navigate("/");
   };
 
   return (

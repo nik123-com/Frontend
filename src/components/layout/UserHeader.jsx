@@ -31,7 +31,7 @@ function UserHeader() {
             setUserRank(res.data.rank);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [isLogin]);
 
@@ -305,7 +305,7 @@ function UserHeader() {
                         if (nextState && unreadCount > 0) {
                           markNotificationsRead()
                             .then(() => loadNotifications())
-                            .catch(() => {});
+                            .catch(() => { });
                         }
                       }}
                       title="Notifications"
@@ -415,9 +415,8 @@ function UserHeader() {
                               notifications.map((notif) => (
                                 <div
                                   key={notif._id}
-                                  className={`p-3 mb-2.5 rounded-3 border position-relative notif-item-card ${
-                                    notif.status === "pending" ? "bg-light border-success-subtle" : "bg-white"
-                                  }`}
+                                  className={`p-3 mb-2.5 rounded-3 border position-relative notif-item-card ${notif.status === "pending" ? "bg-light border-success-subtle" : "bg-white"
+                                    }`}
                                   style={{ cursor: notif.productId ? "pointer" : "default" }}
                                   onClick={() => {
                                     if (notif.productId) {
@@ -447,35 +446,34 @@ function UserHeader() {
                                           notif.type === "announcement"
                                             ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
                                             : notif.type === "rank_allotment"
-                                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
-                                            : notif.type === "wishlist_invite"
-                                            ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
-                                            : notif.type === "review_reply"
-                                            ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-                                            : notif.type === "invite_accepted"
-                                            ? "#10b981"
-                                            : notif.type === "stock_available"
-                                            ? "#0c831f"
-                                            : "#ef4444",
+                                              ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                                              : notif.type === "wishlist_invite"
+                                                ? "linear-gradient(135deg, #81c408 0%, #6fa606 100%)"
+                                                : notif.type === "review_reply"
+                                                  ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                                                  : notif.type === "invite_accepted"
+                                                    ? "#10b981"
+                                                    : notif.type === "stock_available"
+                                                      ? "#0c831f"
+                                                      : "#ef4444",
                                         fontSize: "0.85rem"
                                       }}
                                     >
                                       <i
-                                        className={`fa-solid ${
-                                          notif.type === "announcement"
+                                        className={`fa-solid ${notif.type === "announcement"
                                             ? "fa-bullhorn"
                                             : notif.type === "rank_allotment"
-                                            ? "fa-award"
-                                            : notif.type === "wishlist_invite"
-                                            ? "fa-user-plus"
-                                            : notif.type === "review_reply"
-                                            ? "fa-reply"
-                                            : notif.type === "invite_accepted"
-                                            ? "fa-circle-check"
-                                            : notif.type === "stock_available"
-                                            ? "fa-box-open"
-                                            : "fa-circle-xmark"
-                                        }`}
+                                              ? "fa-award"
+                                              : notif.type === "wishlist_invite"
+                                                ? "fa-user-plus"
+                                                : notif.type === "review_reply"
+                                                  ? "fa-reply"
+                                                  : notif.type === "invite_accepted"
+                                                    ? "fa-circle-check"
+                                                    : notif.type === "stock_available"
+                                                      ? "fa-box-open"
+                                                      : "fa-circle-xmark"
+                                          }`}
                                       ></i>
                                     </div>
                                     <div className="flex-grow-1">
@@ -492,7 +490,7 @@ function UserHeader() {
                                         <div className="d-flex gap-2 mt-1">
                                           <button
                                             className="btn btn-sm text-white rounded-pill px-3 py-1 fw-semibold shadow-sm"
-                                            style={{ 
+                                            style={{
                                               background: "linear-gradient(135deg, #81c408 0%, #6fa606 100%)",
                                               fontSize: "0.78rem",
                                               border: "none"
@@ -513,9 +511,8 @@ function UserHeader() {
 
                                       {notif.status !== "pending" && (
                                         <span
-                                          className={`badge ${
-                                            notif.status === "accepted" ? "bg-success" : "bg-secondary"
-                                          } rounded-pill px-2 py-1`}
+                                          className={`badge ${notif.status === "accepted" ? "bg-success" : "bg-secondary"
+                                            } rounded-pill px-2 py-1`}
                                           style={{ fontSize: "0.7rem" }}
                                         >
                                           {notif.status.toUpperCase()}
@@ -566,7 +563,8 @@ function UserHeader() {
                     style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
                     onClick={() => {
                       sessionStorage.clear();
-                      window.location.reload();
+                      toast.info("Logged out successfully");
+                      navigate("/");
                     }}
                   >
                     Logout

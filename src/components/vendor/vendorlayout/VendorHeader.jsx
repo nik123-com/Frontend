@@ -8,7 +8,7 @@ export default function VendorHeader({ vendor }) {
   const handleLogout = () => {
     sessionStorage.clear();
     toast.info("Logged out successfully");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
