@@ -268,7 +268,7 @@ export default function VendorAddProduct() {
         headers: { Authorization: token, "Content-Type": "multipart/form-data" }
       });
       if (res.data.success) {
-        const toastMsg = saveAsDraft ? "Product saved as Draft" : "Published successfully";
+        const toastMsg = saveAsDraft ? "Product saved as Draft" : (res.data.message || "Published successfully");
         toast.success(toastMsg);
         navigate("/vendor/products");
       } else {
