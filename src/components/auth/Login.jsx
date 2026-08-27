@@ -61,7 +61,6 @@ export default function Login() {
       });
   };
 
-  // ================= UI =================
 
   return (
     <div
