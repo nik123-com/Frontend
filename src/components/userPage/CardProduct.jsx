@@ -77,7 +77,9 @@ export default function CardProduct() {
       fetch();
     }
     fetch1();
-    fetchWishList();
+    if (sessionStorage.getItem("token")) {
+      fetchWishList();
+    }
   }, [category_id, brand_id]);
 
   const fetch = (data) => {
@@ -97,22 +99,16 @@ export default function CardProduct() {
         setLoading(false);
       });
   };
-  const fetchWishList = (WishListData) => {
+  const fetchWishList = () => {
+    if (!sessionStorage.getItem("token")) return;
     allwishList({ public: 0 })
       .then((res) => {
-        console.log(res);
-
-        if (res.data.success) {
-          console.log(res);
+        if (res.data && res.data.success) {
           setWishListData(res.data.data);
-        } else {
-          // toast.warning("Failed to load WishList");
-          console.log(res)
         }
       })
       .catch((err) => {
-        console.log(err);
-        toast.error("Error fetching WishList");
+        console.log("Wishlist fetch error:", err);
       });
   };
 
@@ -248,6 +244,7 @@ export default function CardProduct() {
   function openModal(productId) {
     setSelectedProductId(productId);
     setIsOpen(true);
+    fetchWishList();
   }
   const fetchproductsbycat = async (id) => {
     try {
