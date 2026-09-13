@@ -215,6 +215,13 @@ export default function VendorProducts() {
                         </td>
                         <td className="text-end pe-4">
                           <button
+                            onClick={() => navigate(`/ShopDetail/${p._id}`)}
+                            className="btn btn-sm btn-outline-success me-2"
+                            title="View Product Page & Images"
+                          >
+                            <i className="fa-solid fa-eye"></i>
+                          </button>
+                          <button
                             onClick={() => navigate(`/vendor/products/edit/${p._id}`)}
                             className="btn btn-sm btn-outline-primary me-2"
                             title="Edit Product"

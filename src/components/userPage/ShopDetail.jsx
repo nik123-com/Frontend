@@ -10,13 +10,51 @@ import React from 'react'
 import AddToCartButton from "../common/AddToCartButton";
 
 export default function ShopDetail() {
-
-  const [data, setdata] = useState()
+  const { _id } = useParams();
+  const [data, setdata] = useState();
   const [products, setproducts] = useState();
   const navigate = useNavigate();
   const [cat_id, setcat_id] = useState();
   const [review, setReview] = useState();
-  const { _id } = useParams()
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [_id]);
+
+  const getProductImages = (imageData) => {
+    if (!imageData) return [];
+    let images = [];
+    if (Array.isArray(imageData)) {
+      images = imageData;
+    } else if (typeof imageData === "string") {
+      try {
+        const parsed = JSON.parse(imageData);
+        if (Array.isArray(parsed)) images = parsed;
+        else if (imageData.trim()) images = [imageData];
+      } catch {
+        if (imageData.includes(",")) {
+          images = imageData.split(",").map((s) => s.trim());
+        } else if (imageData.trim()) {
+          images = [imageData];
+        }
+      }
+    }
+
+    return images
+      .filter((img) => typeof img === "string" && img.trim() !== "")
+      .map((img) => {
+        const trimmed = img.trim();
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+          return trimmed;
+        }
+        return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+      });
+  };
+
+  const productImages = getProductImages(data?.image);
+  const currentMainImage = productImages[selectedImageIndex] || "/assets/img/placeholder.jpg";
 
   const ratingChanged = (newRating) => {
     setRating(newRating);
@@ -135,16 +173,18 @@ export default function ShopDetail() {
 
 
   const getsingle = () => {
-
     single({ _id: _id }).then((res) => {
-      // console.log(res.data.data.category_id._id);
-      setdata(res.data.data)
-      setcat_id(res.data.data.category_id._id)
+      if (res?.data?.data) {
+        setdata(res.data.data);
+        const catId = res.data.data?.category_id?._id || res.data.data?.category_id;
+        if (catId) {
+          setcat_id(catId);
+        }
+      }
     }).catch((err) => {
       console.log(err);
-
-    })
-  }
+    });
+  };
   const category_id = cat_id;
   console.log(category_id);
 
@@ -208,14 +248,77 @@ export default function ShopDetail() {
             <div className="col-lg-12 col-xl-12">
               <div className="row g-4">
                 <div className="col-lg-6">
-                  <div className="border rounded position-relative" style={{ position: "relative" }}>
-                    <a href="#">
+                  {/* Main Image Display Box */}
+                  <div
+                    className="border rounded position-relative shadow-sm bg-white overflow-hidden p-2"
+                    style={{ position: "relative", minHeight: "360px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                  >
+                    <div
+                      className="w-100 text-center position-relative"
+                      onClick={() => setIsLightboxOpen(true)}
+                      style={{ cursor: "zoom-in" }}
+                      title="Click to view full screen"
+                    >
                       <img
-                        src={Array.isArray(data?.image) ? data?.image?.[0] : data?.image}
+                        src={currentMainImage}
                         className="img-fluid rounded"
-                        alt="Image"
+                        alt={data?.name || "Product Image"}
+                        style={{ maxHeight: "420px", width: "auto", objectFit: "contain", transition: "all 0.3s ease" }}
                       />
-                    </a>
+                    </div>
+
+                    {/* Expand / Lightbox Button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsLightboxOpen(true)}
+                      className="btn btn-light btn-sm rounded-circle shadow-sm position-absolute"
+                      style={{ top: "12px", right: "12px", zIndex: 5, width: "36px", height: "36px" }}
+                      title="View Fullsize"
+                    >
+                      <i className="fa-solid fa-expand text-secondary"></i>
+                    </button>
+
+                    {/* Image Count Badge */}
+                    {productImages.length > 1 && (
+                      <span
+                        className="badge bg-dark bg-opacity-75 text-white position-absolute rounded-pill px-3 py-2"
+                        style={{ top: "12px", left: "12px", zIndex: 5, fontSize: "12px", backdropFilter: "blur(4px)" }}
+                      >
+                        <i className="fa-solid fa-camera me-1"></i> {selectedImageIndex + 1} / {productImages.length}
+                      </span>
+                    )}
+
+                    {/* Navigation Arrows for Main Image */}
+                    {productImages.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImageIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1));
+                          }}
+                          className="btn btn-light btn-sm rounded-circle shadow-sm position-absolute d-flex align-items-center justify-content-center"
+                          style={{ left: "12px", top: "50%", transform: "translateY(-50%)", width: "38px", height: "38px", zIndex: 5, opacity: 0.9 }}
+                          title="Previous Image"
+                        >
+                          <i className="fa-solid fa-chevron-left text-dark"></i>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImageIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
+                          }}
+                          className="btn btn-light btn-sm rounded-circle shadow-sm position-absolute d-flex align-items-center justify-content-center"
+                          style={{ right: "12px", top: "50%", transform: "translateY(-50%)", width: "38px", height: "38px", zIndex: 5, opacity: 0.9 }}
+                          title="Next Image"
+                        >
+                          <i className="fa-solid fa-chevron-right text-dark"></i>
+                        </button>
+                      </>
+                    )}
+
                     {data?.status === false && (
                       <div
                         style={{
@@ -239,6 +342,51 @@ export default function ShopDetail() {
                       </div>
                     )}
                   </div>
+
+                  {/* Thumbnail Gallery Strip */}
+                  {productImages.length > 0 && (
+                    <div className="mt-3">
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="fw-bold text-uppercase text-muted" style={{ fontSize: "12px", letterSpacing: "0.5px" }}>
+                          Product Images ({productImages.length})
+                        </span>
+                        {data?.vendorId && (
+                          <span className="badge bg-light text-secondary border">
+                            <i className="fa-solid fa-store me-1"></i> Uploaded by Vendor
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="d-flex flex-wrap gap-2 align-items-center">
+                        {productImages.map((imgUrl, idx) => {
+                          const isSelected = idx === selectedImageIndex;
+                          return (
+                            <div
+                              key={idx}
+                              onClick={() => setSelectedImageIndex(idx)}
+                              className="position-relative rounded overflow-hidden"
+                              style={{
+                                width: "75px",
+                                height: "75px",
+                                cursor: "pointer",
+                                border: isSelected ? "3px solid #81c408" : "1.5px solid #dee2e6",
+                                boxShadow: isSelected ? "0 4px 12px rgba(129, 196, 8, 0.4)" : "0 2px 4px rgba(0,0,0,0.05)",
+                                transform: isSelected ? "scale(1.05)" : "scale(1)",
+                                transition: "all 0.2s ease-in-out",
+                                backgroundColor: "#ffffff"
+                              }}
+                            >
+                              <img
+                                src={imgUrl}
+                                alt={`Thumbnail ${idx + 1}`}
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="col-lg-6">
                   <h4 className="fw-bold mb-3">{data?.name}</h4>
@@ -518,9 +666,9 @@ export default function ShopDetail() {
                   <div className="rounded position-relative fruite-item">
                     <div className="fruite-img">
                       <img
-                        src={Array.isArray(card?.image) ? card?.image?.[0] : card?.image}
-                        className="img-fluid w-100 rounded-top " style={{ height: "300px" }}
-                        alt="Image is loading..."
+                        src={getProductImages(card?.image)?.[0] || "/assets/img/placeholder.jpg"}
+                        className="img-fluid w-100 rounded-top " style={{ height: "300px", objectFit: "cover" }}
+                        alt="Product Image"
                       />
                     </div>
                     <div
@@ -548,6 +696,95 @@ export default function ShopDetail() {
         </div>
       </div>
       {/* Single Product End */}
+
+      {/* Image Lightbox Modal */}
+      {isLightboxOpen && (
+        <div
+          className="modal d-block bg-dark bg-opacity-75"
+          tabIndex="-1"
+          style={{ zIndex: 1060, backdropFilter: "blur(5px)" }}
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          <div
+            className="modal-dialog modal-lg modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content bg-dark text-white border-0 shadow-lg position-relative rounded-4 overflow-hidden">
+              {/* Header */}
+              <div className="modal-header border-secondary d-flex align-items-center justify-content-between px-4 py-3">
+                <h6 className="modal-title mb-0 text-light fw-bold">
+                  <i className="fa-regular fa-image me-2 text-success"></i>
+                  {data?.name || "Product"} - Image {selectedImageIndex + 1} of {productImages.length}
+                </h6>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setIsLightboxOpen(false)}
+                ></button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="modal-body text-center p-4 position-relative d-flex align-items-center justify-content-center" style={{ minHeight: "450px" }}>
+                <img
+                  src={currentMainImage}
+                  alt={data?.name}
+                  className="img-fluid rounded shadow"
+                  style={{ maxHeight: "70vh", objectFit: "contain" }}
+                />
+
+                {/* Lightbox Navigation Buttons */}
+                {productImages.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-dark btn-lg rounded-circle position-absolute border-secondary shadow"
+                      style={{ left: "20px", top: "50%", transform: "translateY(-50%)", width: "50px", height: "50px", opacity: 0.9 }}
+                      onClick={() => setSelectedImageIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1))}
+                    >
+                      <i className="fa-solid fa-chevron-left text-white"></i>
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-dark btn-lg rounded-circle position-absolute border-secondary shadow"
+                      style={{ right: "20px", top: "50%", transform: "translateY(-50%)", width: "50px", height: "50px", opacity: 0.9 }}
+                      onClick={() => setSelectedImageIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1))}
+                    >
+                      <i className="fa-solid fa-chevron-right text-white"></i>
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Modal Footer with Thumbnails */}
+              {productImages.length > 1 && (
+                <div className="modal-footer border-secondary justify-content-center py-2 px-3 bg-black bg-opacity-50">
+                  <div className="d-flex gap-2 flex-wrap justify-content-center">
+                    {productImages.map((imgUrl, idx) => (
+                      <img
+                        key={idx}
+                        src={imgUrl}
+                        alt={`Modal Thumbnail ${idx + 1}`}
+                        onClick={() => setSelectedImageIndex(idx)}
+                        className="rounded cursor-pointer"
+                        style={{
+                          width: "55px",
+                          height: "55px",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                          border: idx === selectedImageIndex ? "2px solid #81c408" : "1px solid #555",
+                          opacity: idx === selectedImageIndex ? 1 : 0.6,
+                          transition: "all 0.2s ease"
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <a
         href="#"
         className="btn btn-primary border-3 border-primary rounded-circle back-to-top"
