@@ -6,6 +6,8 @@ import { addOrder } from "../../server/Order";
 import {allCoupon} from "../../server/Coupon";
 import {AllAddress} from '../../server/Address'
 import { numberToWords } from "../../../utils/numberToWords";
+import SmartCartCard from "./SmartCartCard";
+import RecommendedProductsSection from "../../common/RecommendedProductsSection";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -165,19 +167,20 @@ export default function Cart() {
   }
 
 
-  const applyCoupon = () => {
-    allCoupon({ code: coupon }).then((res) => {
+  const applyCoupon = (customCode) => {
+    const codeToApply = typeof customCode === "string" ? customCode : coupon;
+    if (!codeToApply) return;
+
+    allCoupon({ code: codeToApply }).then((res) => {
       console.log(res);
       if (res.data.data.length > 0) {
         toast.success("Coupon loaded")
         setcouponData(res.data.data)
       } else {
         toast.warning("Coupon Not found")
-
       }
-
     }).catch((err) => {
-
+      console.log(err);
     })
   }
   const Check = () => {
@@ -251,7 +254,14 @@ export default function Cart() {
                         <p className="mb-0 fw-semibold text-dark">{Element?.product_id?.name}</p>
                       </td>
                       <td className="text-center py-3">
-                        <p className="mb-0 fw-medium">₹ {Element?.price}</p>
+                        <p className="mb-0 fw-medium">
+                          ₹ {Element?.price}
+                          {Element?.product_id?.price && Number(Element.price) < Number(Element.product_id.price) && (
+                            <span className="badge bg-success-subtle text-success border border-success ms-2" style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-handshake me-1"></i>AI Deal
+                            </span>
+                          )}
+                        </p>
                       </td>
                       <td className="text-center py-3">
                         <div
@@ -334,8 +344,20 @@ export default function Cart() {
               </tbody>
             </table>
           </div>
+
+          {/* Smart Cart Optimization Card */}
+          <SmartCartCard
+            total={total}
+            currentCoupon={coupon}
+            onApplyCoupon={(code) => {
+              setcoupon(code);
+              applyCoupon(code);
+            }}
+            onCartUpdated={() => fetch()}
+          />
+
           {/* Coupon Input Section */}
-          <div className="mt-5">
+          <div className="mt-4">
             <input
               type="text"
               className="border border-primary rounded me-5 py-3 px-3 mb-4 bg-white text-dark"
@@ -467,6 +489,16 @@ export default function Cart() {
               </div>
             </div>
 
+          </div>
+
+          {/* Recommended Add-ons Section */}
+          <div className="mt-5 pt-4 border-top">
+            <RecommendedProductsSection
+              title="Recommended Add-ons for Your Cart"
+              subtitle="Personalized matching items to complete your shopping order"
+              limit={4}
+              recommendationType="for_you"
+            />
           </div>
 
         </div>

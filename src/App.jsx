@@ -68,6 +68,7 @@ const VendorReviews = lazy(() => import("./components/vendor/VendorReviews"));
 const VendorWallet = lazy(() => import("./components/vendor/VendorWallet"));
 const VendorSettings = lazy(() => import("./components/vendor/VendorSettings"));
 const VendorQueries = lazy(() => import("./components/vendor/VendorQueries"));
+const VendorBargaining = lazy(() => import("./components/vendor/VendorBargaining"));
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
@@ -127,6 +128,7 @@ function App() {
                 <Route path="products/edit/:id" element={<VendorAddProduct />} />
                 <Route path="orders" element={<VendorOrders />} />
                 <Route path="inventory" element={<VendorInventory />} />
+                <Route path="bargaining" element={<VendorBargaining />} />
                 <Route path="coupons" element={<VendorCoupons />} />
                 <Route path="reviews" element={<VendorReviews />} />
                 <Route path="wallet" element={<VendorWallet />} />

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { baseUrl, vendor_all_products, vendor_update_stock } from "../endpoints";
+import StockIntelligenceSection from "./StockIntelligenceSection";
+import VendorBargainingSection from "./VendorBargainingSection";
 
 export default function VendorInventory() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
+  const [activeTab, setActiveTab] = useState("intelligence"); // 'intelligence' | 'catalog' | 'bargaining'
 
   const [editForm, setEditForm] = useState({
     stock: 0,
@@ -72,10 +75,51 @@ export default function VendorInventory() {
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
           <h3 className="fw-bold mb-0">Inventory & Stock Control</h3>
-          <p className="text-muted mb-0">Manage stock quantities, SKUs, and warehouse locations in real-time.</p>
+          <p className="text-muted mb-0">Predictive demand intelligence, automated reorder thresholds, and warehouse stock control.</p>
+        </div>
+
+        {/* Tab Pills */}
+        <div className="btn-group p-1 bg-light rounded-pill border">
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 fw-bold ${activeTab === "intelligence" ? "btn-primary shadow-sm" : "btn-light text-muted"}`}
+            onClick={() => setActiveTab("intelligence")}
+          >
+            <i className="fa-solid fa-brain me-1"></i> Stock Intelligence
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 fw-bold ${activeTab === "bargaining" ? "btn-primary shadow-sm" : "btn-light text-muted"}`}
+            onClick={() => setActiveTab("bargaining")}
+          >
+            <i className="fa-solid fa-handshake-simple me-1"></i> AI Bargaining Deals
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 fw-bold ${activeTab === "catalog" ? "btn-primary shadow-sm" : "btn-light text-muted"}`}
+            onClick={() => setActiveTab("catalog")}
+          >
+            <i className="fa-solid fa-boxes-stacked me-1"></i> Stock Adjustment Table
+          </button>
         </div>
       </div>
 
+      {/* Predictive Stock Intelligence Tab */}
+      {activeTab === "intelligence" && (
+        <StockIntelligenceSection
+          onAdjustStock={(f) => {
+            setActiveTab("catalog");
+            const prod = products.find((p) => p._id.toString() === f.productId.toString());
+            if (prod) handleStartEdit(prod);
+          }}
+        />
+      )}
+
+      {/* AI Price-Supply Bargaining Tab */}
+      {activeTab === "bargaining" && <VendorBargainingSection />}
+
+      {/* Catalog & Manual Stock Adjustment Table */}
+      {(activeTab === "catalog" || activeTab === "intelligence") && (
       <div className="card border-0 shadow-sm bg-white rounded-3">
         <div className="card-body p-0">
           {loading ? (
@@ -89,11 +133,11 @@ export default function VendorInventory() {
                 <thead className="table-light">
                   <tr>
                     <th className="ps-4">Product Name</th>
-                    <th>SKU Code</th>
-                    <th>Warehouse Location</th>
-                    <th>Stock Units</th>
-                    <th>Stock Alert</th>
-                    <th className="text-end pe-4">Stock Actions</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap" }}>SKU Code</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap" }}>Warehouse Location</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap" }}>Stock Units</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap" }}>Stock Alert</th>
+                    <th className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "150px" }}>Stock Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -162,9 +206,9 @@ export default function VendorInventory() {
                           )}
                         </td>
 
-                        <td className="text-end pe-4">
+                        <td className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "150px" }}>
                           {isEditing ? (
-                            <div className="btn-group">
+                            <div className="btn-group flex-nowrap">
                               <button
                                 onClick={() => handleSaveEdit(p._id)}
                                 className="btn btn-sm btn-success"
@@ -181,7 +225,7 @@ export default function VendorInventory() {
                           ) : (
                             <button
                               onClick={() => handleStartEdit(p)}
-                              className="btn btn-sm btn-outline-primary"
+                              className="btn btn-sm btn-outline-primary text-nowrap"
                             >
                               <i className="fa-solid fa-pen me-1"></i> Adjust Stock
                             </button>
@@ -201,6 +245,7 @@ export default function VendorInventory() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

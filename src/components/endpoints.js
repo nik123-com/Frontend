@@ -159,6 +159,36 @@ export const customer_announcements = "/customer/announcement/all";
 export const vendor_announcements = "/vendor/announcement/all";
 export const ai_announcement_description = "/api/ai/announcement-description";
 
+// Explainable Recommendation Engine & Behavior Tracking
+export const recommendations_all = "/customer/recommendations";
+export const recommendations_detail = "/customer/recommendations/product-detail";
+export const recommendations_explain = "/customer/recommendations/explain";
+export const behavior_track_event = "/customer/behavior/event";
+export const behavior_profile = "/customer/behavior/profile";
+export const recommendations_metrics = "/api/recommendations/metrics";
+export const admin_recommendations_analytics = "/api/recommendations/analytics";
+
+// Smart Cart Optimization
+export const cart_smart_optimization = "/customer/cart/smart-optimization";
+
+// Context-Aware Sana AI Shopping Agent
+export const sana_contextual_query = "/api/sana/contextual-query";
+
+// Predictive Stock-Out Intelligence (Vendor)
+export const vendor_inventory_intelligence = "/vendor/inventory/intelligence";
+export const vendor_product_forecast = "/vendor/products/stock-forecast";
+
+// AI Price-Supply Bargaining System
+export const bargain_start = "/customer/bargain/start";
+export const bargain_offer = "/customer/bargain/offer";
+export const bargain_accept = "/customer/bargain/accept";
+export const bargain_check_deal = "/customer/bargain/check-deal";
+export const vendor_bargain_history = "/vendor/bargain/history";
+export const bargain_delete = "/vendor/bargain/delete";
+
+
+
+
 
 
 

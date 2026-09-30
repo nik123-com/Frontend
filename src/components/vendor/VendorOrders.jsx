@@ -106,7 +106,7 @@ export default function VendorOrders() {
                     <th>Vendor Subtotal</th>
                     <th>Payment</th>
                     <th>Status</th>
-                    <th className="text-end pe-4">Fulfillment Actions</th>
+                    <th className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "160px" }}>Fulfillment Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -171,8 +171,8 @@ export default function VendorOrders() {
                             {currentStatus}
                           </span>
                         </td>
-                        <td className="text-end pe-4">
-                          <div className="btn-group">
+                        <td className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "160px" }}>
+                          <div className="btn-group flex-nowrap">
                             {currentStatus === "pending" && (
                               <button
                                 onClick={() => handleUpdateStatus(order._id, "accepted")}

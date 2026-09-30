@@ -158,11 +158,11 @@ export default function VendorProducts() {
                 <thead className="table-light">
                   <tr>
                     <th className="ps-4">Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock Status</th>
-                    <th>Status</th>
-                    <th className="text-end pe-4">Actions</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap" }}>Category</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap" }}>Price</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "120px" }}>Stock Status</th>
+                    <th className="text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "90px" }}>Status</th>
+                    <th className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "100px" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -189,13 +189,15 @@ export default function VendorProducts() {
                             </div>
                           </div>
                         </td>
-                        <td>
+                        <td className="text-nowrap" style={{ whiteSpace: "nowrap" }}>
                           <span className="badge bg-secondary-subtle text-secondary border">
                             {p.category_id?.name || "General"}
                           </span>
                         </td>
-                        <td className="fw-bold text-dark">₹{Number(p.price).toLocaleString()}</td>
-                        <td>
+                        <td className="fw-bold text-dark text-nowrap" style={{ whiteSpace: "nowrap" }}>
+                          ₹{Number(p.price).toLocaleString()}
+                        </td>
+                        <td className="text-nowrap" style={{ whiteSpace: "nowrap" }}>
                           {p.stock <= 0 ? (
                             <span className="badge bg-danger">Out of Stock</span>
                           ) : p.stock <= 5 ? (
@@ -204,7 +206,7 @@ export default function VendorProducts() {
                             <span className="badge bg-success-subtle text-success border border-success">{p.stock} units</span>
                           )}
                         </td>
-                        <td>
+                        <td className="text-nowrap" style={{ whiteSpace: "nowrap" }}>
                           {isDraft ? (
                             <span className="badge bg-secondary">Draft</span>
                           ) : isDeactivated ? (
@@ -213,28 +215,25 @@ export default function VendorProducts() {
                             <span className="badge bg-success">Active</span>
                           )}
                         </td>
-                        <td className="text-end pe-4">
-                          <button
-                            onClick={() => navigate(`/ShopDetail/${p._id}`)}
-                            className="btn btn-sm btn-outline-success me-2"
-                            title="View Product Page & Images"
-                          >
-                            <i className="fa-solid fa-eye"></i>
-                          </button>
-                          <button
-                            onClick={() => navigate(`/vendor/products/edit/${p._id}`)}
-                            className="btn btn-sm btn-outline-primary me-2"
-                            title="Edit Product"
-                          >
-                            <i className="fa-solid fa-pen"></i>
-                          </button>
-                          <button
-                            onClick={() => handleDelete(p._id, p.name)}
-                            className="btn btn-sm btn-outline-danger"
-                            title="Delete Product"
-                          >
-                            <i className="fa-solid fa-trash"></i>
-                          </button>
+                        <td className="text-end pe-4 text-nowrap" style={{ minWidth: "100px", whiteSpace: "nowrap" }}>
+                          <div className="d-inline-flex align-items-center justify-content-end gap-2 flex-nowrap">
+                            <button
+                              onClick={() => navigate(`/vendor/products/edit/${p._id}`)}
+                              className="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center shadow-none"
+                              style={{ width: "32px", height: "32px", padding: 0 }}
+                              title="Edit Product"
+                            >
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                            <button
+                              onClick={() => handleDelete(p._id, p.name)}
+                              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center shadow-none"
+                              style={{ width: "32px", height: "32px", padding: 0 }}
+                              title="Delete Product"
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

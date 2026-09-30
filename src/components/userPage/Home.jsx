@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { HashLoader } from "react-spinners";
 import AddToCartButton from "../common/AddToCartButton";
+import RecommendedProductsSection from "../common/RecommendedProductsSection";
 
 
 function Home() {
@@ -223,6 +224,16 @@ function Home() {
         </div>
       </div>
       {/* Features Section End */}
+
+      {/* AI Explainable Recommendations Section */}
+      <div className="container pt-4 pb-2">
+        <RecommendedProductsSection
+          title="Recommended For You"
+          subtitle="AI-driven suggestions with match percentages and explainable reasons"
+          limit={4}
+          recommendationType="for_you"
+        />
+      </div>
 
       {/* Fruits Shop Start */}
       <div className="container-fluid fruite pt-0 pb-5">

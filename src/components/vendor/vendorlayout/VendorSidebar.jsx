@@ -10,6 +10,7 @@ export default function VendorSidebar({ vendor }) {
     { label: "Products", path: "/vendor/products", icon: "fa-box-open" },
     { label: "Orders", path: "/vendor/orders", icon: "fa-shopping-cart" },
     { label: "Inventory", path: "/vendor/inventory", icon: "fa-warehouse" },
+    { label: "AI Bargaining", path: "/vendor/bargaining", icon: "fa-handshake-simple" },
     { label: "Coupons", path: "/vendor/coupons", icon: "fa-ticket" },
     { label: "Reviews", path: "/vendor/reviews", icon: "fa-star" },
     { label: "Wallet & Settlements", path: "/vendor/wallet", icon: "fa-wallet" },

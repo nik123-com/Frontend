@@ -15,6 +15,7 @@ import { allProduct } from "../server/Product";
 import { allCustomer } from "../server/Customer";
 import { adminAllOrders } from "../server/Order";
 import { allVendor } from "../server/Vendor";
+import { getAdminRecommendationAnalytics } from "../server/Recommendation";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -34,6 +35,7 @@ export default function Admindashboard() {
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [vendors, setVendors] = useState([]);
+  const [aiMetrics, setAiMetrics] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -44,11 +46,12 @@ export default function Admindashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [resProducts, resOrders, resCustomers, resVendors] = await Promise.all([
+      const [resProducts, resOrders, resCustomers, resVendors, resAiMetrics] = await Promise.all([
         allProduct(),
         adminAllOrders({}),
         allCustomer(),
-        allVendor()
+        allVendor(),
+        getAdminRecommendationAnalytics().catch(() => ({ data: { success: false } }))
       ]);
 
       if (resProducts.data?.success) {
@@ -65,6 +68,9 @@ export default function Admindashboard() {
       }
       if (resVendors.data?.success) {
         setVendors(resVendors.data.data || []);
+      }
+      if (resAiMetrics.data?.success) {
+        setAiMetrics(resAiMetrics.data.data);
       }
     } catch (err) {
       console.error(err);
@@ -386,6 +392,48 @@ export default function Admindashboard() {
             </div>
           </div>
         </div>
+
+        {/* AI Innovations & Novelty Performance Metrics */}
+        {aiMetrics && (
+          <div className="card shadow-sm border-0 rounded-4 my-4 p-4 bg-white border-start border-4 border-success">
+            <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div className="d-flex align-items-center gap-2">
+                <span className="badge bg-success-subtle text-success border border-success p-2 rounded-circle">
+                  <i className="fa-solid fa-microchip"></i>
+                </span>
+                <h5 className="fw-bold text-dark mb-0">AI Innovations & Novelty Performance</h5>
+              </div>
+              <span className="badge bg-success text-white px-3 py-1 rounded-pill">Active Live Telemetry</span>
+            </div>
+
+            <div className="row g-3 text-center">
+              <div className="col-6 col-md-3">
+                <div className="p-3 bg-light rounded-3">
+                  <small className="text-muted text-uppercase fw-bold" style={{ fontSize: "11px" }}>Rec. Impressions</small>
+                  <h4 className="fw-bold text-dark mb-0 mt-1">{aiMetrics.totalImpressions || 0}</h4>
+                </div>
+              </div>
+              <div className="col-6 col-md-3">
+                <div className="p-3 bg-light rounded-3">
+                  <small className="text-muted text-uppercase fw-bold" style={{ fontSize: "11px" }}>Recommendation CTR</small>
+                  <h4 className="fw-bold text-primary mb-0 mt-1">{aiMetrics.ctrPercentage || 0}%</h4>
+                </div>
+              </div>
+              <div className="col-6 col-md-3">
+                <div className="p-3 bg-light rounded-3">
+                  <small className="text-muted text-uppercase fw-bold" style={{ fontSize: "11px" }}>Rec. Conversion Rate</small>
+                  <h4 className="fw-bold text-success mb-0 mt-1">{aiMetrics.conversionRatePercentage || 0}%</h4>
+                </div>
+              </div>
+              <div className="col-6 col-md-3">
+                <div className="p-3 bg-light rounded-3">
+                  <small className="text-muted text-uppercase fw-bold" style={{ fontSize: "11px" }}>Smart Cart Unlocks</small>
+                  <h4 className="fw-bold text-warning mb-0 mt-1">{aiMetrics.smartCartOptimizationsApplied || 0}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

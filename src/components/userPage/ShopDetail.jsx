@@ -8,6 +8,10 @@ import { addreview, allreview } from "../server/Review";
 import ReactStars from 'react-stars'
 import React from 'react'
 import AddToCartButton from "../common/AddToCartButton";
+import RecommendedProductsSection from "../common/RecommendedProductsSection";
+import BargainModal from "../common/BargainModal";
+import { trackBehaviorEvent } from "../server/Recommendation";
+import { checkActiveBargainDeal } from "../server/Bargain";
 
 export default function ShopDetail() {
   const { _id } = useParams();
@@ -18,6 +22,8 @@ export default function ShopDetail() {
   const [review, setReview] = useState();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isBargainOpen, setIsBargainOpen] = useState(false);
+  const [activeBargainDeal, setActiveBargainDeal] = useState(null);
 
   useEffect(() => {
     setSelectedImageIndex(0);
@@ -153,7 +159,7 @@ export default function ShopDetail() {
       user_id: user,
       product_id: element?._id,
       qty: 1,
-      price: element?.price
+      price: activeBargainDeal ? activeBargainDeal.negotiatedPrice : element?.price
     };
 
 
@@ -171,6 +177,22 @@ export default function ShopDetail() {
       });
   };
 
+  const fetchActiveDeal = async (productId) => {
+    const pId = productId || _id;
+    if (!pId) return;
+    try {
+      const res = await checkActiveBargainDeal({ productId: pId });
+      if (res.data?.success && res.data?.hasActiveDeal && res.data?.deal) {
+        setActiveBargainDeal(res.data.deal);
+      } else {
+        setActiveBargainDeal(null);
+      }
+    } catch (err) {
+      console.error("Error checking active deal:", err);
+      setActiveBargainDeal(null);
+    }
+  };
+
 
   const getsingle = () => {
     single({ _id: _id }).then((res) => {
@@ -180,6 +202,15 @@ export default function ShopDetail() {
         if (catId) {
           setcat_id(catId);
         }
+
+        // Track behavioral view event for personalization engine
+        trackBehaviorEvent({
+          eventType: "product_view",
+          productId: _id,
+          categoryId: catId,
+          brandId: res.data.data?.brand_id?._id || res.data.data?.brand_id,
+          metadata: { price: Number(res.data.data?.price) || 0 }
+        });
       }
     }).catch((err) => {
       console.log(err);
@@ -219,8 +250,24 @@ export default function ShopDetail() {
     if (_id) {
       getsingle();
       fetchreviews();
+      fetchActiveDeal(_id);
     }
   }, [_id]);
+
+  useEffect(() => {
+    const handleRefreshDeal = () => {
+      if (_id) {
+        fetchActiveDeal(_id);
+      }
+    };
+    window.addEventListener("bargainDealLocked", handleRefreshDeal);
+    window.addEventListener("cartUpdated", handleRefreshDeal);
+    return () => {
+      window.removeEventListener("bargainDealLocked", handleRefreshDeal);
+      window.removeEventListener("cartUpdated", handleRefreshDeal);
+    };
+  }, [_id]);
+
   useEffect(() => {
     if (cat_id) {
       fetchproductsbycat();
@@ -404,15 +451,95 @@ export default function ShopDetail() {
                   </div>
                   <p className="mb-3">Category: {data?.category_id?.name}</p>
 
-                  <h5 className="fw-bold mb-3">₹ {data?.price}</h5>
+                  {/* Single-Use AI Bargaining Deal Display */}
+                  {activeBargainDeal ? (
+                    <div
+                      className="p-3 mb-4 rounded-4 shadow-sm border border-success"
+                      style={{
+                        background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+                        maxWidth: "520px"
+                      }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span
+                          className="badge bg-success px-3 py-1 rounded-pill fw-bold text-uppercase d-inline-flex align-items-center gap-1"
+                          style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                        >
+                          <i className="fa-solid fa-handshake"></i> Single-Use AI Deal Locked
+                        </span>
+                        <span className="badge bg-warning-subtle text-dark border border-warning fw-semibold" style={{ fontSize: "11px" }}>
+                          <i className="fa-regular fa-clock me-1"></i> Valid for 1 Purchase
+                        </span>
+                      </div>
+
+                      <div className="d-flex align-items-baseline gap-3 mb-1">
+                        <span className="fs-2 fw-bolder text-success">
+                          ₹ {activeBargainDeal.negotiatedPrice}
+                        </span>
+                        <span className="text-decoration-line-through text-muted fs-5">
+                          ₹ {data?.price}
+                        </span>
+                        {Number(data?.price) > Number(activeBargainDeal.negotiatedPrice) && (
+                          <span className="badge bg-danger text-white rounded-pill px-2 py-1 fw-bold" style={{ fontSize: "12px" }}>
+                            Save ₹{(Number(data?.price || 0) - Number(activeBargainDeal.negotiatedPrice)).toFixed(0)} ({Math.round(((data?.price - activeBargainDeal.negotiatedPrice) / data?.price) * 100)}% OFF)
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="text-muted small" style={{ fontSize: "12px", lineHeight: "1.4" }}>
+                        <i className="fa-solid fa-circle-info text-success me-1"></i>
+                        This exclusive negotiated price is locked for your next purchase only. After checkout, the standard price applies.
+                      </div>
+                    </div>
+                  ) : (
+                    <h5 className="fw-bold mb-3 fs-4">₹ {data?.price}</h5>
+                  )}
 
                   <p className="mb-4">
                     {data?.description}
                   </p>
 
-
-
-                  <AddToCartButton product={data} variant="full" className="mb-4" />
+                  <div className="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <div className="flex-grow-1" style={{ minWidth: "220px" }}>
+                      <AddToCartButton
+                        product={activeBargainDeal ? { ...data, price: activeBargainDeal.negotiatedPrice } : data}
+                        variant="full"
+                      />
+                    </div>
+                    {activeBargainDeal ? (
+                      <button
+                        type="button"
+                        className="btn fw-bold px-4 py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2"
+                        style={{
+                          backgroundColor: "#065f46",
+                          color: "#ffffff",
+                          border: "none",
+                          transition: "all 0.2s ease"
+                        }}
+                        onClick={() => setIsBargainOpen(true)}
+                        title="View your negotiated deal details"
+                      >
+                        <i className="fa-solid fa-check-circle fs-5 text-warning"></i>
+                        <span>Deal Locked (₹{activeBargainDeal.negotiatedPrice})</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn fw-bold px-4 py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2"
+                        style={{
+                          background: "linear-gradient(135deg, #047857, #10b981)",
+                          color: "#ffffff",
+                          border: "none",
+                          transition: "all 0.2s ease"
+                        }}
+                        onClick={() => setIsBargainOpen(true)}
+                        title="Negotiate dynamic pricing with AI based on inventory supply"
+                      >
+                        <i className="fa-solid fa-handshake fs-5"></i>
+                        <span>Bargain with AI</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="col-lg-12">
                   <nav>
@@ -653,49 +780,27 @@ export default function ShopDetail() {
 
           </div>
 
-          {/* Related products header */}
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h1 className="fw-bold mb-0">Related products</h1>
-          </div>
-          <div className="row g-4">
-
-            {products?.map((card, index) => {
-              return (
-
-                <div className="col-md-6 col-lg-4 col-xl-3">
-                  <div className="rounded position-relative fruite-item">
-                    <div className="fruite-img">
-                      <img
-                        src={getProductImages(card?.image)?.[0] || "/assets/img/placeholder.jpg"}
-                        className="img-fluid w-100 rounded-top " style={{ height: "300px", objectFit: "cover" }}
-                        alt="Product Image"
-                      />
-                    </div>
-                    <div
-                      className="text-white bg-primary px-3 py-2 rounded position-absolute"
-                      style={{ top: 12, right: 12 }}
-                    >
-                      {card.category_id?.name}
-                    </div>
-                    <div className="p-4 border border-primary border-top-0 rounded-bottom">
-                      <h4>{card?.name}</h4>
-                      <p>
-                        {card?.description}
-                      </p>
-                      <div className="d-flex justify-content-between flex-lg-wrap">
-                        <p className="text-dark fs-5 fw-bold mb-0">{card.price}</p>
-                        <AddToCartButton product={card} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+          {/* Explainable AI Recommendations Section */}
+          <div className="mt-5 pt-3">
+            <RecommendedProductsSection
+              title="Frequently Explored Together"
+              subtitle="Smart complementary picks with match percentages & explainable reasons"
+              recommendationType="product_detail"
+              currentProductId={_id}
+              limit={4}
+            />
           </div>
 
         </div>
       </div>
       {/* Single Product End */}
+
+      {/* AI Price-Supply Bargaining Modal */}
+      <BargainModal
+        isOpen={isBargainOpen}
+        onClose={() => setIsBargainOpen(false)}
+        product={data}
+      />
 
       {/* Image Lightbox Modal */}
       {isLightboxOpen && (

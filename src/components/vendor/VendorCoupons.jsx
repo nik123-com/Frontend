@@ -140,7 +140,7 @@ export default function VendorCoupons() {
                     <th>Min Spend (₹)</th>
                     <th>Expiry Date</th>
                     <th>Added By</th>
-                    <th className="text-end pe-4">Actions</th>
+                    <th className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "120px" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -160,12 +160,12 @@ export default function VendorCoupons() {
                             )}
                           </div>
                         </td>
-                        <td className="fw-bold text-dark">
+                        <td className="fw-bold text-dark text-nowrap">
                           {c.discount}{c.discountType === "Percentage" || c.discountType === "2" ? "% OFF" : " ₹ OFF"}
                         </td>
-                        <td>₹{c.minAmoutSpend || 0}</td>
-                        <td>{c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : "No Expiry"}</td>
-                        <td>
+                        <td className="text-nowrap">₹{c.minAmoutSpend || 0}</td>
+                        <td className="text-nowrap">{c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : "No Expiry"}</td>
+                        <td className="text-nowrap">
                           {isAdmin ? (
                             <span className="badge bg-warning-subtle text-warning border border-warning px-2 py-1">
                               <i className="fa-solid fa-user-shield me-1"></i> Admin
@@ -176,9 +176,9 @@ export default function VendorCoupons() {
                             </span>
                           )}
                         </td>
-                        <td className="text-end pe-4">
+                        <td className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "120px" }}>
                           {!isAdmin ? (
-                            <button onClick={() => handleDelete(c._id)} className="btn btn-sm btn-outline-danger">
+                            <button onClick={() => handleDelete(c._id)} className="btn btn-sm btn-outline-danger text-nowrap">
                               <i className="fa-solid fa-trash me-1"></i> Delete
                             </button>
                           ) : (

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { baseUrl, vendor_dashboard } from "../endpoints";
 import { getVendorAnnouncements } from "../server/Announcement";
 import socket from "../../socket";
+import StockIntelligenceSection from "./StockIntelligenceSection";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -252,6 +253,13 @@ export default function VendorDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Predictive Stock-Out Intelligence */}
+      <StockIntelligenceSection
+        onAdjustStock={() => {
+          window.location.href = "/vendor/inventory";
+        }}
+      />
 
       {/* Low Stock Warnings */}
       <div className="card border-0 shadow-sm rounded-3 p-4 bg-white">

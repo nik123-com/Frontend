@@ -4,7 +4,63 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../endpoints";
 import { allProduct } from "../server/Product";
+import { allCategory } from "../server/Category";
 import { useCart } from "../../context/CartContext";
+import { askContextualSana } from "../server/Recommendation";
+
+const categoryEmojiMap = {
+  "atta": "🌾",
+  "rice": "🍚",
+  "dal": "🥣",
+  "baby": "🍼",
+  "bakery": "🥐",
+  "biscuit": "🍪",
+  "breakfast": "🥞",
+  "instant": "🍜",
+  "chicken": "🍗",
+  "meat": "🥩",
+  "fish": "🐟",
+  "cleaning": "🧼",
+  "cold drink": "🥤",
+  "juice": "🧃",
+  "dairy": "🥛",
+  "bread": "🍞",
+  "egg": "🥚",
+  "fruit": "🍎",
+  "vegetable": "🥦",
+  "home": "🏠",
+  "office": "💼",
+  "masala": "🧂",
+  "oil": "🫒",
+  "organic": "🥗",
+  "healthy": "🥑",
+  "paan": "🍃",
+  "personal": "🧴",
+  "pet": "🐾",
+  "pharma": "💊",
+  "wellness": "🩺",
+  "sauce": "🍯",
+  "spread": "🧈",
+  "snack": "🍿",
+  "munch": "🥨",
+  "sweet": "🍫",
+  "tea": "🍵",
+  "coffee": "☕",
+  "drink": "🥤",
+  "electronic": "⚡",
+  "fashion": "👕",
+  "footwear": "👟",
+  "beauty": "💄"
+};
+
+export function getCategoryIcon(catName) {
+  if (!catName) return "🛍️";
+  const lower = catName.toLowerCase();
+  for (const [key, icon] of Object.entries(categoryEmojiMap)) {
+    if (lower.includes(key)) return icon;
+  }
+  return "🛍️";
+}
 
 const blockedKeywords = [
   "hack",
@@ -43,7 +99,31 @@ function findMatchingProducts(userMessage, products) {
 
   const query = userMessage.toLowerCase().trim();
 
-  // Common stop words to exclude
+  // ONLY consider products that are strictly active and IN STOCK!
+  const inStockProducts = products.filter(
+    (product) => product && product.status !== false && Number(product.stock) > 0
+  );
+
+  // 1. Direct category match if user asked for a specific category
+  const directCategoryMatches = inStockProducts.filter(product => {
+    const catName = (product.category_id?.name || "").toLowerCase();
+    if (!catName) return false;
+    const cleanQuery = query.replace(/show\s+me|category|categories|products?|list\s+of|give\s+me/gi, '').trim();
+    return cleanQuery.length > 2 && (catName.includes(cleanQuery) || query.includes(catName));
+  });
+
+  if (directCategoryMatches.length > 0) {
+    return directCategoryMatches.slice(0, 10);
+  }
+
+  // If the query was explicitly asking for a category and no in-stock products matched:
+  const isCategoryQuery = query.includes("category") || query.includes("categories") || query.includes("show me");
+  if (isCategoryQuery) {
+    // Do NOT fallback to random products from other categories
+    return [];
+  }
+
+  // 2. Tokenized keyword search on in-stock products only
   const stopWords = new Set([
     "provide", "me", "list", "of", "all", "the", "category", "categories", "and", "or",
     "what", "is", "are", "show", "please", "products", "items", "available", "in", "for",
@@ -54,7 +134,7 @@ function findMatchingProducts(userMessage, products) {
   const rawTokens = query.replace(/[^\w\s]/gi, ' ').split(/\s+/);
   const keywords = rawTokens.filter(token => token.length > 1 && !stopWords.has(token));
 
-  let matched = products.filter(product => {
+  let matched = inStockProducts.filter(product => {
     const catName = (product.category_id?.name || "").toLowerCase();
     const brandName = (product.brand_id?.name || "").toLowerCase();
     const prodName = (product.name || "").toLowerCase();
@@ -71,63 +151,77 @@ function findMatchingProducts(userMessage, products) {
     return false;
   });
 
-  // Fallback: If customer asks for bakery/biscuit or product list and no exact product filter matched
-  const isProductQuery = query.includes("product") || query.includes("category") || query.includes("list") || query.includes("show") || query.includes("bakery") || query.includes("biscuit") || query.includes("gaming") || query.includes("laptop") || query.includes("phone") || query.includes("item");
-
-  if (matched.length === 0 && isProductQuery) {
-    matched = products.slice(0, 8);
-  }
-
+  // Never fallback to arbitrary products when nothing matched
   return matched.slice(0, 10);
 }
 
 async function askSana(customerName, userMessage, matchedProducts = []) {
-  let productInfo = "";
-  if (matchedProducts.length > 0) {
-    productInfo = `
-Products Available in Store Matching Query:
-${matchedProducts.map(p => `- ${p.name} (Category: ${p.category_id?.name || 'General'}, Price: ₹${p.price})`).join("\n")}
+  try {
+    const userId = sessionStorage.getItem("userId");
+    const response = await askContextualSana({
+      query: userMessage,
+      customerName: customerName || "Shopper",
+      userId: userId || null
+    });
 
-INSTRUCTION: Acknowledge that you have found these related products and let ${customerName} know that their product cards are displayed right below your message. Keep the message concise, warm, and helpful.
-`;
+    if (response.data && response.data.success) {
+      const backendMessage = response.data.message || "";
+      const isNotFound =
+        backendMessage.toLowerCase().includes("don't found") ||
+        backendMessage.toLowerCase().includes("not found") ||
+        backendMessage.toLowerCase().includes("check back soon") ||
+        backendMessage.toLowerCase().includes("none of the products");
+
+      // If backend says not found or returned no products, DO NOT show any products!
+      if (isNotFound || !Array.isArray(response.data.products) || response.data.products.length === 0) {
+        return {
+          message: "Sorry sir/Ma'am, We don't Found it in our stock right now.",
+          products: [],
+          reasons: [],
+          type: "general_answer"
+        };
+      }
+
+      const strictlyInStock = response.data.products.filter(
+        (p) => p && p.status !== false && Number(p.stock) > 0
+      );
+
+      if (strictlyInStock.length === 0) {
+        return {
+          message: "Sorry sir/Ma'am, We don't Found it in our stock right now.",
+          products: [],
+          reasons: [],
+          type: "general_answer"
+        };
+      }
+
+      return {
+        message: backendMessage,
+        products: strictlyInStock,
+        reasons: response.data.reasons || [],
+        type: response.data.type || "product_recommendation"
+      };
+    }
+  } catch (err) {
+    console.debug("Contextual Sana call error, falling back:", err);
   }
 
-  const prompt = `
-You are Sana, a professional AI Shopping Assistant for Aventra.
-
-Customer Name: ${customerName}
-
-Customer Message:
-${userMessage}
-${productInfo}
-
-ROLE:
-- Act as a personal shopping assistant.
-- Help customers discover products.
-- Recommend products.
-- Assist with orders, shipping, returns and refunds.
-- Always address the customer by name.
-
-SECURITY POLICY:
-Never assist with hacking, exploits, payment bypassing, coupon abuse, refund abuse, or fraud.
-
-RECOMMENDATION FORMAT:
-Hello ${customerName},
-
-${matchedProducts.length > 0 ? "Certainly! Here are the products matching your request:" : "Certainly! How can I help you today?"}
-
-Keep responses professional and concise.
-`;
-
-  const response = await axios.post(`${baseUrl}/api/aiCall`, {
-    prompt: prompt,
-  });
-
-  if (response.data && response.data.success) {
-    return response.data.message;
-  } else {
-    throw new Error(response.data?.message || "Failed to get response from Gemini");
+  // Graceful fallback: If no products in stock, politely apologize and return empty products
+  if (matchedProducts.length === 0) {
+    return {
+      message: "Sorry sir/Ma'am, We don't Found it in our stock right now.",
+      products: [],
+      reasons: []
+    };
   }
+
+  const prompt = `You are Sana, a professional AI Shopping Assistant for Aventra.\nCustomer Name: ${customerName}\nCustomer Message: ${userMessage}\nIn-Stock Products: ${matchedProducts.map(p => p.name).join(", ")}\nROLE: Act as personal shopping assistant. If in-stock products are available, introduce them warmly. If not found, say politely: 'Sorry sir/Ma'am, We don't Found it'.`;
+  const res = await axios.post(`${baseUrl}/api/aiCall`, { prompt });
+  return {
+    message: res.data?.message || "Here are the available products in stock for your request:",
+    products: matchedProducts,
+    reasons: []
+  };
 }
 
 export default function MyChatBot() {
@@ -135,6 +229,7 @@ export default function MyChatBot() {
   const { handleAddToCart } = useCart();
 
   const [allProducts, setAllProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(() => {
     const saved = sessionStorage.getItem("sana-chat-messages");
@@ -168,16 +263,48 @@ export default function MyChatBot() {
 
   const messagesEndRef = useRef(null);
 
-  // Fetch all products from store on component mount
+  // Fetch actual products and store categories on component mount
   useEffect(() => {
+    // 1. Fetch live products
     allProduct({})
       .then((res) => {
         if (res.data && res.data.success && Array.isArray(res.data.data)) {
           setAllProducts(res.data.data);
+          // If categories haven't loaded yet, derive active categories directly from live products
+          setCategories((prev) => {
+            if (prev.length > 0) return prev;
+            const seen = new Set();
+            const fromProds = [];
+            res.data.data.forEach((p) => {
+              const catName = p.category_id?.name;
+              if (catName && !seen.has(catName)) {
+                seen.add(catName);
+                fromProds.push({
+                  _id: p.category_id?._id || p.category_id,
+                  name: catName
+                });
+              }
+            });
+            return fromProds;
+          });
         }
       })
       .catch((err) => {
         console.error("Error loading products for Sana Chat:", err);
+      });
+
+    // 2. Fetch live store categories from Category API
+    allCategory({})
+      .then((res) => {
+        if (res.data && res.data.success && Array.isArray(res.data.data)) {
+          const activeCats = res.data.data.filter((c) => c.status !== false && c.name);
+          if (activeCats.length > 0) {
+            setCategories(activeCats);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading categories for Sana Chat:", err);
       });
   }, []);
 
@@ -239,10 +366,26 @@ export default function MyChatBot() {
         setMessages((prev) => [...prev, greetingMsg]);
 
         setTimeout(() => {
+          const availableCats = categories.length > 0 ? categories : [
+            { name: "Bakery and Biscuits" },
+            { name: "Dairy,Bread and Eggs" },
+            { name: "Breakfast and Instant Food" },
+            { name: "Cold Drink and juices" },
+            { name: "Snacks and Munchies" },
+            { name: "Fruits and vegetables" },
+            { name: "Atta,Rice and Dal" },
+            { name: "Chicken,Meat and Fish" }
+          ];
+
+          const catListText = availableCats
+            .slice(0, 8)
+            .map(c => `• ${getCategoryIcon(c.name)} ${c.name}`)
+            .join("\n");
+
           const capabilitiesMsg = {
             id: `bot-cap-${Date.now()}`,
             sender: "bot",
-            text: `I can help you discover products in categories like:\n\n🥐 Bakery & Biscuits\n📱 Smartphones\n💻 Laptops\n⌚ Smart Watches\n🎧 Headphones\n📺 Electronics\n👕 Fashion\n👟 Footwear\n🎮 Gaming\n🏠 Home Appliances\n\nWhat are you looking for today?`,
+            text: `I can help you discover products in our real store categories:\n\n${catListText}\n\nWhat are you looking for today?`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
           setMessages((prev) => [...prev, capabilitiesMsg]);
@@ -269,15 +412,35 @@ export default function MyChatBot() {
       }
 
       try {
-        // Find matching products for query
-        const matchedProducts = findMatchingProducts(userText, allProducts);
+        // Find matching in-stock products for query
+        const localMatches = findMatchingProducts(userText, allProducts);
 
-        const responseText = await askSana(userName || "Customer", userText, matchedProducts);
+        const sanaResult = await askSana(userName || "Customer", userText, localMatches);
+        
+        // Strictly filter to active, in-stock products only
+        let finalProducts = Array.isArray(sanaResult.products)
+          ? sanaResult.products.filter(p => p && p.status !== false && Number(p.stock) > 0)
+          : [];
+
+        let botReplyText = sanaResult.message || "";
+        const isNotFound =
+          botReplyText.toLowerCase().includes("don't found") ||
+          botReplyText.toLowerCase().includes("not found") ||
+          botReplyText.toLowerCase().includes("check back soon") ||
+          botReplyText.toLowerCase().includes("none of the products") ||
+          finalProducts.length === 0;
+
+        if (isNotFound) {
+          botReplyText = "Sorry sir/Ma'am, We don't Found it in our stock right now.";
+          finalProducts = [];
+        }
+
         const botMsg = {
           id: `bot-${Date.now()}`,
           sender: "bot",
-          text: responseText,
-          products: matchedProducts,
+          text: botReplyText,
+          products: finalProducts,
+          reasons: sanaResult.reasons || [],
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages((prev) => [...prev, botMsg]);
@@ -336,14 +499,24 @@ export default function MyChatBot() {
     handleAddToCart(product, navigate);
   };
 
-  const quickCategories = [
-    { label: "🥐 Bakery & Biscuits", query: "Provide me list of all the Bakery and Biscuit category ?" },
-    { label: "🎮 Gaming", query: "Show me Gaming products" },
-    { label: "📱 Smartphones", query: "Show me Smartphones category" },
-    { label: "💻 Laptops", query: "Show me Laptops" },
-    { label: "🏠 Home Appliances", query: "Show me Home Appliances" },
-    { label: "🎧 Headphones", query: "Show me Headphones" },
+  const displayCategories = categories.length > 0 ? categories : [
+    { name: "Bakery and Biscuits" },
+    { name: "Dairy,Bread and Eggs" },
+    { name: "Breakfast and Instant Food" },
+    { name: "Cold Drink and juices" },
+    { name: "Snacks and Munchies" },
+    { name: "Fruits and vegetables" },
+    { name: "Atta,Rice and Dal" },
+    { name: "Chicken,Meat and Fish" },
+    { name: "Cleaning Essentials" },
+    { name: "Personal care" }
   ];
+
+  const quickCategories = displayCategories.map((cat) => ({
+    id: cat._id || cat.name,
+    label: `${getCategoryIcon(cat.name)} ${cat.name}`,
+    query: `Show me ${cat.name} category`
+  }));
 
   return (
     <>
@@ -968,7 +1141,11 @@ export default function MyChatBot() {
           {/* Messages List */}
           <div className="sana-chat-messages">
             {messages.map((msg) => {
-              const hasProducts = msg.sender === "bot" && Array.isArray(msg.products) && msg.products.length > 0;
+              const isNotFound = msg.text?.toLowerCase().includes("don't found") ||
+                msg.text?.toLowerCase().includes("not found") ||
+                msg.text?.toLowerCase().includes("check back soon") ||
+                msg.text?.toLowerCase().includes("none of the products");
+              const hasProducts = !isNotFound && msg.sender === "bot" && Array.isArray(msg.products) && msg.products.length > 0;
 
               return (
                 <div key={msg.id} className={`sana-message-wrapper ${msg.sender} ${hasProducts ? 'has-products' : ''}`}>
@@ -1093,6 +1270,27 @@ export default function MyChatBot() {
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isTyping}
               />
+              <button
+                type="button"
+                className="sana-mic-btn border-0 bg-transparent text-secondary p-1"
+                title="Speak to Sana"
+                onClick={() => {
+                  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                  if (!SR) {
+                    alert("Speech recognition is not supported in this browser.");
+                    return;
+                  }
+                  const rec = new SR();
+                  rec.lang = "en-US";
+                  rec.start();
+                  rec.onresult = (evt) => {
+                    const speech = evt.results[0][0].transcript;
+                    setInputText(speech);
+                  };
+                }}
+              >
+                <i className="fa-solid fa-microphone text-muted fs-6"></i>
+              </button>
               <button
                 type="submit"
                 className="sana-send-btn"
