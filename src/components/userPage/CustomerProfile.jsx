@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getCustomerProfile, updateCustomerProfile } from "../server/Customer";
 import { toast } from "react-toastify";
@@ -25,6 +25,34 @@ export default function CustomerProfile() {
   const [govtId, setGovtId] = useState("");
   const [evidenceFile, setEvidenceFile] = useState(null);
   const [evidencePreview, setEvidencePreview] = useState("");
+  const [imgLoadError, setImgLoadError] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const DOC_TYPE_NAMES = {
+    aadhar: "Aadhaar Card",
+    voter: "Voter ID Card",
+    pan: "PAN Card",
+    passport: "Passport",
+    dl: "Driving Licence"
+  };
+
+  const isValidImageUrl = (val) => {
+    if (!val || typeof val !== "string") return false;
+    const s = val.trim();
+    return (
+      s.startsWith("data:image/") ||
+      s.startsWith("blob:") ||
+      s.startsWith("http://") ||
+      s.startsWith("https://") ||
+      /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(s)
+    );
+  };
+
+  const isPdfUrl = (val) => {
+    if (!val || typeof val !== "string") return false;
+    const s = val.trim();
+    return s.startsWith("data:application/pdf") || /\.pdf(\?.*)?$/i.test(s);
+  };
 
   // Form Fields - Password Security
   const [currentPassword, setCurrentPassword] = useState("");
@@ -58,7 +86,14 @@ export default function CustomerProfile() {
         setContact(c.Contact || "");
         setAddress(c.Address || "");
         setGovtId(c.GovtID || "");
-        setEvidencePreview(c.evidence || "");
+        
+        // Only set preview if c.evidence is an actual valid image or PDF URL/data URI
+        if (c.evidence && (isValidImageUrl(c.evidence) || isPdfUrl(c.evidence))) {
+          setEvidencePreview(c.evidence);
+        } else {
+          setEvidencePreview("");
+        }
+        setImgLoadError(false);
       } else {
         toast.error(res.data?.message || "Failed to load profile.");
       }
@@ -75,15 +110,28 @@ export default function CustomerProfile() {
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         toast.error("File size must be under 5MB");
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
       setEvidenceFile(file);
+      setImgLoadError(false);
       const reader = new FileReader();
       reader.onloadend = () => {
         setEvidencePreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleClearSelectedFile = () => {
+    setEvidenceFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (customer.evidence && (isValidImageUrl(customer.evidence) || isPdfUrl(customer.evidence))) {
+      setEvidencePreview(customer.evidence);
+    } else {
+      setEvidencePreview("");
+    }
+    setImgLoadError(false);
   };
 
   const handleProfileSubmit = async (e) => {
@@ -133,6 +181,8 @@ export default function CustomerProfile() {
           timer: 2200
         });
 
+        setEvidenceFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
         fetchProfile();
       } else {
         Swal.fire("Update Failed", res.data?.message || "Could not update profile.", "error");
@@ -461,38 +511,89 @@ export default function CustomerProfile() {
                       Verification Document / Proof (Optional)
                     </label>
                     <div className="p-3 border rounded-3 bg-light">
+                      {/* If customer registered an ID type like Aadhar/PAN, show registered indicator */}
+                      {customer.evidence && DOC_TYPE_NAMES[customer.evidence.toLowerCase()] && (
+                        <div className="mb-2.5">
+                          <span
+                            className="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5"
+                            style={{ fontSize: "11px" }}
+                          >
+                            <i className="fa-solid fa-id-card"></i>
+                            Registered ID Type: {DOC_TYPE_NAMES[customer.evidence.toLowerCase()]}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="d-flex align-items-center gap-3 flex-wrap">
-                        {evidencePreview ? (
-                          <div className="position-relative">
+                        {evidencePreview && !imgLoadError && isValidImageUrl(evidencePreview) ? (
+                          <div className="position-relative" style={{ width: "90px", height: "90px" }}>
                             <img
                               src={evidencePreview}
                               alt="Document proof preview"
-                              className="rounded border shadow-sm"
-                              style={{ width: "90px", height: "90px", objectFit: "cover" }}
+                              className="rounded border shadow-sm w-100 h-100"
+                              style={{ objectFit: "cover" }}
+                              onError={() => setImgLoadError(true)}
                             />
-                            <span className="position-absolute bottom-0 start-0 bg-dark text-white px-1.5 py-0.5 rounded small" style={{ fontSize: "10px" }}>
-                              Current File
+                            <span
+                              className="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-0.5"
+                              style={{ fontSize: "10px", borderRadius: "0 0 4px 4px" }}
+                            >
+                              {evidenceFile ? "New File" : "Current File"}
+                            </span>
+                          </div>
+                        ) : evidencePreview && isPdfUrl(evidencePreview) ? (
+                          <div
+                            className="rounded border bg-white shadow-sm d-flex flex-column align-items-center justify-content-center p-2 text-center position-relative"
+                            style={{ width: "90px", height: "90px" }}
+                          >
+                            <i className="fa-solid fa-file-pdf text-danger fs-2 mb-1"></i>
+                            <span
+                              className="text-truncate small fw-semibold text-dark w-100 px-1"
+                              style={{ fontSize: "10px" }}
+                              title={evidenceFile?.name || "PDF Document"}
+                            >
+                              {evidenceFile?.name || "PDF Document"}
+                            </span>
+                            <span
+                              className="position-absolute bottom-0 start-0 w-100 bg-danger text-white text-center py-0.5"
+                              style={{ fontSize: "9px", borderRadius: "0 0 4px 4px" }}
+                            >
+                              {evidenceFile ? "New PDF" : "Current PDF"}
                             </span>
                           </div>
                         ) : (
                           <div
-                            className="rounded border bg-white d-flex align-items-center justify-content-center text-muted"
+                            className="rounded border bg-white d-flex flex-column align-items-center justify-content-center text-muted p-2 text-center shadow-sm"
                             style={{ width: "90px", height: "90px" }}
                           >
-                            <i className="fa-regular fa-file-image fs-3"></i>
+                            <i className="fa-regular fa-file-lines fs-3 text-secondary mb-1"></i>
+                            <span style={{ fontSize: "10px" }}>No Doc File</span>
                           </div>
                         )}
 
-                        <div className="flex-grow-1">
+                        <div className="flex-grow-1" style={{ minWidth: "220px" }}>
                           <input
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*,.pdf"
                             className="form-control"
                             onChange={handleFileChange}
                           />
-                          <small className="text-muted d-block mt-1">
-                            Upload updated ID proof or document (JPG, PNG, PDF up to 5MB).
-                          </small>
+                          <div className="d-flex align-items-center justify-content-between mt-1 flex-wrap gap-2">
+                            <small className="text-muted">
+                              Upload updated ID proof or document (JPG, PNG, PDF up to 5MB).
+                            </small>
+                            {evidenceFile && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold"
+                                style={{ fontSize: "11px" }}
+                                onClick={handleClearSelectedFile}
+                              >
+                                <i className="fa-solid fa-xmark me-1"></i>Clear Selection
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
