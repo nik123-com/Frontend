@@ -7,7 +7,9 @@ import {
   admin_allot_customer_rank,
   admin_revoke_customer_rank,
   customer_check_reward,
-  customer_dismiss_reward
+  customer_dismiss_reward,
+  customer_profile,
+  customer_update_profile
 } from "../endpoints";
 
 function getToken(){
@@ -38,4 +40,10 @@ export function checkRankReward(data = {}){
 }
 export function dismissRewardPopup(data = {}){
     return axios.post ( baseUrl + customer_dismiss_reward ,data,getToken());
+}
+export function getCustomerProfile(data = {}) {
+    return axios.post(baseUrl + customer_profile, data, getToken());
+}
+export function updateCustomerProfile(data) {
+    return axios.post(baseUrl + customer_update_profile, data, getToken());
 }

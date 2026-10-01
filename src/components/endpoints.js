@@ -189,9 +189,9 @@ export const vendor_bargain_authorize = "/vendor/bargain/authorize";
 export const vendor_bargain_decline = "/vendor/bargain/decline";
 export const bargain_delete = "/vendor/bargain/delete";
 
-
-
-
+// Customer Profile & Credentials
+export const customer_profile = "/customer/profile";
+export const customer_update_profile = "/customer/profile/update";
 
 
 

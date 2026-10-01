@@ -35,6 +35,7 @@ const ViewWishList = lazy(() => import("./components/userPage/ViewWishList"));
 const ForgotPassword = lazy(() => import("./components/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/auth/ResetPassword"));
 const CustomerQueries = lazy(() => import("./components/userPage/CustomerQueries"));
+const CustomerProfile = lazy(() => import("./components/userPage/CustomerProfile"));
 const VendorRegister = lazy(() => import("./components/auth/VendorRegister"));
 const VendorMaster = lazy(() => import("./components/vendor/vendorlayout/VendorMaster"));
 
@@ -118,6 +119,8 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                 <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                 <Route path="/queries" element={<CustomerQueries />}></Route>
+                <Route path="/myprofile" element={<CustomerProfile />}></Route>
+                <Route path="/profile" element={<CustomerProfile />}></Route>
               </Route>
 
               {/* Vendor Panel */}

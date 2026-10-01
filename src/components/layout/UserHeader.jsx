@@ -21,10 +21,12 @@ function UserHeader() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [userRank, setUserRank] = useState(null);
+  const [customerName, setCustomerName] = useState(sessionStorage.getItem("userId.name") || "");
   const notifRef = useRef(null);
 
   useEffect(() => {
     if (isLogin) {
+      setCustomerName(sessionStorage.getItem("userId.name") || "");
       checkRankReward()
         .then((res) => {
           if (res.data && res.data.success && res.data.rank) {
@@ -33,6 +35,12 @@ function UserHeader() {
         })
         .catch(() => { });
     }
+
+    const handleProfileUpdate = () => {
+      setCustomerName(sessionStorage.getItem("userId.name") || "");
+    };
+    window.addEventListener("userProfileUpdated", handleProfileUpdate);
+    return () => window.removeEventListener("userProfileUpdated", handleProfileUpdate);
   }, [isLogin]);
 
   const loadNotifications = () => {
@@ -283,6 +291,11 @@ function UserHeader() {
                 <Link to="/queries" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('queries') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Queries
                 </Link>
+                {isLogin && (
+                  <Link to="/myprofile" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('profile') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
+                    My Profile
+                  </Link>
+                )}
               </div>
               <div className="d-flex my-2 my-xl-0 ms-auto align-items-center position-relative flex-shrink-0">
                 <button
@@ -556,6 +569,26 @@ function UserHeader() {
                     </span>
                   )}
                 </Link>
+
+                {isLogin && (
+                  <Link
+                    to="/myprofile"
+                    className="btn btn-outline-success m-1 rounded-pill px-3 py-2 fw-bold text-nowrap d-flex align-items-center gap-1.5 shadow-sm text-decoration-none"
+                    style={{ borderColor: "#81c408", color: "#365314" }}
+                    onClick={() => setIsNavCollapsed(true)}
+                    title="View & Update My Profile Credentials"
+                  >
+                    <i className="fa-solid fa-circle-user text-success fs-5"></i>
+                    <span className="d-none d-md-inline text-truncate" style={{ maxWidth: "110px" }}>
+                      {customerName || "Profile"}
+                    </span>
+                    {userRank && (
+                      <span className="badge bg-warning text-dark rounded-pill px-1.5 py-0.5" style={{ fontSize: "10px" }}>
+                        #{userRank}
+                      </span>
+                    )}
+                  </Link>
+                )}
 
                 {isLogin ? (
                   <button
