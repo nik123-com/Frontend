@@ -21,12 +21,17 @@ function UserHeader() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [userRank, setUserRank] = useState(null);
-  const [customerName, setCustomerName] = useState(sessionStorage.getItem("userId.name") || "");
+
+  // Profile dropdown state
+  const getStoredName = () => sessionStorage.getItem("userId.name") || sessionStorage.getItem("name") || "";
+  const [customerName, setCustomerName] = useState(getStoredName());
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const profileRef = useRef(null);
   const notifRef = useRef(null);
 
   useEffect(() => {
     if (isLogin) {
-      setCustomerName(sessionStorage.getItem("userId.name") || "");
+      setCustomerName(getStoredName());
       checkRankReward()
         .then((res) => {
           if (res.data && res.data.success && res.data.rank) {
@@ -37,7 +42,7 @@ function UserHeader() {
     }
 
     const handleProfileUpdate = () => {
-      setCustomerName(sessionStorage.getItem("userId.name") || "");
+      setCustomerName(getStoredName());
     };
     window.addEventListener("userProfileUpdated", handleProfileUpdate);
     return () => window.removeEventListener("userProfileUpdated", handleProfileUpdate);
@@ -218,6 +223,28 @@ function UserHeader() {
     };
   }, [showNotifDropdown]);
 
+  // Auto-close profile dropdown on click outside or escape key press
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       {/* Navbar start */}
@@ -291,11 +318,6 @@ function UserHeader() {
                 <Link to="/queries" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('queries') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
                   Queries
                 </Link>
-                {isLogin && (
-                  <Link to="/myprofile" className={`nav-item nav-link px-3 py-2 ${location.pathname.toLowerCase().includes('profile') ? 'active' : ''}`} onClick={() => setIsNavCollapsed(true)}>
-                    My Profile
-                  </Link>
-                )}
               </div>
               <div className="d-flex my-2 my-xl-0 ms-auto align-items-center position-relative flex-shrink-0">
                 <button
@@ -570,38 +592,117 @@ function UserHeader() {
                   )}
                 </Link>
 
-                {isLogin && (
-                  <Link
-                    to="/myprofile"
-                    className="btn btn-outline-success m-1 rounded-pill px-3 py-2 fw-bold text-nowrap d-flex align-items-center gap-1.5 shadow-sm text-decoration-none"
-                    style={{ borderColor: "#81c408", color: "#365314" }}
-                    onClick={() => setIsNavCollapsed(true)}
-                    title="View & Update My Profile Credentials"
-                  >
-                    <i className="fa-solid fa-circle-user text-success fs-5"></i>
-                    <span className="d-none d-md-inline text-truncate" style={{ maxWidth: "110px" }}>
-                      {customerName || "Profile"}
-                    </span>
-                    {userRank && (
-                      <span className="badge bg-warning text-dark rounded-pill px-1.5 py-0.5" style={{ fontSize: "10px" }}>
-                        #{userRank}
-                      </span>
-                    )}
-                  </Link>
-                )}
-
                 {isLogin ? (
-                  <button
-                    className="btn btn-primary text-white m-1 rounded-pill px-3 px-xl-4 py-2 fw-bold text-nowrap flex-shrink-0 shadow-sm"
-                    style={{ backgroundColor: "#81c408", borderColor: "#81c408" }}
-                    onClick={() => {
-                      sessionStorage.clear();
-                      toast.info("Logged out successfully");
-                      navigate("/");
-                    }}
-                  >
-                    Logout
-                  </button>
+                  <div className="position-relative ms-1 my-auto" ref={profileRef}>
+                    <button
+                      type="button"
+                      className="btn bg-white rounded-pill px-3 py-1.5 fw-bold text-nowrap d-flex align-items-center gap-2 shadow-sm"
+                      style={{
+                        borderColor: "#81c408",
+                        borderWidth: "1.5px",
+                        borderStyle: "solid",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease-in-out"
+                      }}
+                      onClick={() => setShowProfileDropdown((prev) => !prev)}
+                      aria-expanded={showProfileDropdown}
+                      title="Account Options"
+                    >
+                      <i
+                        className="fa-solid fa-circle-user"
+                        style={{ color: "#0c831f", fontSize: "1.35rem", lineHeight: 1 }}
+                      />
+                      <span
+                        className="text-truncate fw-semibold"
+                        style={{ maxWidth: "140px", color: "#1e293b", fontSize: "0.95rem" }}
+                      >
+                        {customerName || "Profile"}
+                      </span>
+                      {userRank && (
+                        <span className="badge bg-warning text-dark rounded-pill px-1.5 py-0.5" style={{ fontSize: "10px" }}>
+                          #{userRank}
+                        </span>
+                      )}
+                      <i
+                        className="fa-solid fa-chevron-down text-muted"
+                        style={{
+                          fontSize: "0.65rem",
+                          transition: "transform 0.2s ease",
+                          transform: showProfileDropdown ? "rotate(180deg)" : "rotate(0deg)"
+                        }}
+                      />
+                    </button>
+
+                    {/* Profile Dropdown Menu */}
+                    {showProfileDropdown && (
+                      <div
+                        className="dropdown-menu show position-absolute end-0 mt-2 py-2 border shadow-lg"
+                        style={{
+                          minWidth: "210px",
+                          borderRadius: "14px",
+                          backgroundColor: "#ffffff",
+                          borderColor: "#e2e8f0",
+                          zIndex: 1100,
+                          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08)",
+                          animation: "notifFadeIn 0.2s ease-out"
+                        }}
+                      >
+                        {/* Header preview */}
+                        <div className="px-3 py-2 border-bottom mb-1 bg-light bg-opacity-75 rounded-top-3">
+                          <p className="mb-0 fw-bold text-dark text-truncate" style={{ fontSize: "0.88rem" }}>
+                            {customerName || "Valued Shopper"}
+                          </p>
+                          <small className="text-muted text-truncate d-block" style={{ fontSize: "0.75rem" }}>
+                            {sessionStorage.getItem("email") || "Customer Account"}
+                          </small>
+                        </div>
+
+                        {/* Option 1: View Profile */}
+                        <button
+                          type="button"
+                          className="dropdown-item d-flex align-items-center gap-2.5 px-3 py-2 text-dark fw-medium"
+                          style={{ fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s ease" }}
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            setIsNavCollapsed(true);
+                            navigate("/myprofile");
+                          }}
+                        >
+                          <div
+                            className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0"
+                            style={{ width: "28px", height: "28px", backgroundColor: "#81c408" }}
+                          >
+                            <i className="fa-solid fa-user" style={{ fontSize: "0.75rem" }}></i>
+                          </div>
+                          <span>View Profile</span>
+                        </button>
+
+                        <hr className="dropdown-divider my-1 opacity-25" />
+
+                        {/* Option 2: Logout */}
+                        <button
+                          type="button"
+                          className="dropdown-item d-flex align-items-center gap-2.5 px-3 py-2 text-danger fw-medium"
+                          style={{ fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s ease" }}
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            setIsNavCollapsed(true);
+                            sessionStorage.clear();
+                            toast.info("Logged out successfully");
+                            navigate("/");
+                          }}
+                        >
+                          <div
+                            className="rounded-circle d-flex align-items-center justify-content-center text-danger flex-shrink-0"
+                            style={{ width: "28px", height: "28px", backgroundColor: "#fee2e2" }}
+                          >
+                            <i className="fa-solid fa-arrow-right-from-bracket" style={{ fontSize: "0.75rem" }}></i>
+                          </div>
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <Link
                     className="btn btn-primary text-white m-1 rounded-pill px-3 px-xl-4 py-2 fw-bold text-decoration-none text-nowrap flex-shrink-0 shadow-sm"

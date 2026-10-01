@@ -152,8 +152,8 @@ export default function CustomerProfile() {
       toast.error("Please enter your current password");
       return;
     }
-    if (!newPassword || newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters long");
+    if (!newPassword) {
+      toast.error("Please enter a new password");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -255,13 +255,9 @@ export default function CustomerProfile() {
               <div>
                 <div className="d-flex align-items-center gap-2 flex-wrap">
                   <h3 className="fw-bold mb-0 text-white">{name || "Valued Shopper"}</h3>
-                  {rank ? (
+                  {rank && (
                     <span className="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill shadow-sm">
                       <i className="fa-solid fa-crown me-1 text-warning-emphasis"></i> Rank #{rank} VIP
-                    </span>
-                  ) : (
-                    <span className="badge bg-white bg-opacity-25 text-white rounded-pill px-2.5 py-1">
-                      <i className="fa-solid fa-shield-halved me-1"></i> Verified Customer
                     </span>
                   )}
                 </div>
@@ -279,11 +275,6 @@ export default function CustomerProfile() {
                   <span className="badge bg-success bg-opacity-75 text-white px-2 py-1 rounded-pill">
                     <i className="fa-solid fa-circle-check me-1"></i> Account Active
                   </span>
-                  {customer.created_at && (
-                    <span className="badge bg-white bg-opacity-20 text-white px-2 py-1 rounded-pill">
-                      Member since {new Date(customer.created_at).getFullYear()}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
@@ -587,7 +578,7 @@ export default function CustomerProfile() {
                       className="form-control border-start-0 border-end-0 py-2.5 ps-0"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="At least 6 characters"
+                      placeholder="Enter new password"
                       required
                     />
                     <button
