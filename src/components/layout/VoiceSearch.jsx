@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function VoiceSearch() {
   const [text, setText] = useState("");
@@ -8,6 +8,15 @@ function VoiceSearch() {
   const [showGuide, setShowGuide] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAdminOrVendor =
+    location.pathname.toLowerCase().startsWith("/admin") ||
+    location.pathname.toLowerCase().startsWith("/vendor");
+
+  if (isAdminOrVendor) {
+    return null;
+  }
 
   const commandList = [
     { category: "Navigation", commands: ["Home", "Products / Shop", "Categories", "Brands", "Cart", "Checkout", "My Orders", "Wishlist", "Addresses"] },

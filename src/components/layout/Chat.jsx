@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { baseUrl } from "../endpoints";
 import { allProduct } from "../server/Product";
 import { allCategory } from "../server/Category";
@@ -226,6 +226,7 @@ async function askSana(customerName, userMessage, matchedProducts = []) {
 
 export default function MyChatBot() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { handleAddToCart } = useCart();
 
   const [allProducts, setAllProducts] = useState([]);
@@ -517,6 +518,13 @@ export default function MyChatBot() {
     label: `${getCategoryIcon(cat.name)} ${cat.name}`,
     query: `Show me ${cat.name} category`
   }));
+  const isAdminOrVendor =
+    location.pathname.toLowerCase().startsWith("/admin") ||
+    location.pathname.toLowerCase().startsWith("/vendor");
+
+  if (isAdminOrVendor) {
+    return null;
+  }
 
   return (
     <>

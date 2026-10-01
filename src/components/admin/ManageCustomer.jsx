@@ -80,10 +80,19 @@ export default function ManageCustomer() {
 
   const handleAllotRank = (customer) => {
     const currentRank = customer.rank || 1;
+    const hasRank = Boolean(customer.rank);
     Swal.fire({
-      title: customer.rank ? `Update Rank for ${customer.name}` : `Allot Rank for ${customer.name}`,
+      title: hasRank ? `Update Rank for ${customer.name}` : `Allot Rank for ${customer.name}`,
       html: `
         <div className="text-start fs-6 p-2">
+          ${hasRank ? `
+            <div class="d-flex align-items-center justify-content-between p-2 mb-3 bg-danger-subtle border border-danger-subtle rounded-3">
+              <span class="small text-danger fw-semibold"><i class="fas fa-award me-1"></i> Current Rank: #${customer.rank}</span>
+              <button type="button" class="btn btn-danger btn-sm py-1 px-2.5 fw-semibold" id="swal-customer-quick-remove-rank">
+                <i class="fas fa-trash-alt me-1"></i> Remove Rank Now
+              </button>
+            </div>
+          ` : ''}
           <div className="mb-3">
             <label className="form-label fw-bold small text-secondary">Numerical Rank:</label>
             <input type="number" id="swal-input-rank" class="form-control" min="1" value="${currentRank}" placeholder="Enter rank number (e.g. 1, 2, 3)" />
@@ -111,11 +120,18 @@ export default function ManageCustomer() {
       focusConfirm: false,
       showCancelButton: true,
       showDenyButton: Boolean(customer.rank),
-      denyButtonText: "Revoke Rank",
+      denyButtonText: '<i class="fas fa-trash-alt me-1"></i> Remove Rank',
       denyButtonColor: "#dc3545",
       confirmButtonText: customer.rank ? "Update Rank" : "Assign Rank",
       confirmButtonColor: "#81c408",
       didOpen: () => {
+        const quickRemoveBtn = document.getElementById("swal-customer-quick-remove-rank");
+        if (quickRemoveBtn) {
+          quickRemoveBtn.addEventListener("click", () => {
+            Swal.close();
+            handleRevokeRank(customer);
+          });
+        }
         const rankInput = document.getElementById("swal-input-rank");
         const rank1Fields = document.getElementById("swal-rank1-fields");
         if (rankInput && rank1Fields) {
@@ -208,28 +224,28 @@ export default function ManageCustomer() {
 
   const handleRevokeRank = (customer) => {
     Swal.fire({
-      title: "Revoke Customer Rank?",
-      text: `Are you sure you want to revoke the rank from customer "${customer.name}"?`,
+      title: "Remove Customer Rank?",
+      text: `Are you sure you want to remove the rank from customer "${customer.name}"?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#dc3545",
       cancelButtonColor: "#6c757d",
-      confirmButtonText: "Yes, Revoke Rank!"
+      confirmButtonText: "Yes, Remove Rank!"
     }).then((result) => {
       if (result.isConfirmed) {
         setLoading(true);
         revokeCustomerRank({ customerId: customer._id })
           .then((res) => {
             if (res.data.success) {
-              toast.success(res.data.message || "Rank revoked successfully");
+              toast.success(res.data.message || "Rank removed successfully");
               fetchCustomers();
             } else {
-              toast.error(res.data.message || "Failed to revoke rank");
+              toast.error(res.data.message || "Failed to remove rank");
             }
           })
           .catch((err) => {
             console.error(err);
-            toast.error("Error revoking rank from customer");
+            toast.error("Error removing rank from customer");
           })
           .finally(() => {
             setLoading(false);
@@ -331,21 +347,42 @@ export default function ManageCustomer() {
                               <div className="text-muted small">{element.email}</div>
                             </td>
                             <td>
-                              <button
-                                type="button"
-                                className={`btn btn-sm ${
-                                  element.rank
-                                    ? element.rank === 1
-                                      ? "btn-warning text-dark border-warning shadow-sm"
-                                      : "btn-success text-white shadow-sm"
-                                    : "btn-outline-secondary"
-                                } rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1 fw-semibold`}
-                                onClick={() => handleAllotRank(element)}
-                                title={element.rank ? `Rank #${element.rank} allotted. Click to edit rank.` : "Click to allot rank"}
-                              >
-                                <i className={`fas fa-award ${element.rank === 1 ? "text-dark" : element.rank ? "text-warning" : "text-muted"}`}></i>
-                                <span>{element.rank ? `Rank #${element.rank}` : "Allot Rank"}</span>
-                              </button>
+                              {element.rank ? (
+                                <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                                  <button
+                                    type="button"
+                                    className={`btn btn-sm ${
+                                      element.rank === 1
+                                        ? "btn-warning text-dark border-warning shadow-sm"
+                                        : "btn-success text-white shadow-sm"
+                                    } rounded-pill d-inline-flex align-items-center gap-1 px-3 py-1 fw-semibold`}
+                                    onClick={() => handleAllotRank(element)}
+                                    title={`Rank #${element.rank} allotted. Click to edit rank.`}
+                                  >
+                                    <i className={`fas fa-award ${element.rank === 1 ? "text-dark" : "text-warning"}`}></i>
+                                    <span>Rank #{element.rank}</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger rounded-pill px-2.5 py-1 fw-semibold d-inline-flex align-items-center gap-1 shadow-xs"
+                                    onClick={() => handleRevokeRank(element)}
+                                    title={`Remove Rank #${element.rank} from ${element.name}`}
+                                  >
+                                    <i className="fas fa-trash-alt"></i>
+                                    <span>Remove Rank</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-secondary rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-1 fw-semibold"
+                                  onClick={() => handleAllotRank(element)}
+                                  title="Click to allot rank"
+                                >
+                                  <i className="fas fa-award text-muted"></i>
+                                  <span>Allot Rank</span>
+                                </button>
+                              )}
                             </td>
                             <td>
                               <div className="text-dark small"><i className="fa-solid fa-phone text-muted me-1.5 small"></i>{element.Contact || "N/A"}</div>
