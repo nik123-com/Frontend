@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import {
   startBargainSession,
   submitBargainOffer,
-  acceptBargainCounterOffer
+  acceptBargainCounterOffer,
+  getBargainSessionStatus
 } from "../server/Bargain";
 import { addCart } from "../server/Cart";
 
@@ -14,6 +15,7 @@ export default function BargainModal({ isOpen, onClose, product, initialQuantity
   const [quantity, setQuantity] = useState(initialQuantity);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [offeredPrice, setOfferedPrice] = useState("");
@@ -65,6 +67,39 @@ export default function BargainModal({ isOpen, onClose, product, initialQuantity
     }
   }, [isOpen, product?._id, quantity]);
 
+  // Real-time polling when waiting for vendor to supply margin and discount
+  useEffect(() => {
+    let timer = null;
+    if (isOpen && session?.sessionId && session?.status === "waiting_vendor_approval") {
+      timer = setInterval(async () => {
+        try {
+          const res = await getBargainSessionStatus({ sessionId: session.sessionId });
+          if (res.data?.success && res.data.data) {
+            const updated = res.data.data;
+            if (updated.status !== "waiting_vendor_approval") {
+              setSession((prev) => ({
+                ...prev,
+                ...updated
+              }));
+              if (updated.status === "in_progress") {
+                toast.success("🎉 Vendor authorized bargaining! You can now start negotiating.");
+                const listP = Number(updated.originalPrice || product.price || 0);
+                setOfferedPrice(Math.round(listP * 0.9));
+              } else if (updated.status === "vendor_declined") {
+                toast.info("Vendor cannot offer additional discount on this item at this time.");
+              }
+            }
+          }
+        } catch (err) {
+          // ignore polling errors
+        }
+      }, 3000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isOpen, session?.sessionId, session?.status]);
+
   useEffect(() => {
     if (session?.history?.length) {
       scrollToBottom();
@@ -96,9 +131,10 @@ export default function BargainModal({ isOpen, onClose, product, initialQuantity
       });
       if (res.data?.success) {
         setSession(res.data.data);
-        // Pre-fill suggested counter price (e.g. 5% below list)
-        const listP = Number(res.data.data.product?.price || product.price || 0);
-        setOfferedPrice(Math.round(listP * 0.9));
+        if (res.data.data.status === "in_progress") {
+          const listP = Number(res.data.data.product?.price || product.price || 0);
+          setOfferedPrice(Math.round(listP * 0.9));
+        }
       } else {
         toast.error(res.data?.message || "Failed to start bargaining session");
       }
@@ -280,70 +316,182 @@ export default function BargainModal({ isOpen, onClose, product, initialQuantity
               </div>
             </div>
 
-            {/* Negotiation Chat Message Thread */}
-            <div
-              className="p-4 flex-grow-1 overflow-y-auto d-flex flex-column gap-3"
-              style={{ maxHeight: "360px", minHeight: "260px", backgroundColor: "#f8fafc" }}
-            >
-              {loading ? (
-                <div className="text-center my-auto py-5">
-                  <div className="spinner-border text-success" role="status"></div>
-                  <p className="mt-2 text-muted small">Connecting with Store AI Negotiator...</p>
+            {/* Negotiation Content / States */}
+            {session?.status === "waiting_vendor_approval" ? (
+              <div className="p-4 p-md-5 text-center my-auto d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                <div
+                  className="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm"
+                  style={{
+                    width: "72px",
+                    height: "72px",
+                    background: "linear-gradient(135deg, #fef3c7, #fde68a)",
+                    color: "#b45309"
+                  }}
+                >
+                  <i className="fa-solid fa-hourglass-half fs-2 fa-spin"></i>
                 </div>
-              ) : session?.history?.length > 0 ? (
-                session.history.map((msg, idx) => {
-                  const isBot = msg.sender === "ai_vendor";
-                  return (
-                    <div
-                      key={idx}
-                      className={`d-flex flex-column ${isBot ? "align-self-start" : "align-self-end"}`}
-                      style={{ maxWidth: "80%" }}
-                    >
-                      <div
-                        className={`p-3 rounded-4 shadow-sm ${
-                          isBot
-                            ? "bg-white text-dark border-start border-4 border-success"
-                            : "text-white"
-                        }`}
-                        style={{
-                          background: isBot ? "#ffffff" : "linear-gradient(135deg, #059669, #10b981)",
-                          fontSize: "0.92rem",
-                          lineHeight: "1.45"
-                        }}
-                      >
-                        <div className="d-flex align-items-center justify-content-between mb-1 gap-3">
-                          <small className="fw-bold" style={{ color: isBot ? "#047857" : "#d1fae5" }}>
-                            {isBot ? "Store AI Agent" : "You (Buyer)"}
-                          </small>
-                          {msg.offeredPrice && (
-                            <span
-                              className={`badge rounded-pill px-2 py-1 ${
-                                isBot ? "bg-success-subtle text-success" : "bg-white text-dark"
-                              }`}
-                              style={{ fontSize: "0.75rem" }}
-                            >
-                              Offer: ₹{msg.offeredPrice}
-                            </span>
-                          )}
-                        </div>
-                        <p className="mb-0 text-break">{msg.message}</p>
-                      </div>
-                      <small className="text-muted mt-1 px-1" style={{ fontSize: "0.7rem", alignSelf: isBot ? "flex-start" : "flex-end" }}>
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </small>
-                    </div>
-                  );
-                })
-              ) : null}
+                <h5 className="fw-bold text-dark mb-2">Bargaining Request Sent to Vendor</h5>
+                <p className="text-muted small mb-4" style={{ maxWidth: "480px", lineHeight: "1.6" }}>
+                  Aventra is currently asking the vendor for their <strong>profit margin</strong> and <strong>maximum allowable discount</strong> on this product. Once the vendor authorizes, the live AI bargaining assistant will start automatically!
+                </p>
 
-              {submitting && (
-                <div className="d-flex align-items-center gap-2 p-2 bg-white rounded-3 shadow-sm align-self-start border">
-                  <span className="spinner-border spinner-border-sm text-success" role="status"></span>
-                  <small className="text-muted">Evaluating supply elasticity & pricing margin...</small>
+                <div className="card border-0 bg-white shadow-sm rounded-4 p-3 mb-4 w-100" style={{ maxWidth: "420px" }}>
+                  <div className="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
+                    <span className="small text-muted">Store Vendor:</span>
+                    <span className="fw-bold text-dark">{session.vendor?.businessName || "Vendor Store"}</span>
+                  </div>
+                  <div className="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
+                    <span className="small text-muted">List Price:</span>
+                    <span className="fw-bold text-dark">₹{originalPrice} / unit</span>
+                  </div>
+                  <div className="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
+                    <span className="small text-muted">Requested Quantity:</span>
+                    <span className="fw-bold text-dark">{quantity} unit(s)</span>
+                  </div>
+                  <div className="d-flex align-items-center justify-content-between">
+                    <span className="small text-muted">Status:</span>
+                    <span className="badge bg-warning text-dark px-2.5 py-1.5 fw-semibold">
+                      <i className="fa-solid fa-clock me-1"></i> Awaiting Vendor Margin & Discount
+                    </span>
+                  </div>
                 </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
+
+                <div className="d-flex align-items-center gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-success btn-sm rounded-pill px-3 py-2 fw-semibold"
+                    disabled={checkingStatus}
+                    onClick={async () => {
+                      try {
+                        setCheckingStatus(true);
+                        const res = await getBargainSessionStatus({ sessionId: session.sessionId });
+                        if (res.data?.success && res.data.data) {
+                          const updated = res.data.data;
+                          setSession((prev) => ({ ...prev, ...updated }));
+                          if (updated.status === "in_progress") {
+                            toast.success("Vendor has approved! You can negotiate now.");
+                            const listP = Number(updated.originalPrice || product.price || 0);
+                            setOfferedPrice(Math.round(listP * 0.9));
+                          } else if (updated.status === "vendor_declined") {
+                            toast.info("Vendor cannot provide additional discount at this time.");
+                          } else {
+                            toast.info("Vendor is still reviewing. Auto-refresh is active.");
+                          }
+                        }
+                      } catch (err) {
+                        toast.error("Error checking status");
+                      } finally {
+                        setCheckingStatus(false);
+                      }
+                    }}
+                  >
+                    {checkingStatus ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-1" /> Checking...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-arrows-rotate me-1"></i> Check Status Now
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-light btn-sm rounded-pill px-3 py-2"
+                    onClick={onClose}
+                  >
+                    Close & Wait
+                  </button>
+                </div>
+              </div>
+            ) : session?.status === "vendor_declined" ? (
+              <div className="p-4 p-md-5 text-center my-auto d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                <div
+                  className="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm bg-danger-subtle text-danger"
+                  style={{ width: "68px", height: "68px" }}
+                >
+                  <i className="fa-solid fa-ban fs-2"></i>
+                </div>
+                <h5 className="fw-bold text-dark mb-2">Bargaining Unavailable for this Product</h5>
+                <p className="text-muted small mb-4" style={{ maxWidth: "420px" }}>
+                  {session.vendorNote || "The vendor cannot provide additional discounts on this item due to tight profit margins."}
+                </p>
+                <div className="d-flex align-items-center gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-success rounded-pill px-4 py-2 fw-semibold"
+                    onClick={onClose}
+                  >
+                    Continue at Regular Price (₹{originalPrice})
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Live Chat Message Thread */
+              <div
+                className="p-4 flex-grow-1 overflow-y-auto d-flex flex-column gap-3"
+                style={{ maxHeight: "360px", minHeight: "260px", backgroundColor: "#f8fafc" }}
+              >
+                {loading ? (
+                  <div className="text-center my-auto py-5">
+                    <div className="spinner-border text-success" role="status"></div>
+                    <p className="mt-2 text-muted small">Connecting with Store AI Negotiator...</p>
+                  </div>
+                ) : session?.history?.length > 0 ? (
+                  session.history.map((msg, idx) => {
+                    const isBot = msg.sender === "ai_vendor";
+                    return (
+                      <div
+                        key={idx}
+                        className={`d-flex flex-column ${isBot ? "align-self-start" : "align-self-end"}`}
+                        style={{ maxWidth: "80%" }}
+                      >
+                        <div
+                          className={`p-3 rounded-4 shadow-sm ${
+                            isBot
+                              ? "bg-white text-dark border-start border-4 border-success"
+                              : "text-white"
+                          }`}
+                          style={{
+                            background: isBot ? "#ffffff" : "linear-gradient(135deg, #059669, #10b981)",
+                            fontSize: "0.92rem",
+                            lineHeight: "1.45"
+                          }}
+                        >
+                          <div className="d-flex align-items-center justify-content-between mb-1 gap-3">
+                            <small className="fw-bold" style={{ color: isBot ? "#047857" : "#d1fae5" }}>
+                              {isBot ? "Store AI Agent" : "You (Buyer)"}
+                            </small>
+                            {msg.offeredPrice && (
+                              <span
+                                className={`badge rounded-pill px-2 py-1 ${
+                                  isBot ? "bg-success-subtle text-success" : "bg-white text-dark"
+                                }`}
+                                style={{ fontSize: "0.75rem" }}
+                              >
+                                Offer: ₹{msg.offeredPrice}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mb-0 text-break">{msg.message}</p>
+                        </div>
+                        <small className="text-muted mt-1 px-1" style={{ fontSize: "0.7rem", alignSelf: isBot ? "flex-start" : "flex-end" }}>
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </small>
+                      </div>
+                    );
+                  })
+                ) : null}
+
+                {submitting && (
+                  <div className="d-flex align-items-center gap-2 p-2 bg-white rounded-3 shadow-sm align-self-start border">
+                    <span className="spinner-border spinner-border-sm text-success" role="status"></span>
+                    <small className="text-muted">Evaluating supply elasticity & pricing margin...</small>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+            )}
 
             {/* Deal Locked Celebration Alert */}
             {isDealLocked && (
@@ -386,7 +534,7 @@ export default function BargainModal({ isOpen, onClose, product, initialQuantity
             )}
 
             {/* AI Counter-Offer Quick Acceptance Option */}
-            {!isDealLocked && session?.aiLatestCounterOffer > 0 && session.aiLatestCounterOffer < originalPrice && (
+            {!isDealLocked && session?.status === "in_progress" && session?.aiLatestCounterOffer > 0 && session.aiLatestCounterOffer < originalPrice && (
               <div className="p-2 px-4 bg-warning-subtle border-top border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <small className="text-dark">
                   Vendor AI Counter-Offer: <strong>₹{session.aiLatestCounterOffer}</strong> per unit (Round {session.currentRound - 1}/{session.maxRounds})
@@ -403,7 +551,7 @@ export default function BargainModal({ isOpen, onClose, product, initialQuantity
             )}
 
             {/* Bottom Form Input Area */}
-            {!isDealLocked && (
+            {!isDealLocked && session?.status === "in_progress" && (
               <form onSubmit={handleSendOffer} className="p-3 bg-white border-top">
                 <div className="row g-2 align-items-center">
                   <div className="col-12 col-sm-4">

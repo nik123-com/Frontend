@@ -5,7 +5,10 @@ import {
   bargain_offer,
   bargain_accept,
   bargain_check_deal,
+  bargain_session_status,
   vendor_bargain_history,
+  vendor_bargain_authorize,
+  vendor_bargain_decline,
   bargain_delete
 } from "../endpoints";
 
@@ -20,6 +23,16 @@ export const startBargainSession = ({ productId, quantity = 1 }) => {
   return axios.post(
     `${baseUrl}${bargain_start}`,
     { productId, quantity, userId },
+    { headers: getAuthHeaders() }
+  );
+};
+
+// Check latest session status (polling for vendor approval)
+export const getBargainSessionStatus = ({ sessionId }) => {
+  const userId = sessionStorage.getItem("userId");
+  return axios.post(
+    `${baseUrl}${bargain_session_status}`,
+    { sessionId, userId },
     { headers: getAuthHeaders() }
   );
 };
@@ -60,6 +73,24 @@ export const getVendorBargainHistory = () => {
   return axios.post(
     `${baseUrl}${vendor_bargain_history}`,
     {},
+    { headers: getAuthHeaders() }
+  );
+};
+
+// Vendor authorizes bargaining demand by providing their profit margin and maximum allowable discount
+export const authorizeVendorBargain = ({ negotiationId, marginPercent, maxDiscountPercent, vendorNote = "" }) => {
+  return axios.post(
+    `${baseUrl}${vendor_bargain_authorize}`,
+    { negotiationId, marginPercent, maxDiscountPercent, vendorNote },
+    { headers: getAuthHeaders() }
+  );
+};
+
+// Vendor declines bargaining demand
+export const declineVendorBargain = ({ negotiationId, reason = "" }) => {
+  return axios.post(
+    `${baseUrl}${vendor_bargain_decline}`,
+    { negotiationId, reason },
     { headers: getAuthHeaders() }
   );
 };

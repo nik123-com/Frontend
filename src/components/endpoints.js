@@ -183,7 +183,10 @@ export const bargain_start = "/customer/bargain/start";
 export const bargain_offer = "/customer/bargain/offer";
 export const bargain_accept = "/customer/bargain/accept";
 export const bargain_check_deal = "/customer/bargain/check-deal";
+export const bargain_session_status = "/customer/bargain/session-status";
 export const vendor_bargain_history = "/vendor/bargain/history";
+export const vendor_bargain_authorize = "/vendor/bargain/authorize";
+export const vendor_bargain_decline = "/vendor/bargain/decline";
 export const bargain_delete = "/vendor/bargain/delete";
 
 
