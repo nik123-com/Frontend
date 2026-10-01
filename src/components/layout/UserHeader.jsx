@@ -608,15 +608,11 @@ function UserHeader() {
                       aria-expanded={showProfileDropdown}
                       title="Account Options"
                     >
-                      <i
-                        className="fa-solid fa-circle-user"
-                        style={{ color: "#0c831f", fontSize: "1.35rem", lineHeight: 1 }}
-                      />
                       <span
                         className="text-truncate fw-semibold"
                         style={{ maxWidth: "140px", color: "#1e293b", fontSize: "0.95rem" }}
                       >
-                        {customerName || "Profile"}
+                        Profile
                       </span>
                       {userRank && (
                         <span className="badge bg-warning text-dark rounded-pill px-1.5 py-0.5" style={{ fontSize: "10px" }}>
@@ -650,17 +646,17 @@ function UserHeader() {
                         {/* Header preview */}
                         <div className="px-3 py-2 border-bottom mb-1 bg-light bg-opacity-75 rounded-top-3">
                           <p className="mb-0 fw-bold text-dark text-truncate" style={{ fontSize: "0.88rem" }}>
-                            {customerName || "Valued Shopper"}
+                            My Account
                           </p>
                           <small className="text-muted text-truncate d-block" style={{ fontSize: "0.75rem" }}>
                             {sessionStorage.getItem("email") || "Customer Account"}
                           </small>
                         </div>
 
-                        {/* Option 1: View Profile */}
+                        {/* Option 1: Profile */}
                         <button
                           type="button"
-                          className="dropdown-item d-flex align-items-center gap-2.5 px-3 py-2 text-dark fw-medium"
+                          className="dropdown-item d-flex align-items-center px-3 py-2 text-dark fw-medium"
                           style={{ fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s ease" }}
                           onClick={() => {
                             setShowProfileDropdown(false);
@@ -668,13 +664,7 @@ function UserHeader() {
                             navigate("/myprofile");
                           }}
                         >
-                          <div
-                            className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0"
-                            style={{ width: "28px", height: "28px", backgroundColor: "#81c408" }}
-                          >
-                            <i className="fa-solid fa-user" style={{ fontSize: "0.75rem" }}></i>
-                          </div>
-                          <span>View Profile</span>
+                          <span>Profile</span>
                         </button>
 
                         <hr className="dropdown-divider my-1 opacity-25" />
