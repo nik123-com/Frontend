@@ -6,6 +6,7 @@ import { getCustomerAnnouncements } from "../server/Announcement";
 import { checkRankReward } from "../server/Customer";
 import { toast } from "react-toastify";
 import socket from "../../socket";
+import LogoutVideoModal from "./LogoutVideoModal";
 
 function UserHeader() {
   const location = useLocation();
@@ -28,6 +29,22 @@ function UserHeader() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const profileRef = useRef(null);
   const notifRef = useRef(null);
+
+  // Logout video modal state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowProfileDropdown(false);
+    setIsNavCollapsed(true);
+    setShowLogoutModal(true);
+  };
+
+  const handleFinishLogout = () => {
+    setShowLogoutModal(false);
+    sessionStorage.clear();
+    toast.info("Logged out successfully");
+    navigate("/");
+  };
 
   useEffect(() => {
     if (isLogin) {
@@ -674,13 +691,7 @@ function UserHeader() {
                           type="button"
                           className="dropdown-item d-flex align-items-center gap-2.5 px-3 py-2 text-danger fw-medium"
                           style={{ fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s ease" }}
-                          onClick={() => {
-                            setShowProfileDropdown(false);
-                            setIsNavCollapsed(true);
-                            sessionStorage.clear();
-                            toast.info("Logged out successfully");
-                            navigate("/");
-                          }}
+                          onClick={handleLogoutClick}
                         >
                           <div
                             className="rounded-circle d-flex align-items-center justify-content-center text-danger flex-shrink-0"
@@ -748,6 +759,12 @@ function UserHeader() {
         </div>
       </div>
       {/* Modal Search End */}
+
+      {/* Logout Video Modal */}
+      <LogoutVideoModal
+        isOpen={showLogoutModal}
+        onClose={handleFinishLogout}
+      />
     </>
   )
 }
