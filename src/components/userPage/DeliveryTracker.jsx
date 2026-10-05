@@ -44,7 +44,8 @@ export default function DeliveryTracker({ order, onClose }) {
   estDate.setDate(createdDate.getDate() + 3);
 
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
+    const d = date ? new Date(date) : new Date();
+    return d.toLocaleDateString("en-US", {
       weekday: "long",
       month: "short",
       day: "numeric",
@@ -56,50 +57,114 @@ export default function DeliveryTracker({ order, onClose }) {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const formatDateTime = (dateVal) => {
+    if (!dateVal) return "";
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return "";
+    return `${formatDate(d)} at ${formatShortTime(d)}`;
+  };
+
+  const getTimelineTime = (statusKey) => {
+    if (Array.isArray(order.statusTimeline) && order.statusTimeline.length > 0) {
+      const match = [...order.statusTimeline]
+        .reverse()
+        .find((entry) => (entry.status || "").toLowerCase() === statusKey.toLowerCase());
+      if (match && match.timestamp) {
+        return new Date(match.timestamp);
+      }
+    }
+    return null;
+  };
+
+  const createdMs = new Date(order.createdAt || Date.now()).getTime();
+  const updatedMs = order.updatedAt ? new Date(order.updatedAt).getTime() : createdMs;
+  const nowMs = Date.now();
+
+  const getStepTimestamp = (stepIndex, statusKey) => {
+    const explicit = getTimelineTime(statusKey);
+    if (explicit) return explicit;
+
+    if (stepIndex === 0) {
+      return new Date(createdMs);
+    }
+
+    if (stepIndex === activeIndex && order.updatedAt) {
+      return new Date(updatedMs);
+    }
+
+    let offsetMinutes = 30;
+    if (stepIndex === 1) offsetMinutes = 25;
+    else if (stepIndex === 2) offsetMinutes = 85;
+    else if (stepIndex === 2.5) offsetMinutes = 145;
+    else if (stepIndex === 3) offsetMinutes = 215;
+    else if (stepIndex === 4) offsetMinutes = 330;
+
+    if (updatedMs > createdMs && activeIndex >= stepIndex) {
+      const totalSteps = Math.max(activeIndex, 1);
+      const stepRatio = Math.min(stepIndex / totalSteps, 1);
+      const computedMs = createdMs + (updatedMs - createdMs) * stepRatio;
+      return new Date(Math.min(computedMs, nowMs));
+    }
+
+    const targetMs = createdMs + offsetMinutes * 60 * 1000;
+    return new Date(Math.min(targetMs, nowMs));
+  };
+
   // Generate Amazon-style activity history log
   const getActivityLog = () => {
     const log = [];
     if (isCancelled) {
-      log.push({ title: "Order Cancelled", date: "Processed", active: true });
+      const cancelTime = getTimelineTime("cancelled") || (order.updatedAt ? new Date(order.updatedAt) : new Date());
+      log.push({
+        title: "Order Cancelled",
+        date: formatDateTime(cancelTime),
+        active: true
+      });
       return log;
     }
 
     if (activeIndex >= 4) {
+      const deliveredTime = getStepTimestamp(4, "delivered");
       log.push({
         title: "Package delivered to customer",
-        date: formatDate(new Date(order.updatedAt || Date.now())),
+        date: formatDateTime(deliveredTime),
         active: true
       });
     }
     if (activeIndex >= 3) {
+      const shippedTime = getStepTimestamp(3, "shipped");
+      const sortingTime = getStepTimestamp(2.5, "sorting");
       log.push({
         title: "Out for delivery with courier driver",
-        date: formatDate(createdDate),
+        date: formatDateTime(shippedTime),
         active: activeIndex === 3
       });
       log.push({
         title: "Package arrived at regional sorting facility",
-        date: formatDate(createdDate),
+        date: formatDateTime(sortingTime),
         active: false
       });
     }
     if (activeIndex >= 2) {
+      const packedTime = getStepTimestamp(2, "packed");
       log.push({
         title: "Package packed and sealed at fulfillment warehouse",
-        date: formatDate(createdDate),
+        date: formatDateTime(packedTime),
         active: activeIndex === 2
       });
     }
     if (activeIndex >= 1) {
+      const acceptedTime = getStepTimestamp(1, "accepted");
       log.push({
         title: "Order accepted by seller & inventory allocated",
-        date: formatDate(createdDate),
+        date: formatDateTime(acceptedTime),
         active: activeIndex === 1
       });
     }
+    const placedTime = getStepTimestamp(0, "placed");
     log.push({
       title: "Order placed & payment verified",
-      date: `${formatDate(createdDate)} at ${formatShortTime(order.createdAt)}`,
+      date: formatDateTime(placedTime),
       active: activeIndex === 0
     });
 
@@ -125,10 +190,10 @@ export default function DeliveryTracker({ order, onClose }) {
           </div>
           <div className="amazon-subtext">
             {isCancelled
-              ? "This order was cancelled."
+              ? `Cancelled on ${formatDateTime(order.updatedAt || order.createdAt)}`
               : activeIndex === 4
-              ? `Delivered on ${formatDate(new Date(order.updatedAt || Date.now()))}`
-              : "Standard Shipping with Live Tracking"}
+              ? `Delivered on ${formatDateTime(order.updatedAt || Date.now())}`
+              : `Last updated: ${formatDateTime(order.updatedAt || order.createdAt)} • Real-time Tracking`}
           </div>
         </div>
 
@@ -169,6 +234,7 @@ export default function DeliveryTracker({ order, onClose }) {
                 {STOPS.map((stop, idx) => {
                   const isCompleted = idx <= activeIndex;
                   const isActive = idx === activeIndex;
+                  const stepTime = getStepTimestamp(idx, stop.key);
 
                   return (
                     <div
@@ -184,11 +250,15 @@ export default function DeliveryTracker({ order, onClose }) {
                       </div>
                       <div className="amazon-step-title">{stop.title}</div>
                       <div className="amazon-step-time">
-                        {isActive
-                          ? "Current Status"
-                          : isCompleted
-                          ? "Completed"
-                          : "Pending"}
+                        {isActive ? (
+                          <span className="text-success fw-bold">
+                            {formatShortTime(stepTime)}
+                          </span>
+                        ) : isCompleted ? (
+                          <span>{formatShortTime(stepTime)}</span>
+                        ) : (
+                          "Pending"
+                        )}
                       </div>
                     </div>
                   );
@@ -210,14 +280,36 @@ export default function DeliveryTracker({ order, onClose }) {
               </div>
 
               <div className="amazon-info-card">
-                <div className="amazon-info-title">Delivery Address</div>
-                <div className="amazon-info-value text-truncate">
-                  {order.addressId
-                    ? `${order.addressId.houseno || ""}, ${order.addressId.city || ""}, ${order.addressId.state || ""}`
-                    : "Saved Customer Address"}
+                <div className="amazon-info-title d-flex justify-content-between align-items-center">
+                  <span>Delivery Address</span>
+                  <i className="fa fa-location-dot text-primary"></i>
+                </div>
+                <div className="amazon-info-value text-truncate" title={(() => {
+                  if (!order.addressId) return "Saved Customer Address";
+                  const parts = [order.addressId.houseno, order.addressId.landmark, order.addressId.city, order.addressId.state]
+                    .map(s => (s || "").trim())
+                    .filter(s => s.length > 0);
+                  return parts.length > 0 ? parts.join(", ") : "Saved Customer Address";
+                })()}>
+                  {(() => {
+                    if (!order.addressId) return "Saved Customer Address";
+                    const parts = [order.addressId.houseno, order.addressId.landmark, order.addressId.city, order.addressId.state]
+                      .map(s => (s || "").trim())
+                      .filter(s => s.length > 0);
+                    return parts.length > 0 ? parts.join(", ") : "Saved Customer Address";
+                  })()}
                 </div>
                 <small className="text-muted d-block mt-1">
-                  PIN: {order.addressId?.pin || "N/A"}
+                  <strong className="text-dark">PIN Code:</strong>{" "}
+                  {order.addressId?.pin && order.addressId.pin !== "N/A" ? (
+                    <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0 ms-1 fw-bold">
+                      {order.addressId.pin}
+                    </span>
+                  ) : (
+                    <span className="badge bg-warning-subtle text-warning border px-2 py-0 ms-1">
+                      N/A
+                    </span>
+                  )}
                 </small>
               </div>
 
@@ -237,20 +329,39 @@ export default function DeliveryTracker({ order, onClose }) {
 
             {/* Amazon Recent Updates Timeline Log */}
             <div className="amazon-activity-list">
-              <h6 className="fw-bold text-dark mb-3">
-                <i className="fa fa-list-check me-2 text-primary"></i>
-                Tracking Activity Updates
-              </h6>
+              <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <h6 className="fw-bold text-dark mb-0">
+                  <i className="fa fa-list-check me-2 text-primary"></i>
+                  Tracking Activity Updates
+                </h6>
+                <span className="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-2 px-2 py-1" style={{ fontSize: "0.75rem" }}>
+                  <span className="live-dot-pulse"></span>
+                  Live Real-Time Updates
+                </span>
+              </div>
               <div>
                 {activityLogs.map((log, index) => (
                   <div
                     key={index}
                     className={`amazon-activity-item ${log.active ? "active" : ""}`}
                   >
-                    <div className="amazon-activity-dot"></div>
-                    <div>
-                      <div className="amazon-activity-text fw-bold">{log.title}</div>
-                      <div className="amazon-activity-date">{log.date}</div>
+                    <div className="amazon-activity-dot-wrapper">
+                      <div className="amazon-activity-dot"></div>
+                      {index < activityLogs.length - 1 && <div className="amazon-activity-line"></div>}
+                    </div>
+                    <div className="flex-grow-1 pb-2">
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        <span className="amazon-activity-text fw-bold">{log.title}</span>
+                        {log.active && (
+                          <span className="badge bg-success text-white" style={{ fontSize: "0.68rem", padding: "2px 6px" }}>
+                            Real-time Status
+                          </span>
+                        )}
+                      </div>
+                      <div className="amazon-activity-date mt-1 d-flex align-items-center gap-1">
+                        <i className="fa fa-clock text-muted" style={{ fontSize: "0.72rem" }}></i>
+                        <span>{log.date}</span>
+                      </div>
                     </div>
                   </div>
                 ))}

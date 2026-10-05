@@ -141,9 +141,15 @@ export default function MyOrders() {
                           </span>
                         </td>
                         <td>
-                          <span className={`badge ${getStatusBadge(order.orderStatus)}`}>
-                            {order.orderStatus}
-                          </span>
+                          <div className="d-flex flex-column align-items-start">
+                            <span className={`badge ${getStatusBadge(order.orderStatus)} text-capitalize`}>
+                              {order.orderStatus}
+                            </span>
+                            <small className="text-muted mt-1 d-flex align-items-center gap-1" style={{ fontSize: "0.72rem" }}>
+                              <i className="fa fa-clock text-secondary" style={{ fontSize: "0.68rem" }}></i>
+                              {new Date(order.updatedAt || order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </small>
+                          </div>
                         </td>
                         <td className="text-center">
                           <div className="d-flex gap-2 justify-content-center">

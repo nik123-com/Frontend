@@ -74,6 +74,7 @@ export const admin_update_order = "/api/order/update"
 //address
 export const add_address = "/customer/address/add"
 export const all_address = "/customer/address/all"
+export const update_address = "/customer/address/update"
 
 //WishList
 export const add_wishlist = "/customer/wishlist/add"

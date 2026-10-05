@@ -1,5 +1,5 @@
 import axios from "axios";
-import { add_address, all_address, baseUrl } from "../endpoints";
+import { add_address, all_address, update_address, baseUrl } from "../endpoints";
 
 function getToken(){
  const token = sessionStorage.getItem("token");
@@ -17,4 +17,8 @@ export function addAddress(data){
 
 export function AllAddress(data){
     return axios.post(baseUrl + all_address,data,getToken())
+}
+
+export function updateAddress(data){
+    return axios.post(baseUrl + update_address,data,getToken())
 }
