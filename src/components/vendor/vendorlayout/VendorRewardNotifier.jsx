@@ -11,7 +11,7 @@ export default function VendorRewardNotifier() {
 
     checkVendorRankReward()
       .then((res) => {
-        if (res.data && res.data.success) {
+        if (res.data && res.data.success && res.data.rank) {
           sessionStorage.setItem("vendor_reward_shown_session", "true");
           const { rank, businessName, ownerName, coupon } = res.data;
 
