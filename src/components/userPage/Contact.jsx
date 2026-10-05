@@ -217,8 +217,6 @@ export default function Contact() {
                       </div>
                     </div>
                   </a>
-
-                  {/* Phone */}
                   <a
                     href="tel:+012345678910"
                     className="text-decoration-none text-dark"
