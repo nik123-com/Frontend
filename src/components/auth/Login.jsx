@@ -96,24 +96,18 @@ export default function Login() {
                 <input
                   type="email"
                   className="form-control shadow-sm border-0 py-3 px-4 w-100"
-                  placeholder="Enter Your Email "
+                  placeholder="Enter Your Email"
                   onChange={ChangeEmail}
                   value={email}
                   required
+                  autoComplete="off"
                   style={{
                     borderRadius: "10px",
                     fontSize: "15px",
-                    paddingRight: "50px",
                     backgroundColor: "#ffffff",
                     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.03)"
                   }}
                 />
-                <span
-                  className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
-                  style={{ pointerEvents: "none" }}
-                >
-                  {/* <i className="fa-solid fa-envelope" style={{ color: "#00a884", fontSize: "16px" }}></i> */}
-                </span>
               </div>
 
               {/* Password Input */}
