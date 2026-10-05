@@ -171,8 +171,8 @@ export const admin_recommendations_analytics = "/api/recommendations/analytics";
 // Smart Cart Optimization
 export const cart_smart_optimization = "/customer/cart/smart-optimization";
 
-// Context-Aware Sana AI Shopping Agent
-export const sana_contextual_query = "/api/sana/contextual-query";
+// Context-Aware Stellar AI Shopping Agent
+export const Stellar_contextual_query = "/api/Stellar/contextual-query";
 
 // Predictive Stock-Out Intelligence (Vendor)
 export const vendor_inventory_intelligence = "/vendor/inventory/intelligence";

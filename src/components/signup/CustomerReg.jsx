@@ -1,23 +1,23 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
-// Use of Axios for Link with Backend
-import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { register } from "../server/auth"
-
+import { COUNTRY_CODES, formatContact, sanitizePhoneNumber, validatePhoneNumber } from "../../utils/countryCodes"
 
 export default function CustomerReg() {
-
   const nav = useNavigate();
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [Contact, setContact] = useState("")
+  const [countryCode, setCountryCode] = useState("+91")
+  const [phoneDigits, setPhoneDigits] = useState("")
+  const [phoneError, setPhoneError] = useState("")
   const [GovtID, setGovtID] = useState("")
   const [evidence, setevidence] = useState("aadhar")
   const [Address, setAddress] = useState("")
   const [password, setPassword] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
   const ChangeName = (e) => {
     setName(e.target.value)
@@ -26,9 +26,19 @@ export default function CustomerReg() {
   const ChangeEmail = (e) => {
     setEmail(e.target.value)
   }
-  const ChangeContact = (e) => {
-    setContact(e.target.value)
+
+  const handlePhoneChange = (e) => {
+    const sanitized = sanitizePhoneNumber(e.target.value);
+    setPhoneDigits(sanitized);
+    if (!sanitized) {
+      setPhoneError("Contact / Mobile number is required");
+    } else if (sanitized.length < 10) {
+      setPhoneError(`Contact number must be exactly 10 digits (currently ${sanitized.length})`);
+    } else {
+      setPhoneError("");
+    }
   }
+
   const ChangeEvidence = (e) => {
     setevidence(e.target.value)
   }
@@ -42,31 +52,71 @@ export default function CustomerReg() {
     setPassword(e.target.value)
   }
 
-
   const handleForm = (e) => {
-    e.preventDefault()
-    let data = {
-      name: name,
-      email: email,
-      Contact: Contact,
-      evidence: evidence,
-      GovtID: GovtID,
-      Address: Address,
-      password: password
+    e.preventDefault();
+
+    if (!name.trim()) {
+      toast.error("Please enter your name");
+      return;
+    }
+    if (!email.trim()) {
+      toast.error("Please enter your email");
+      return;
+    }
+    if (!password) {
+      toast.error("Please enter password");
+      return;
     }
 
-    console.log(data);
+    const phoneValidation = validatePhoneNumber(phoneDigits, true);
+    if (!phoneValidation.isValid) {
+      setPhoneError(phoneValidation.error);
+      toast.error(phoneValidation.error);
+      return;
+    }
 
+    if (!GovtID.trim()) {
+      toast.error("Please enter Government ID proof");
+      return;
+    }
+    if (!Address.trim()) {
+      toast.error("Please enter your address");
+      return;
+    }
 
-    register(data).then((res) => {
-      console.log(res);
-      toast.success("Registered Successfully");
-      nav("/login")
+    const formattedContact = formatContact(countryCode, phoneDigits);
 
+    let data = {
+      name: name.trim(),
+      email: email.trim(),
+      Contact: formattedContact,
+      countryCode: countryCode,
+      evidence: evidence,
+      GovtID: GovtID.trim(),
+      Address: Address.trim(),
+      password: password
+    };
 
-    }).catch((err) => {
-      console.log(err);
-    })
+    setSubmitting(true);
+    register(data)
+      .then((res) => {
+        if (res.data && res.data.success) {
+          toast.success("Registered Successfully!");
+          nav("/login");
+        } else {
+          const msg = Array.isArray(res.data?.message)
+            ? res.data.message.join(", ")
+            : (res.data?.message || "Registration failed");
+          toast.error(msg);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err.response?.data?.message || "Registration failed. Please try again.");
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   }
 
   return (
@@ -152,14 +202,46 @@ export default function CustomerReg() {
                     onChange={ChangePassword}
                     value={password}
                   />
-                  <input
-                    type="tel"
-                    className="w-100 form-control border-0 py-3 mb-4"
-                    placeholder="Enter Your contact"
-                    onChange={ChangeContact}
-                    value={Contact}
-                    maxLength={"10"}
-                  />
+                  <div className="mb-4">
+                    <div className="input-group bg-white rounded shadow-xs overflow-hidden border">
+                      <select
+                        className="form-select border-0 bg-light fw-semibold text-dark py-3"
+                        style={{ maxWidth: "150px", cursor: "pointer", fontSize: "14px" }}
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        aria-label="Country Code"
+                      >
+                        {COUNTRY_CODES.map((item) => (
+                          <option key={`${item.code}-${item.country}`} value={item.code}>
+                            {item.flag} {item.code} ({item.country})
+                          </option>
+                        ))}
+                      </select>
+                      <span className="input-group-text bg-white border-0 text-muted px-2">
+                        <i className="fa-solid fa-phone"></i>
+                      </span>
+                      <input
+                        type="tel"
+                        className="form-control border-0 py-3 ps-1"
+                        placeholder="Enter 10-digit mobile number"
+                        onChange={handlePhoneChange}
+                        value={phoneDigits}
+                        maxLength={10}
+                      />
+                      <span className="input-group-text bg-white border-0 text-muted small pe-3">
+                        {phoneDigits.length}/10
+                      </span>
+                    </div>
+                    {phoneError && (
+                      <small className="text-danger d-block mt-1 ps-1 fw-semibold" style={{ fontSize: "12px" }}>
+                        <i className="fa-solid fa-circle-exclamation me-1"></i>
+                        {phoneError}
+                      </small>
+                    )}
+                    <small className="text-muted d-block mt-1 ps-1" style={{ fontSize: "11px" }}>
+                      Number format: <strong>{phoneDigits ? `${countryCode}-${phoneDigits}` : `${countryCode}-XXXXXXXXXX`}</strong> (Strictly 10 digits)
+                    </small>
+                  </div>
                   <select
                     className="w-100 form-control border-1 py-3 mb-4 bg-white"
                     onChange={(e) => {
@@ -188,10 +270,11 @@ export default function CustomerReg() {
                     value={Address}
                   />
                   <button
-                    className="w-100 btn form-control border-secondary py-3 bg-white text-primary "
+                    className="w-100 btn form-control border-secondary py-3 bg-white text-primary fw-bold"
                     type="submit"
+                    disabled={submitting}
                   >
-                    Submit
+                    {submitting ? "Submitting Registration..." : "Submit"}
                   </button>
                 </form>
               </div>

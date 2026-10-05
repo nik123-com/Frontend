@@ -6,7 +6,7 @@ import { baseUrl } from "../endpoints";
 import { allProduct } from "../server/Product";
 import { allCategory } from "../server/Category";
 import { useCart } from "../../context/CartContext";
-import { askContextualSana } from "../server/Recommendation";
+import { askContextualStellar } from "../server/Recommendation";
 
 const categoryEmojiMap = {
   "atta": "🌾",
@@ -155,10 +155,10 @@ function findMatchingProducts(userMessage, products) {
   return matched.slice(0, 10);
 }
 
-async function askSana(customerName, userMessage, matchedProducts = []) {
+async function askStellar(customerName, userMessage, matchedProducts = []) {
   try {
     const userId = sessionStorage.getItem("userId");
-    const response = await askContextualSana({
+    const response = await askContextualStellar({
       query: userMessage,
       customerName: customerName || "Shopper",
       userId: userId || null
@@ -203,7 +203,7 @@ async function askSana(customerName, userMessage, matchedProducts = []) {
       };
     }
   } catch (err) {
-    console.debug("Contextual Sana call error, falling back:", err);
+    console.debug("Contextual Stellar call error, falling back:", err);
   }
 
   // Graceful fallback: If no products in stock, politely apologize and return empty products
@@ -215,7 +215,7 @@ async function askSana(customerName, userMessage, matchedProducts = []) {
     };
   }
 
-  const prompt = `You are Sana, a professional AI Shopping Assistant for Aventra.\nCustomer Name: ${customerName}\nCustomer Message: ${userMessage}\nIn-Stock Products: ${matchedProducts.map(p => p.name).join(", ")}\nROLE: Act as personal shopping assistant. If in-stock products are available, introduce them warmly. If not found, say politely: 'Sorry sir/Ma'am, We don't Found it'.`;
+  const prompt = `You are Stellar, a professional AI Shopping Assistant for Aventra.\nCustomer Name: ${customerName}\nCustomer Message: ${userMessage}\nIn-Stock Products: ${matchedProducts.map(p => p.name).join(", ")}\nROLE: Act as personal shopping assistant. If in-stock products are available, introduce them warmly. If not found, say politely: 'Sorry sir/Ma'am, We don't Found it'.`;
   const res = await axios.post(`${baseUrl}/api/aiCall`, { prompt });
   return {
     message: res.data?.message || "Here are the available products in stock for your request:",
@@ -233,7 +233,7 @@ export default function MyChatBot() {
   const [categories, setCategories] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(() => {
-    const saved = sessionStorage.getItem("sana-chat-messages");
+    const saved = sessionStorage.getItem("Stellar-chat-messages");
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -245,18 +245,18 @@ export default function MyChatBot() {
       {
         id: "welcome",
         sender: "bot",
-        text: "👋 Welcome to Aventra!\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
+        text: "👋 Welcome to Aventra!\n\nI'm Stellar, your personal shopping assistant.\n\nWhat's your name?",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ];
   });
 
   const [userName, setUserName] = useState(() => {
-    return sessionStorage.getItem("sana-chat-username") || "";
+    return sessionStorage.getItem("Stellar-chat-username") || "";
   });
 
   const [step, setStep] = useState(() => {
-    return sessionStorage.getItem("sana-chat-step") || "ask_name";
+    return sessionStorage.getItem("Stellar-chat-step") || "ask_name";
   });
 
   const [inputText, setInputText] = useState("");
@@ -291,7 +291,7 @@ export default function MyChatBot() {
         }
       })
       .catch((err) => {
-        console.error("Error loading products for Sana Chat:", err);
+        console.error("Error loading products for Stellar Chat:", err);
       });
 
     // 2. Fetch live store categories from Category API
@@ -305,20 +305,20 @@ export default function MyChatBot() {
         }
       })
       .catch((err) => {
-        console.error("Error loading categories for Sana Chat:", err);
+        console.error("Error loading categories for Stellar Chat:", err);
       });
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem("sana-chat-messages", JSON.stringify(messages));
+    sessionStorage.setItem("Stellar-chat-messages", JSON.stringify(messages));
   }, [messages]);
 
   useEffect(() => {
-    sessionStorage.setItem("sana-chat-username", userName);
+    sessionStorage.setItem("Stellar-chat-username", userName);
   }, [userName]);
 
   useEffect(() => {
-    sessionStorage.setItem("sana-chat-step", step);
+    sessionStorage.setItem("Stellar-chat-step", step);
   }, [step]);
 
   useEffect(() => {
@@ -416,14 +416,14 @@ export default function MyChatBot() {
         // Find matching in-stock products for query
         const localMatches = findMatchingProducts(userText, allProducts);
 
-        const sanaResult = await askSana(userName || "Customer", userText, localMatches);
+        const StellarResult = await askStellar(userName || "Customer", userText, localMatches);
         
         // Strictly filter to active, in-stock products only
-        let finalProducts = Array.isArray(sanaResult.products)
-          ? sanaResult.products.filter(p => p && p.status !== false && Number(p.stock) > 0)
+        let finalProducts = Array.isArray(StellarResult.products)
+          ? StellarResult.products.filter(p => p && p.status !== false && Number(p.stock) > 0)
           : [];
 
-        let botReplyText = sanaResult.message || "";
+        let botReplyText = StellarResult.message || "";
         const isNotFound =
           botReplyText.toLowerCase().includes("don't found") ||
           botReplyText.toLowerCase().includes("not found") ||
@@ -441,7 +441,7 @@ export default function MyChatBot() {
           sender: "bot",
           text: botReplyText,
           products: finalProducts,
-          reasons: sanaResult.reasons || [],
+          reasons: StellarResult.reasons || [],
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages((prev) => [...prev, botMsg]);
@@ -471,14 +471,14 @@ export default function MyChatBot() {
       confirmButtonText: "Yes, clear it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        sessionStorage.removeItem("sana-chat-messages");
-        sessionStorage.removeItem("sana-chat-username");
-        sessionStorage.removeItem("sana-chat-step");
+        sessionStorage.removeItem("Stellar-chat-messages");
+        sessionStorage.removeItem("Stellar-chat-username");
+        sessionStorage.removeItem("Stellar-chat-step");
         setMessages([
           {
             id: "welcome",
             sender: "bot",
-            text: "👋 Welcome to Aventra!\n\nI'm Sana, your personal shopping assistant.\n\nWhat's your name?",
+            text: "👋 Welcome to Aventra!\n\nI'm Stellar, your personal shopping assistant.\n\nWhat's your name?",
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }
         ]);
@@ -529,8 +529,8 @@ export default function MyChatBot() {
   return (
     <>
       <style>{`
-        /* Sana Chatbot Styles */
-        .sana-chatbot-button {
+        /* Stellar Chatbot Styles */
+        .Stellar-chatbot-button {
           position: fixed;
           bottom: 24px;
           right: 24px;
@@ -548,18 +548,18 @@ export default function MyChatBot() {
           justify-content: center;
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .sana-chatbot-button:hover {
+        .Stellar-chatbot-button:hover {
           background: linear-gradient(135deg, #5b9309, #3f6602);
           opacity: 1;
           transform: scale(1.08) translateY(-2px);
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
           z-index: 10005;
         }
-        .sana-chatbot-button:active {
+        .Stellar-chatbot-button:active {
           transform: scale(0.95);
         }
 
-        .sana-chat-window {
+        .Stellar-chat-window {
           position: fixed;
           bottom: 96px;
           right: 24px;
@@ -574,10 +574,10 @@ export default function MyChatBot() {
           overflow: hidden;
           z-index: 9999;
           font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          animation: sanaFadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: StellarFadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes sanaFadeInUp {
+        @keyframes StellarFadeInUp {
           from {
             opacity: 0;
             transform: translateY(20px) scale(0.95);
@@ -588,7 +588,7 @@ export default function MyChatBot() {
           }
         }
 
-        .sana-chat-header {
+        .Stellar-chat-header {
           background: #81c408;
           color: white;
           padding: 16px 20px;
@@ -597,12 +597,12 @@ export default function MyChatBot() {
           justify-content: space-between;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
-        .sana-chat-header-info {
+        .Stellar-chat-header-info {
           display: flex;
           align-items: center;
           gap: 12px;
         }
-        .sana-chat-avatar-container {
+        .Stellar-chat-avatar-container {
           position: relative;
           width: 36px;
           height: 36px;
@@ -613,17 +613,17 @@ export default function MyChatBot() {
           justify-content: center;
           overflow: hidden;
         }
-        .sana-chat-avatar {
+        .Stellar-chat-avatar {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
-        .sana-chat-avatar-placeholder {
+        .Stellar-chat-avatar-placeholder {
           font-weight: bold;
           color: #81c408;
           font-size: 18px;
         }
-        .sana-status-dot {
+        .Stellar-status-dot {
           position: absolute;
           bottom: 0;
           right: 0;
@@ -632,35 +632,35 @@ export default function MyChatBot() {
           background: #4ade80;
           border: 2px solid #81c408;
           border-radius: 50%;
-          animation: sanaPulse 2s infinite;
+          animation: StellarPulse 2s infinite;
         }
-        @keyframes sanaPulse {
+        @keyframes StellarPulse {
           0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
           70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
           100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
         }
-        .sana-chat-title-container {
+        .Stellar-chat-title-container {
           display: flex;
           flex-direction: column;
         }
-        .sana-chat-title {
+        .Stellar-chat-title {
           font-weight: 700;
           font-size: 16px;
           margin: 0;
           letter-spacing: 0.5px;
           line-height: 1.2;
         }
-        .sana-chat-subtitle {
+        .Stellar-chat-subtitle {
           font-size: 11px;
           color: rgba(255, 255, 255, 0.85);
           margin: 0;
         }
-        .sana-chat-header-actions {
+        .Stellar-chat-header-actions {
           display: flex;
           align-items: center;
           gap: 8px;
         }
-        .sana-chat-action-btn {
+        .Stellar-chat-action-btn {
           background: transparent;
           border: none;
           color: white;
@@ -672,11 +672,11 @@ export default function MyChatBot() {
           border-radius: 50%;
           transition: background 0.2s;
         }
-        .sana-chat-action-btn:hover {
+        .Stellar-chat-action-btn:hover {
           background: rgba(255, 255, 255, 0.15);
         }
 
-        .sana-chat-messages {
+        .Stellar-chat-messages {
           flex: 1;
           padding: 16px;
           overflow-y: auto;
@@ -685,34 +685,34 @@ export default function MyChatBot() {
           gap: 16px;
           background-color: #fbfbfb;
         }
-        .sana-chat-messages::-webkit-scrollbar {
+        .Stellar-chat-messages::-webkit-scrollbar {
           width: 6px;
         }
-        .sana-chat-messages::-webkit-scrollbar-track {
+        .Stellar-chat-messages::-webkit-scrollbar-track {
           background: transparent;
         }
-        .sana-chat-messages::-webkit-scrollbar-thumb {
+        .Stellar-chat-messages::-webkit-scrollbar-thumb {
           background: rgba(0, 0, 0, 0.08);
           border-radius: 10px;
         }
 
-        .sana-message-wrapper {
+        .Stellar-message-wrapper {
           display: flex;
           flex-direction: column;
           max-width: 82%;
         }
-        .sana-message-wrapper.bot {
+        .Stellar-message-wrapper.bot {
           align-self: flex-start;
         }
-        .sana-message-wrapper.user {
+        .Stellar-message-wrapper.user {
           align-self: flex-end;
         }
-        .sana-message-wrapper.has-products {
+        .Stellar-message-wrapper.has-products {
           max-width: 98% !important;
           width: 98% !important;
         }
 
-        .sana-message-bubble {
+        .Stellar-message-bubble {
           padding: 12px 16px;
           border-radius: 18px;
           font-size: 14px;
@@ -721,34 +721,34 @@ export default function MyChatBot() {
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
           word-break: break-word;
         }
-        .sana-message-wrapper.bot .sana-message-bubble {
+        .Stellar-message-wrapper.bot .Stellar-message-bubble {
           background: #81c408;
           color: white;
           border-top-left-radius: 4px;
         }
-        .sana-message-wrapper.user .sana-message-bubble {
+        .Stellar-message-wrapper.user .Stellar-message-bubble {
           background: #f1f1f1;
           color: #333;
           border-top-right-radius: 4px;
         }
-        .sana-message-time {
+        .Stellar-message-time {
           font-size: 10px;
           color: #999;
           margin-top: 4px;
           margin-left: 4px;
         }
-        .sana-message-wrapper.user .sana-message-time {
+        .Stellar-message-wrapper.user .Stellar-message-time {
           align-self: flex-end;
           margin-right: 4px;
         }
 
         /* Product Cards Styling inside Chat */
-        .sana-products-wrapper {
+        .Stellar-products-wrapper {
           margin-top: 10px;
           width: 100%;
         }
 
-        .sana-products-header {
+        .Stellar-products-header {
           font-size: 12px;
           font-weight: 700;
           color: #2e7d32;
@@ -759,7 +759,7 @@ export default function MyChatBot() {
           padding: 0 2px;
         }
 
-        .sana-products-scroll {
+        .Stellar-products-scroll {
           display: flex;
           gap: 10px;
           overflow-x: auto;
@@ -768,21 +768,21 @@ export default function MyChatBot() {
           -webkit-overflow-scrolling: touch;
         }
 
-        .sana-products-scroll::-webkit-scrollbar {
+        .Stellar-products-scroll::-webkit-scrollbar {
           height: 5px;
         }
 
-        .sana-products-scroll::-webkit-scrollbar-track {
+        .Stellar-products-scroll::-webkit-scrollbar-track {
           background: #f1f1f1;
           border-radius: 4px;
         }
 
-        .sana-products-scroll::-webkit-scrollbar-thumb {
+        .Stellar-products-scroll::-webkit-scrollbar-thumb {
           background: #81c408;
           border-radius: 4px;
         }
 
-        .sana-product-card {
+        .Stellar-product-card {
           flex: 0 0 165px;
           width: 165px;
           background: #ffffff;
@@ -797,13 +797,13 @@ export default function MyChatBot() {
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .sana-product-card:hover {
+        .Stellar-product-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
           border-color: #81c408;
         }
 
-        .sana-product-img-box {
+        .Stellar-product-img-box {
           width: 100%;
           height: 100px;
           position: relative;
@@ -816,7 +816,7 @@ export default function MyChatBot() {
           justify-content: center;
         }
 
-        .sana-product-img {
+        .Stellar-product-img {
           width: 100%;
           height: 100%;
           object-fit: contain;
@@ -824,11 +824,11 @@ export default function MyChatBot() {
           transition: transform 0.3s ease;
         }
 
-        .sana-product-card:hover .sana-product-img {
+        .Stellar-product-card:hover .Stellar-product-img {
           transform: scale(1.05);
         }
 
-        .sana-product-cat-pill {
+        .Stellar-product-cat-pill {
           position: absolute;
           top: 4px;
           left: 4px;
@@ -845,7 +845,7 @@ export default function MyChatBot() {
           box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
 
-        .sana-product-details {
+        .Stellar-product-details {
           display: flex;
           flex-direction: column;
           flex: 1;
@@ -853,7 +853,7 @@ export default function MyChatBot() {
           margin-top: 8px;
         }
 
-        .sana-product-name {
+        .Stellar-product-name {
           font-size: 12.5px;
           font-weight: 700;
           color: #1e293b;
@@ -868,24 +868,24 @@ export default function MyChatBot() {
           cursor: pointer;
         }
 
-        .sana-product-name:hover {
+        .Stellar-product-name:hover {
           color: #81c408;
         }
 
-        .sana-product-meta {
+        .Stellar-product-meta {
           display: flex;
           align-items: center;
           justify-content: space-between;
           margin-bottom: 8px;
         }
 
-        .sana-product-price {
+        .Stellar-product-price {
           font-size: 13.5px;
           font-weight: 800;
           color: #0c831f;
         }
 
-        .sana-stock-badge {
+        .Stellar-stock-badge {
           font-size: 8.5px;
           font-weight: 700;
           padding: 2px 5px;
@@ -893,22 +893,22 @@ export default function MyChatBot() {
           text-transform: uppercase;
         }
 
-        .sana-stock-badge.in-stock {
+        .Stellar-stock-badge.in-stock {
           background: #e8f5e9;
           color: #2e7d32;
         }
 
-        .sana-stock-badge.out-of-stock {
+        .Stellar-stock-badge.out-of-stock {
           background: #ffebee;
           color: #c62828;
         }
 
-        .sana-product-actions {
+        .Stellar-product-actions {
           display: flex;
           gap: 6px;
         }
 
-        .sana-card-btn {
+        .Stellar-card-btn {
           flex: 1;
           border: none;
           border-radius: 8px;
@@ -923,28 +923,28 @@ export default function MyChatBot() {
           outline: none;
         }
 
-        .sana-card-btn.view-btn {
+        .Stellar-card-btn.view-btn {
           background: #f1f5f9;
           color: #475569;
         }
 
-        .sana-card-btn.view-btn:hover {
+        .Stellar-card-btn.view-btn:hover {
           background: #e2e8f0;
           color: #0f172a;
         }
 
-        .sana-card-btn.cart-btn {
+        .Stellar-card-btn.cart-btn {
           background: #81c408;
           color: #ffffff;
           box-shadow: 0 2px 6px rgba(129, 196, 8, 0.3);
         }
 
-        .sana-card-btn.cart-btn:hover {
+        .Stellar-card-btn.cart-btn:hover {
           background: #6fa606;
           box-shadow: 0 4px 10px rgba(111, 166, 6, 0.4);
         }
 
-        .sana-typing-container {
+        .Stellar-typing-container {
           display: flex;
           align-items: center;
           gap: 4px;
@@ -955,25 +955,25 @@ export default function MyChatBot() {
           width: fit-content;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
         }
-        .sana-typing-dot {
+        .Stellar-typing-dot {
           width: 8px;
           height: 8px;
           background: rgba(255, 255, 255, 0.8);
           border-radius: 50%;
-          animation: sanaTypingDot 1.4s infinite both;
+          animation: StellarTypingDot 1.4s infinite both;
         }
-        .sana-typing-dot:nth-child(2) {
+        .Stellar-typing-dot:nth-child(2) {
           animation-delay: .2s;
         }
-        .sana-typing-dot:nth-child(3) {
+        .Stellar-typing-dot:nth-child(3) {
           animation-delay: .4s;
         }
-        @keyframes sanaTypingDot {
+        @keyframes StellarTypingDot {
           0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
           40% { transform: scale(1); opacity: 1; }
         }
 
-        .sana-chat-footer {
+        .Stellar-chat-footer {
           padding: 10px 14px;
           background: white;
           border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -983,16 +983,16 @@ export default function MyChatBot() {
         }
 
         /* Quick Category Chips */
-        .sana-quick-chips {
+        .Stellar-quick-chips {
           display: flex;
           gap: 6px;
           overflow-x: auto;
           padding: 2px 0 6px 0;
         }
-        .sana-quick-chips::-webkit-scrollbar {
+        .Stellar-quick-chips::-webkit-scrollbar {
           display: none;
         }
-        .sana-chip {
+        .Stellar-chip {
           background: #f4fce3;
           border: 1px solid #81c408;
           color: #558b2f;
@@ -1004,12 +1004,12 @@ export default function MyChatBot() {
           cursor: pointer;
           transition: all 0.2s ease;
         }
-        .sana-chip:hover {
+        .Stellar-chip:hover {
           background: #81c408;
           color: white;
         }
 
-        .sana-input-container {
+        .Stellar-input-container {
           display: flex;
           align-items: center;
           background: #f7f7f7;
@@ -1019,12 +1019,12 @@ export default function MyChatBot() {
           gap: 8px;
           transition: all 0.2s;
         }
-        .sana-input-container:focus-within {
+        .Stellar-input-container:focus-within {
           background: white;
           border-color: #81c408;
           box-shadow: 0 0 0 3px rgba(129, 196, 8, 0.15);
         }
-        .sana-chat-input {
+        .Stellar-chat-input {
           flex: 1;
           border: none;
           background: transparent;
@@ -1033,10 +1033,10 @@ export default function MyChatBot() {
           color: #333;
           padding: 6px 0;
         }
-        .sana-chat-input::placeholder {
+        .Stellar-chat-input::placeholder {
           color: #aaa;
         }
-        .sana-send-btn {
+        .Stellar-send-btn {
           background: #81c408;
           border: none;
           color: white;
@@ -1049,16 +1049,16 @@ export default function MyChatBot() {
           cursor: pointer;
           transition: background 0.2s, transform 0.2s;
         }
-        .sana-send-btn:hover {
+        .Stellar-send-btn:hover {
           background: #6fa606;
           transform: scale(1.05);
         }
-        .sana-send-btn:disabled {
+        .Stellar-send-btn:disabled {
           background: #ccc;
           cursor: not-allowed;
           transform: none;
         }
-        .sana-chat-powered {
+        .Stellar-chat-powered {
           font-size: 9px;
           color: #bbb;
           text-align: center;
@@ -1070,7 +1070,7 @@ export default function MyChatBot() {
         }
 
         @media (max-width: 480px) {
-          .sana-chat-window {
+          .Stellar-chat-window {
             bottom: 0;
             right: 0;
             width: 100%;
@@ -1083,9 +1083,9 @@ export default function MyChatBot() {
 
       {/* Floating Chat Button */}
       <button
-        className="sana-chatbot-button"
+        className="Stellar-chatbot-button"
         onClick={() => setIsOpen(!isOpen)}
-        title="Chat with Sana"
+        title="Chat with Stellar"
       >
         {isOpen ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "white" }}>
@@ -1101,31 +1101,31 @@ export default function MyChatBot() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="sana-chat-window">
+        <div className="Stellar-chat-window">
           {/* Header */}
-          <div className="sana-chat-header">
-            <div className="sana-chat-header-info">
-              <div className="sana-chat-avatar-container">
+          <div className="Stellar-chat-header">
+            <div className="Stellar-chat-header-info">
+              <div className="Stellar-chat-avatar-container">
                 <img
-                  className="sana-chat-avatar"
-                  src="/images/sana.png"
-                  alt="Sana"
+                  className="Stellar-chat-avatar"
+                  src="/images/Stellar.png"
+                  alt="Stellar"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
                   }}
                 />
-                <span className="sana-chat-avatar-placeholder" style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>S</span>
-                <span className="sana-status-dot"></span>
+                <span className="Stellar-chat-avatar-placeholder" style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>S</span>
+                <span className="Stellar-status-dot"></span>
               </div>
-              <div className="sana-chat-title-container">
-                <h3 className="sana-chat-title">Sana</h3>
-                <span className="sana-chat-subtitle">Shopping Assistant</span>
+              <div className="Stellar-chat-title-container">
+                <h3 className="Stellar-chat-title">Stellar</h3>
+                <span className="Stellar-chat-subtitle">Shopping Assistant</span>
               </div>
             </div>
-            <div className="sana-chat-header-actions">
+            <div className="Stellar-chat-header-actions">
               <button
-                className="sana-chat-action-btn"
+                className="Stellar-chat-action-btn"
                 onClick={handleReset}
                 title="Reset Chat"
               >
@@ -1134,7 +1134,7 @@ export default function MyChatBot() {
                 </svg>
               </button>
               <button
-                className="sana-chat-action-btn"
+                className="Stellar-chat-action-btn"
                 onClick={() => setIsOpen(false)}
                 title="Minimize"
               >
@@ -1147,7 +1147,7 @@ export default function MyChatBot() {
           </div>
 
           {/* Messages List */}
-          <div className="sana-chat-messages">
+          <div className="Stellar-chat-messages">
             {messages.map((msg) => {
               const isNotFound = msg.text?.toLowerCase().includes("don't found") ||
                 msg.text?.toLowerCase().includes("not found") ||
@@ -1156,71 +1156,71 @@ export default function MyChatBot() {
               const hasProducts = !isNotFound && msg.sender === "bot" && Array.isArray(msg.products) && msg.products.length > 0;
 
               return (
-                <div key={msg.id} className={`sana-message-wrapper ${msg.sender} ${hasProducts ? 'has-products' : ''}`}>
-                  <div className="sana-message-bubble">
+                <div key={msg.id} className={`Stellar-message-wrapper ${msg.sender} ${hasProducts ? 'has-products' : ''}`}>
+                  <div className="Stellar-message-bubble">
                     {msg.text}
                   </div>
 
                   {/* Render Product Cards inside Bot Message */}
                   {hasProducts && (
-                    <div className="sana-products-wrapper">
-                      <div className="sana-products-header">
+                    <div className="Stellar-products-wrapper">
+                      <div className="Stellar-products-header">
                         <span>🛍️ Matching Products ({msg.products.length})</span>
                       </div>
-                      <div className="sana-products-scroll">
+                      <div className="Stellar-products-scroll">
                         {msg.products.map((product) => {
                           const imageSrc = Array.isArray(product.image) && product.image.length > 0
                             ? product.image[0]
                             : (typeof product.image === "string" && product.image ? product.image : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80");
 
                           return (
-                            <div key={product._id} className="sana-product-card">
-                              <div className="sana-product-img-box" onClick={() => handleViewProduct(product._id)}>
+                            <div key={product._id} className="Stellar-product-card">
+                              <div className="Stellar-product-img-box" onClick={() => handleViewProduct(product._id)}>
                                 <img
                                   src={imageSrc}
                                   alt={product.name}
-                                  className="sana-product-img"
+                                  className="Stellar-product-img"
                                   onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80";
                                   }}
                                 />
                                 {product.category_id?.name && (
-                                  <span className="sana-product-cat-pill">
+                                  <span className="Stellar-product-cat-pill">
                                     {product.category_id.name}
                                   </span>
                                 )}
                               </div>
 
-                              <div className="sana-product-details">
+                              <div className="Stellar-product-details">
                                 <h4
-                                  className="sana-product-name"
+                                  className="Stellar-product-name"
                                   title={product.name}
                                   onClick={() => handleViewProduct(product._id)}
                                 >
                                   {product.name}
                                 </h4>
 
-                                <div className="sana-product-meta">
-                                  <span className="sana-product-price">
+                                <div className="Stellar-product-meta">
+                                  <span className="Stellar-product-price">
                                     ₹{product.price}
                                   </span>
-                                  <span className={`sana-stock-badge ${product.status !== false ? 'in-stock' : 'out-of-stock'}`}>
+                                  <span className={`Stellar-stock-badge ${product.status !== false ? 'in-stock' : 'out-of-stock'}`}>
                                     {product.status !== false ? 'In Stock' : 'Out'}
                                   </span>
                                 </div>
 
-                                <div className="sana-product-actions">
+                                <div className="Stellar-product-actions">
                                   <button
                                     type="button"
-                                    className="sana-card-btn view-btn"
+                                    className="Stellar-card-btn view-btn"
                                     onClick={() => handleViewProduct(product._id)}
                                   >
                                     View
                                   </button>
                                   <button
                                     type="button"
-                                    className="sana-card-btn cart-btn"
+                                    className="Stellar-card-btn cart-btn"
                                     onClick={(e) => handleAddProductToCart(e, product)}
                                   >
                                     Add
@@ -1234,18 +1234,18 @@ export default function MyChatBot() {
                     </div>
                   )}
 
-                  <span className="sana-message-time">{msg.timestamp}</span>
+                  <span className="Stellar-message-time">{msg.timestamp}</span>
                 </div>
               );
             })}
 
             {/* Typing Indicator */}
             {isTyping && (
-              <div className="sana-message-wrapper bot">
-                <div className="sana-typing-container">
-                  <span className="sana-typing-dot"></span>
-                  <span className="sana-typing-dot"></span>
-                  <span className="sana-typing-dot"></span>
+              <div className="Stellar-message-wrapper bot">
+                <div className="Stellar-typing-container">
+                  <span className="Stellar-typing-dot"></span>
+                  <span className="Stellar-typing-dot"></span>
+                  <span className="Stellar-typing-dot"></span>
                 </div>
               </div>
             )}
@@ -1253,14 +1253,14 @@ export default function MyChatBot() {
           </div>
 
           {/* Footer Input Area */}
-          <form className="sana-chat-footer" onSubmit={(e) => handleSend(e)}>
+          <form className="Stellar-chat-footer" onSubmit={(e) => handleSend(e)}>
             {step === "chat" && (
-              <div className="sana-quick-chips">
+              <div className="Stellar-quick-chips">
                 {quickCategories.map((cat, idx) => (
                   <button
                     key={idx}
                     type="button"
-                    className="sana-chip"
+                    className="Stellar-chip"
                     onClick={() => handleSend(null, cat.query)}
                   >
                     {cat.label}
@@ -1269,19 +1269,19 @@ export default function MyChatBot() {
               </div>
             )}
 
-            <div className="sana-input-container">
+            <div className="Stellar-input-container">
               <input
                 type="text"
-                className="sana-chat-input"
-                placeholder={step === "ask_name" ? "Enter your name..." : "Ask Sana something..."}
+                className="Stellar-chat-input"
+                placeholder={step === "ask_name" ? "Enter your name..." : "Ask Stellar something..."}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isTyping}
               />
               <button
                 type="button"
-                className="sana-mic-btn border-0 bg-transparent text-secondary p-1"
-                title="Speak to Sana"
+                className="Stellar-mic-btn border-0 bg-transparent text-secondary p-1"
+                title="Speak to Stellar"
                 onClick={() => {
                   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
                   if (!SR) {
@@ -1301,7 +1301,7 @@ export default function MyChatBot() {
               </button>
               <button
                 type="submit"
-                className="sana-send-btn"
+                className="Stellar-send-btn"
                 disabled={!inputText.trim() || isTyping}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1310,7 +1310,7 @@ export default function MyChatBot() {
                 </svg>
               </button>
             </div>
-            <p className="sana-chat-powered">
+            <p className="Stellar-chat-powered">
               <span>Powered by Gemini AI</span>
             </p>
           </form>

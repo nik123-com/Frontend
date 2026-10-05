@@ -8,7 +8,7 @@ import {
   behavior_profile,
   recommendations_metrics,
   cart_smart_optimization,
-  sana_contextual_query,
+  Stellar_contextual_query,
   vendor_inventory_intelligence,
   vendor_product_forecast,
   admin_recommendations_analytics
@@ -49,10 +49,10 @@ export const trackBehaviorEvent = ({
   metadata = {}
 }) => {
   const userId = sessionStorage.getItem("userId");
-  let sessionId = sessionStorage.getItem("sana_session_id");
+  let sessionId = sessionStorage.getItem("Stellar_session_id");
   if (!sessionId) {
     sessionId = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem("sana_session_id", sessionId);
+    sessionStorage.setItem("Stellar_session_id", sessionId);
   }
 
   return axios.post(`${baseUrl}${behavior_track_event}`, {
@@ -77,7 +77,7 @@ export const trackRecommendationMetric = ({
   metadata = {}
 }) => {
   const userId = sessionStorage.getItem("userId");
-  const sessionId = sessionStorage.getItem("sana_session_id") || "";
+  const sessionId = sessionStorage.getItem("Stellar_session_id") || "";
   return axios.post(`${baseUrl}${recommendations_metrics}`, {
     userId,
     sessionId,
@@ -104,9 +104,9 @@ export const getSmartCartOptimization = (data = {}) => {
   });
 };
 
-// 8. Context-Aware Sana AI Shopping Query
-export const askContextualSana = (data = {}) => {
-  return axios.post(`${baseUrl}${sana_contextual_query}`, data);
+// 8. Context-Aware Stellar AI Shopping Query
+export const askContextualStellar = (data = {}) => {
+  return axios.post(`${baseUrl}${Stellar_contextual_query}`, data);
 };
 
 // 9. Vendor Predictive Stock-Out Intelligence
