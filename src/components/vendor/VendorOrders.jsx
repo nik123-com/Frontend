@@ -72,7 +72,7 @@ export default function VendorOrders() {
       {/* Filter Tabs */}
       <div className="card border-0 shadow-sm p-3 mb-4 bg-white rounded-3">
         <ul className="nav nav-pills flex-wrap gap-2">
-          {["all", "pending", "accepted", "packed", "shipped", "delivered"].map((tab) => (
+          {["all", "pending", "accepted", "packed", "shipped", "delivered", "cancelled"].map((tab) => (
             <li className="nav-item" key={tab}>
               <button
                 className={`nav-link text-capitalize px-4 py-2 fw-semibold ${
@@ -111,8 +111,12 @@ export default function VendorOrders() {
                 </thead>
                 <tbody>
                   {filteredOrders.map((order) => {
-                    const currentStatus =
-                      order.vendorItems?.[0]?.itemStatus || order.orderStatus || "pending";
+                    const isOrderCancelled =
+                      (order.orderStatus || "").toLowerCase() === "cancelled" ||
+                      order.vendorItems?.some((item) => (item.itemStatus || "").toLowerCase() === "cancelled");
+                    const currentStatus = isOrderCancelled
+                      ? "cancelled"
+                      : (order.vendorItems?.[0]?.itemStatus || order.orderStatus || "pending");
 
                     return (
                       <tr key={order._id}>
@@ -150,8 +154,8 @@ export default function VendorOrders() {
                           ₹{Number(order.vendorSubtotal || 0).toLocaleString()}
                         </td>
                         <td>
-                          <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : "bg-warning text-dark"}`}>
-                            {order.paymentStatus === "Paid" ? "Paid" : "COD"}
+                          <span className={`badge ${order.paymentStatus === "Paid" ? "bg-success" : (order.paymentStatus === "Cancelled" || isOrderCancelled ? "bg-danger" : "bg-warning text-dark")}`}>
+                            {isOrderCancelled && order.paymentStatus !== "Paid" ? "Cancelled" : (order.paymentStatus || "COD")}
                           </span>
                         </td>
                         <td>
@@ -165,58 +169,75 @@ export default function VendorOrders() {
                                 ? "bg-primary"
                                 : currentStatus === "accepted"
                                 ? "bg-warning text-dark"
+                                : currentStatus === "cancelled"
+                                ? "bg-danger"
                                 : "bg-secondary"
                             }`}
                           >
-                            {currentStatus}
+                            {currentStatus === "cancelled" ? "Cancelled by Customer" : currentStatus}
                           </span>
                         </td>
                         <td className="text-end pe-4 text-nowrap" style={{ whiteSpace: "nowrap", minWidth: "160px" }}>
-                          <div className="btn-group flex-nowrap">
-                            {currentStatus === "pending" && (
+                          {isOrderCancelled ? (
+                            <div className="d-flex align-items-center justify-content-end gap-2">
+                              <span className="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1">
+                                <i className="fa-solid fa-ban me-1"></i>Cancelled
+                              </span>
                               <button
-                                onClick={() => handleUpdateStatus(order._id, "accepted")}
-                                className="btn btn-sm btn-outline-success"
+                                onClick={() => setSelectedInvoiceOrderId(order._id)}
+                                className="btn btn-sm btn-outline-secondary"
+                                title="Print Invoice"
                               >
-                                Accept
+                                <i className="fa-solid fa-print"></i>
                               </button>
-                            )}
+                            </div>
+                          ) : (
+                            <div className="btn-group flex-nowrap">
+                              {currentStatus === "pending" && (
+                                <button
+                                  onClick={() => handleUpdateStatus(order._id, "accepted")}
+                                  className="btn btn-sm btn-outline-success"
+                                >
+                                  Accept
+                                </button>
+                              )}
 
-                            {currentStatus === "accepted" && (
+                              {currentStatus === "accepted" && (
+                                <button
+                                  onClick={() => handleUpdateStatus(order._id, "packed")}
+                                  className="btn btn-sm btn-outline-primary"
+                                >
+                                  Mark Packed
+                                </button>
+                              )}
+
+                              {currentStatus === "packed" && (
+                                <button
+                                  onClick={() => handleUpdateStatus(order._id, "shipped")}
+                                  className="btn btn-sm btn-outline-info"
+                                >
+                                  Mark Shipped
+                                </button>
+                              )}
+
+                              {currentStatus === "shipped" && (
+                                <button
+                                  onClick={() => handleUpdateStatus(order._id, "delivered")}
+                                  className="btn btn-sm btn-outline-success"
+                                >
+                                  Mark Delivered
+                                </button>
+                              )}
+
                               <button
-                                onClick={() => handleUpdateStatus(order._id, "packed")}
-                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => setSelectedInvoiceOrderId(order._id)}
+                                className="btn btn-sm btn-outline-dark"
+                                title="Print Invoice / Packing Slip"
                               >
-                                Mark Packed
+                                <i className="fa-solid fa-print"></i> Invoice
                               </button>
-                            )}
-
-                            {currentStatus === "packed" && (
-                              <button
-                                onClick={() => handleUpdateStatus(order._id, "shipped")}
-                                className="btn btn-sm btn-outline-info"
-                              >
-                                Mark Shipped
-                              </button>
-                            )}
-
-                            {currentStatus === "shipped" && (
-                              <button
-                                onClick={() => handleUpdateStatus(order._id, "delivered")}
-                                className="btn btn-sm btn-outline-success"
-                              >
-                                Mark Delivered
-                              </button>
-                            )}
-
-                            <button
-                              onClick={() => setSelectedInvoiceOrderId(order._id)}
-                              className="btn btn-sm btn-outline-dark"
-                              title="Print Invoice / Packing Slip"
-                            >
-                              <i className="fa-solid fa-print"></i> Invoice
-                            </button>
-                          </div>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     );

@@ -4,6 +4,7 @@ import { getCustomerProfile, updateCustomerProfile } from "../server/Customer";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { COUNTRY_CODES, splitContact, formatContact, sanitizePhoneNumber, validatePhoneNumber } from "../../utils/countryCodes";
+import PhoneInputLayout from "../common/PhoneInputLayout";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
@@ -498,49 +499,16 @@ export default function CustomerProfile() {
 
                   {/* Contact Number */}
                   <div className="col-12 col-md-6">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <label className="form-label fw-bold text-dark small mb-0">
-                        Contact / Mobile Number
-                      </label>
-                      <span className="text-muted small" style={{ fontSize: "11px" }}>
-                        {contactNumber.length}/10 digits
-                      </span>
-                    </div>
-                    <div className="input-group">
-                      <span className="input-group-text bg-light border-end-0">
-                        <i className="fa-solid fa-phone text-muted"></i>
-                      </span>
-                      <select
-                        className="form-select bg-light border-start-0 border-end-0 fw-semibold text-dark py-2.5 ps-1"
-                        style={{ maxWidth: "140px", cursor: "pointer", fontSize: "13px" }}
-                        value={countryCode}
-                        onChange={handleCountryCodeChange}
-                        aria-label="Country Code"
-                      >
-                        {COUNTRY_CODES.map((item) => (
-                          <option key={`${item.code}-${item.country}`} value={item.code}>
-                            {item.flag} {item.code} ({item.country})
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="tel"
-                        className="form-control border-start-0 py-2.5 ps-2"
-                        value={contactNumber}
-                        onChange={handleContactNumberChange}
-                        placeholder="10-digit mobile number"
-                        maxLength={10}
-                      />
-                    </div>
-                    {contactError && (
-                      <small className="text-danger d-block mt-1 fw-semibold" style={{ fontSize: "11px" }}>
-                        <i className="fa-solid fa-circle-exclamation me-1"></i>
-                        {contactError}
-                      </small>
-                    )}
-                    <small className="text-muted d-block mt-1" style={{ fontSize: "11px" }}>
-                      Stored format: <strong>{contactNumber ? `${countryCode}-${contactNumber}` : `${countryCode}-XXXXXXXXXX`}</strong> (Maximum 10 digits)
-                    </small>
+                    <PhoneInputLayout
+                      label="Contact / Mobile Number"
+                      countryCode={countryCode}
+                      phoneDigits={contactNumber}
+                      phoneError={contactError}
+                      onCountryCodeChange={handleCountryCodeChange}
+                      onPhoneChange={handleContactNumberChange}
+                      placeholder="9779843211"
+                      className="mb-0"
+                    />
                   </div>
 
                   {/* Govt ID */}

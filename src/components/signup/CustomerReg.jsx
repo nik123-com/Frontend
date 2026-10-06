@@ -3,7 +3,8 @@ import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 import { register } from "../server/auth"
-import { COUNTRY_CODES, formatContact, sanitizePhoneNumber, validatePhoneNumber } from "../../utils/countryCodes"
+import { formatContact, sanitizePhoneNumber, validatePhoneNumber } from "../../utils/countryCodes"
+import PhoneInputLayout from "../common/PhoneInputLayout"
 
 export default function CustomerReg() {
   const nav = useNavigate();
@@ -202,46 +203,17 @@ export default function CustomerReg() {
                     onChange={ChangePassword}
                     value={password}
                   />
-                  <div className="mb-4">
-                    <div className="input-group bg-white rounded shadow-xs overflow-hidden border">
-                      <select
-                        className="form-select border-0 bg-light fw-semibold text-dark py-3"
-                        style={{ maxWidth: "150px", cursor: "pointer", fontSize: "14px" }}
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        aria-label="Country Code"
-                      >
-                        {COUNTRY_CODES.map((item) => (
-                          <option key={`${item.code}-${item.country}`} value={item.code}>
-                            {item.flag} {item.code} ({item.country})
-                          </option>
-                        ))}
-                      </select>
-                      <span className="input-group-text bg-white border-0 text-muted px-2">
-                        <i className="fa-solid fa-phone"></i>
-                      </span>
-                      <input
-                        type="tel"
-                        className="form-control border-0 py-3 ps-1"
-                        placeholder="Enter 10-digit mobile number"
-                        onChange={handlePhoneChange}
-                        value={phoneDigits}
-                        maxLength={10}
-                      />
-                      <span className="input-group-text bg-white border-0 text-muted small pe-3">
-                        {phoneDigits.length}/10
-                      </span>
-                    </div>
-                    {phoneError && (
-                      <small className="text-danger d-block mt-1 ps-1 fw-semibold" style={{ fontSize: "12px" }}>
-                        <i className="fa-solid fa-circle-exclamation me-1"></i>
-                        {phoneError}
-                      </small>
-                    )}
-                    <small className="text-muted d-block mt-1 ps-1" style={{ fontSize: "11px" }}>
-                      Number format: <strong>{phoneDigits ? `${countryCode}-${phoneDigits}` : `${countryCode}-XXXXXXXXXX`}</strong> (Strictly 10 digits)
-                    </small>
-                  </div>
+                  <PhoneInputLayout
+                    label="Contact / Mobile Number"
+                    countryCode={countryCode}
+                    phoneDigits={phoneDigits}
+                    phoneError={phoneError}
+                    onCountryCodeChange={(e) => setCountryCode(e.target.value)}
+                    onPhoneChange={handlePhoneChange}
+                    placeholder="9779843211"
+                    required={true}
+                    className="mb-4"
+                  />
                   <select
                     className="w-100 form-control border-1 py-3 mb-4 bg-white"
                     onChange={(e) => {

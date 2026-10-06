@@ -66,6 +66,7 @@ export const delete_coupon = "/api/coupon/DeleteOne";
 
 export const add_order = "/customer/order/add"
 export const all_order = "/customer/order/all"
+export const customer_cancel_order = "/customer/order/cancel"
 export const admin_add_order = "/api/order/add"
 export const admin_all_order = "/api/order/all"
 export const admin_single_order = "/api/order/single"

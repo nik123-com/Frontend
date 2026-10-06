@@ -3,11 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { baseUrl, vendor_register, ai_store_description } from "../endpoints";
+import PhoneInputLayout from "../common/PhoneInputLayout";
+import { formatContact, sanitizePhoneNumber, validatePhoneNumber } from "../../utils/countryCodes";
 
 export default function VendorRegister() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+
+  const [countryCode, setCountryCode] = useState("+91");
+  const [phoneDigits, setPhoneDigits] = useState("");
+  const [phoneError, setPhoneError] = useState("");
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -56,6 +62,29 @@ export default function VendorRegister() {
     }
   };
 
+  const handlePhoneChange = (e) => {
+    const sanitized = sanitizePhoneNumber(e.target.value);
+    setPhoneDigits(sanitized);
+    if (!sanitized) {
+      setPhoneError("Contact / Mobile number is required");
+      setFormData(prev => ({ ...prev, phone: "" }));
+    } else if (sanitized.length < 10) {
+      setPhoneError(`Contact number must be exactly 10 digits (currently ${sanitized.length})`);
+      setFormData(prev => ({ ...prev, phone: formatContact(countryCode, sanitized) }));
+    } else {
+      setPhoneError("");
+      setFormData(prev => ({ ...prev, phone: formatContact(countryCode, sanitized) }));
+    }
+  };
+
+  const handleCountryCodeChange = (e) => {
+    const newCode = e.target.value;
+    setCountryCode(newCode);
+    if (phoneDigits) {
+      setFormData(prev => ({ ...prev, phone: formatContact(newCode, phoneDigits) }));
+    }
+  };
+
   const generateAiStoreDescription = async () => {
     if (!formData.businessName.trim()) {
       toast.warn("Please enter Business / Store Name first!");
@@ -89,9 +118,26 @@ export default function VendorRegister() {
       return;
     }
 
+    if (!phoneDigits) {
+      setPhoneError("Contact / Mobile number is required");
+      toast.error("Contact / Mobile number is required");
+      return;
+    }
+
+    const phoneValidation = validatePhoneNumber(phoneDigits, true);
+    if (!phoneValidation.isValid) {
+      setPhoneError(phoneValidation.error);
+      toast.error(phoneValidation.error);
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await axios.post(baseUrl + vendor_register, formData);
+      const payload = {
+        ...formData,
+        phone: formatContact(countryCode, phoneDigits)
+      };
+      const res = await axios.post(baseUrl + vendor_register, payload);
       if (res.data.success) {
         toast.success(res.data.message || "Vendor Registration Submitted! Pending Admin Approval.");
         navigate("/login");
@@ -171,14 +217,16 @@ export default function VendorRegister() {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label fw-semibold">Phone Number</label>
-              <input
-                type="text"
-                name="phone"
-                className="form-control"
-                placeholder="+91 9876543210"
-                value={formData.phone}
-                onChange={handleChange}
+              <PhoneInputLayout
+                label="Contact / Mobile Number"
+                countryCode={countryCode}
+                phoneDigits={phoneDigits}
+                phoneError={phoneError}
+                onCountryCodeChange={handleCountryCodeChange}
+                onPhoneChange={handlePhoneChange}
+                placeholder="9779843211"
+                required={true}
+                className="mb-0"
               />
             </div>
 

@@ -1,7 +1,7 @@
 import React from "react";
 import "./DeliveryTracker.css";
 
-export default function DeliveryTracker({ order, onClose }) {
+export default function DeliveryTracker({ order, onClose, canCancel = false, onCancel = null }) {
   if (!order) return null;
 
   const STOPS = [
@@ -222,6 +222,31 @@ export default function DeliveryTracker({ order, onClose }) {
           </div>
         ) : (
           <>
+            {canCancel && onCancel ? (
+              <div className="alert alert-warning py-2 px-3 rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 border-0 bg-warning-subtle text-dark">
+                <div className="d-flex align-items-center gap-2">
+                  <i className="fa-solid fa-hourglass-half text-warning fs-5"></i>
+                  <span style={{ fontSize: "0.85rem" }}>
+                    <strong>Awaiting Vendor Acceptance:</strong> You can cancel this order at this stage before the seller accepts it.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-danger rounded-pill px-3 fw-bold text-nowrap shadow-sm"
+                  onClick={onCancel}
+                >
+                  <i className="fa-solid fa-ban me-1"></i> Cancel Order
+                </button>
+              </div>
+            ) : activeIndex >= 1 ? (
+              <div className="alert alert-success py-2 px-3 rounded-3 d-flex align-items-center gap-2 mb-3 border-0 bg-success-subtle text-success-emphasis" style={{ fontSize: "0.85rem" }}>
+                <i className="fa-solid fa-shield-halved text-success fs-5"></i>
+                <span>
+                  <strong>Order Accepted by Seller:</strong> The seller has confirmed your order and is fulfilling it. Cancellation is now closed.
+                </span>
+              </div>
+            ) : null}
+
             {/* Amazon-Style Timeline Progress Bar */}
             <div className="amazon-progress-container">
               <div className="amazon-progress-bar-background"></div>
