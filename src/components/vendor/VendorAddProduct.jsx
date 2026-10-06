@@ -143,7 +143,7 @@ export default function VendorAddProduct() {
         toast.success("AI Generated Product Description!");
       }
     } catch (err) {
-      toast.error("Failed to generate AI description");
+      toast.error(err.response?.data?.message || "Failed to generate AI description");
     } finally {
       setAiLoading(false);
     }
@@ -173,7 +173,7 @@ export default function VendorAddProduct() {
         toast.success("AI Generated SEO Title & Keywords!");
       }
     } catch (err) {
-      toast.error("Failed to generate SEO data");
+      toast.error(err.response?.data?.message || "Failed to generate SEO data");
     } finally {
       setAiLoading(false);
     }
@@ -197,7 +197,7 @@ export default function VendorAddProduct() {
         setAiCaptionModal(res.data.caption);
       }
     } catch (err) {
-      toast.error("Failed to generate caption");
+      toast.error(err.response?.data?.message || "Failed to generate caption");
     } finally {
       setAiLoading(false);
     }
@@ -221,7 +221,7 @@ export default function VendorAddProduct() {
         setAiPriceModal(res.data.suggestion);
       }
     } catch (err) {
-      toast.error("Failed to get price suggestion");
+      toast.error(err.response?.data?.message || "Failed to get price suggestion");
     } finally {
       setAiLoading(false);
     }
@@ -364,7 +364,18 @@ export default function VendorAddProduct() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">Description</label>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <label className="form-label fw-semibold mb-0">Description</label>
+                  <button
+                    type="button"
+                    onClick={generateAiDescription}
+                    disabled={aiLoading}
+                    className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    ✨ AI Generate Description
+                  </button>
+                </div>
                 <textarea
                   name="description"
                   className="form-control"
@@ -533,7 +544,18 @@ export default function VendorAddProduct() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">SEO Description</label>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <label className="form-label fw-semibold mb-0">SEO Description</label>
+                  <button
+                    type="button"
+                    onClick={generateAiSeo}
+                    disabled={aiLoading}
+                    className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    ✨ AI Generate SEO
+                  </button>
+                </div>
                 <textarea
                   name="seoDescription"
                   className="form-control"

@@ -2,12 +2,35 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { addCategory } from "../server/Category";
+import { baseUrl, ai_category_description } from "../endpoints";
 
 export default function Category() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   let [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const generateAiDescription = async () => {
+    if (!name.trim()) {
+      toast.warn("Please enter Category Name first!");
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const res = await axios.post(baseUrl + ai_category_description, { name });
+      if (res.data.success && res.data.description) {
+        setDescription(res.data.description);
+        toast.success("AI generated category description!");
+      } else {
+        toast.error("Failed to generate description");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to generate AI description");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -68,11 +91,30 @@ export default function Category() {
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="form-label fw-semibold">Description</label>
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="form-label fw-semibold mb-0">Description</label>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-sm"
+                        onClick={generateAiDescription}
+                        disabled={aiLoading}
+                        style={{ fontSize: "0.82rem" }}
+                      >
+                        {aiLoading ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-1"></span> Generating...
+                          </>
+                        ) : (
+                          <>
+                            ✨ AI Generate Description
+                          </>
+                        )}
+                      </button>
+                    </div>
                     <textarea
                       className="form-control py-3 rounded border-0 bg-white"
                       rows="4"
-                      placeholder="Enter category description"
+                      placeholder="Enter category description or click AI Generate..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     ></textarea>

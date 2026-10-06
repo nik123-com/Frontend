@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { allCategory } from "../server/Category";
 import { allBrand } from "../server/Brand";
 import { addProduct } from "../server/Product";
+import { baseUrl, ai_product_description } from "../endpoints";
 
 export default function Product() {
   const [name, setName] = useState("");
@@ -12,6 +14,7 @@ export default function Product() {
   const [categoryId, setCategoryId] = useState("");
   const [brandId, setBrandId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const [data, setData] = useState([]);
   const [data1, setData1] = useState([]);
@@ -47,6 +50,32 @@ export default function Product() {
         console.log(err);
         toast.error("Error fetching Brand");
       });
+  };
+
+  const generateAiDescription = async () => {
+    if (!name.trim()) {
+      toast.warn("Please enter Product Name first!");
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const selectedCat = data.find((c) => c._id === categoryId)?.name || "";
+      const res = await axios.post(baseUrl + ai_product_description, {
+        name,
+        category: selectedCat,
+        features: description
+      });
+      if (res.data.success && res.data.description) {
+        setDescription(res.data.description);
+        toast.success("AI generated product description!");
+      } else {
+        toast.error("Failed to generate description");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to generate AI description");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -148,12 +177,32 @@ export default function Product() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label fw-semibold">
-                    Description
-                  </label>
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <label className="form-label fw-semibold mb-0">
+                      Description
+                    </label>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold shadow-sm"
+                      onClick={generateAiDescription}
+                      disabled={aiLoading}
+                      style={{ fontSize: "0.82rem" }}
+                    >
+                      {aiLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-1"></span> Generating...
+                        </>
+                      ) : (
+                        <>
+                          ✨ AI Generate Description
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <textarea
                     className="form-control py-3"
                     rows="4"
+                    placeholder="Enter product description or click AI Generate..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />

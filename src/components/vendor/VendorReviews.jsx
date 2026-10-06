@@ -63,7 +63,7 @@ export default function VendorReviews() {
         toast.error(res.data.message || "Failed to generate AI reply");
       }
     } catch (err) {
-      toast.error("Error generating AI reply");
+      toast.error(err.response?.data?.message || "Error generating AI reply");
     } finally {
       setGeneratingAi(false);
     }

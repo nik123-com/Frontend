@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { baseUrl, vendor_update_profile } from "../endpoints";
+import { baseUrl, vendor_update_profile, vendor_ai_store_description } from "../endpoints";
 
 export default function VendorSettings() {
   const { vendor, reloadVendor } = useOutletContext();
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -76,6 +77,36 @@ export default function VendorSettings() {
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const generateAiStoreDescription = async () => {
+    if (!formData.businessName.trim()) {
+      toast.warn("Please enter Store / Business Name first!");
+      return;
+    }
+    setAiLoading(true);
+    const token = sessionStorage.getItem("token");
+    try {
+      const res = await axios.post(
+        baseUrl + vendor_ai_store_description,
+        {
+          businessName: formData.businessName,
+          category: "General Merchandise",
+          city: formData.address || "Local"
+        },
+        { headers: { Authorization: token } }
+      );
+      if (res.data.success && res.data.description) {
+        setFormData(prev => ({ ...prev, description: res.data.description }));
+        toast.success("AI generated store description!");
+      } else {
+        toast.error("Failed to generate description");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to generate AI description");
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -168,11 +199,31 @@ export default function VendorSettings() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">Store Description</label>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <label className="form-label fw-semibold mb-0">Store Description</label>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold shadow-sm"
+                    onClick={generateAiStoreDescription}
+                    disabled={aiLoading}
+                    style={{ fontSize: "0.82rem" }}
+                  >
+                    {aiLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-1"></span> Generating...
+                      </>
+                    ) : (
+                      <>
+                        ✨ AI Generate Description
+                      </>
+                    )}
+                  </button>
+                </div>
                 <textarea
                   name="description"
                   className="form-control"
                   rows="3"
+                  placeholder="Enter store description or click AI Generate..."
                   value={formData.description}
                   onChange={handleChange}
                 ></textarea>

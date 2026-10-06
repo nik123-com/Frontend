@@ -137,10 +137,15 @@ export const vendor_all_query = "/vendor/query/all";
 export const vendor_feedback_query = "/vendor/query/feedback";
 
 export const vendor_ai_description = "/vendor/ai/description";
+export const vendor_ai_store_description = "/vendor/ai/store-description";
 export const vendor_ai_seo = "/vendor/ai/seo";
 export const vendor_ai_caption = "/vendor/ai/caption";
 export const vendor_ai_price_suggest = "/vendor/ai/price-suggest";
 export const vendor_ai_review_reply = "/vendor/ai/review-reply";
+
+export const ai_product_description = "/api/ai/product-description";
+export const ai_category_description = "/api/ai/category-description";
+export const ai_store_description = "/api/ai/store-description";
 
 // Admin Vendor Management
 export const admin_all_vendors = "/api/vendor/all";
