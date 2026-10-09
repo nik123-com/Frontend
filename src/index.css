@@ -914,7 +914,8 @@ body {
 }
 
 /* Category Tag Badge */
-.fruite-item .position-absolute {
+.fruite-item > .position-absolute,
+.fruite-item .fruite-category-badge {
   top: 12px !important;
   left: 12px !important;
   font-size: 0.75rem !important;
@@ -924,6 +925,48 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
   z-index: 2 !important;
 }
+
+/* Product Card Slideshow Styles on Hover (Customer Products Page) */
+.product-slideshow-img {
+  transition: opacity 0.35s ease, transform 0.4s ease !important;
+  animation: productSlideFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes productSlideFadeIn {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.product-slideshow-btn {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #1e293b !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.product-slideshow-btn:hover {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  transform: translateY(-50%) scale(1.12) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.product-slideshow-dot {
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-slideshow-dot:hover {
+  transform: scale(1.2);
+}
+
 
 /* Card Body Content Box */
 .fruite-item .p-4 {

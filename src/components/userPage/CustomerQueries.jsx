@@ -31,7 +31,6 @@ export default function CustomerQueries() {
 
   useEffect(() => {
     if (!userId) {
-      toast.warning("Please log in to access Customer Support Queries");
       navigate("/login");
       return;
     }
@@ -284,10 +283,10 @@ export default function CustomerQueries() {
                           </span>
                           <span
                             className={`badge ${q.status === "Replied"
-                                ? "bg-primary"
-                                : q.status === "Closed"
-                                  ? "bg-secondary"
-                                  : "bg-warning text-dark"
+                              ? "bg-primary"
+                              : q.status === "Closed"
+                                ? "bg-secondary"
+                                : "bg-warning text-dark"
                               }`}
                           >
                             {q.status}

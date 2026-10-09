@@ -1,5 +1,5 @@
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
@@ -13,6 +13,281 @@ import Modal from 'react-modal';
 import { allCategory } from "../server/Category";
 import AddToCartButton from "../common/AddToCartButton";
 import { Colors } from "chart.js";
+
+const getProductImages = (imageData) => {
+  if (!imageData) return [];
+  let images = [];
+  if (Array.isArray(imageData)) {
+    images = imageData;
+  } else if (typeof imageData === "string") {
+    try {
+      const parsed = JSON.parse(imageData);
+      if (Array.isArray(parsed)) images = parsed;
+      else if (imageData.trim()) images = [imageData];
+    } catch {
+      if (imageData.includes(",")) {
+        images = imageData.split(",").map((s) => s.trim());
+      } else if (imageData.trim()) {
+        images = [imageData];
+      }
+    }
+  }
+
+  return images
+    .map((item) => {
+      if (typeof item === "object" && item !== null && item.url) return item.url;
+      return item;
+    })
+    .filter((img) => typeof img === "string" && img.trim() !== "")
+    .map((img) => {
+      const trimmed = img.trim();
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+        return trimmed;
+      }
+      return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+    });
+};
+
+function CustomerProductCardItem({ el, isLogin, openModal, navotShop }) {
+  const images = useMemo(() => {
+    return getProductImages(el?.image);
+  }, [el?.image]);
+
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Preload images so hover slideshow has zero lag
+  useEffect(() => {
+    if (images.length > 1) {
+      images.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
+  }, [images]);
+
+  // Slideshow interval on hover
+  useEffect(() => {
+    if (!isHovered || images.length <= 1) return;
+
+    const intervalId = setInterval(() => {
+      setCurrentImgIndex((prev) => (prev + 1) % images.length);
+    }, 1400);
+
+    return () => clearInterval(intervalId);
+  }, [isHovered, images.length]);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setCurrentImgIndex(0); // Reset to first image on mouse leave
+  };
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const handleDotClick = (e, index) => {
+    e.stopPropagation();
+    setCurrentImgIndex(index);
+  };
+
+  const activeSrc = images.length > 0 ? images[currentImgIndex] : "/assets/img/fruite-item-5.jpg";
+
+  return (
+    <div
+      onClick={() => navotShop(el._id)}
+      className="h-100"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ cursor: "pointer" }}
+    >
+      <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
+        {/* Product Image Area with Hover Slideshow */}
+        <div className="fruite-img position-relative" style={{ position: "relative" }}>
+          <img
+            key={currentImgIndex}
+            src={activeSrc}
+            className="img-fluid rounded-top product-slideshow-img"
+            alt={el?.name || "Image"}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/assets/img/fruite-item-5.jpg";
+            }}
+          />
+
+          {/* Slideshow Image Counter Badge (shows vendor upload count) */}
+          {images.length > 1 && (
+            <div
+              className={`position-absolute badge rounded-pill px-2 py-1 ${
+                isHovered ? "bg-dark bg-opacity-75 text-white" : "bg-dark bg-opacity-50 text-white-50"
+              }`}
+              style={{
+                top: "10px",
+                right: "10px",
+                zIndex: 4,
+                fontSize: "11px",
+                fontWeight: "600",
+                letterSpacing: "0.5px",
+                backdropFilter: "blur(4px)",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                pointerEvents: "none",
+                transition: "all 0.25s ease"
+              }}
+              title={`${images.length} images uploaded by vendor`}
+            >
+              <i className="fa-solid fa-images me-1 text-warning"></i>
+              {currentImgIndex + 1}/{images.length}
+            </div>
+          )}
+
+          {/* Slideshow Arrow Buttons (visible on hover if multiple images) */}
+          {images.length > 1 && isHovered && (
+            <>
+              <button
+                type="button"
+                className="btn btn-sm product-slideshow-btn position-absolute rounded-circle d-flex align-items-center justify-content-center"
+                style={{
+                  left: "8px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: "28px",
+                  height: "28px",
+                  padding: 0,
+                  zIndex: 5
+                }}
+                onClick={handlePrev}
+                title="Previous Image"
+              >
+                <i className="fa-solid fa-chevron-left" style={{ fontSize: "11px" }}></i>
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm product-slideshow-btn position-absolute rounded-circle d-flex align-items-center justify-content-center"
+                style={{
+                  right: "8px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: "28px",
+                  height: "28px",
+                  padding: 0,
+                  zIndex: 5
+                }}
+                onClick={handleNext}
+                title="Next Image"
+              >
+                <i className="fa-solid fa-chevron-right" style={{ fontSize: "11px" }}></i>
+              </button>
+            </>
+          )}
+
+          {/* Slideshow Progress Indicators / Dots */}
+          {images.length > 1 && (
+            <div
+              className="position-absolute d-flex justify-content-center align-items-center gap-1 w-100"
+              style={{
+                bottom: el?.status === false ? "44px" : "10px",
+                left: 0,
+                zIndex: 4,
+                transition: "opacity 0.25s ease",
+                opacity: isHovered ? 1 : 0.6
+              }}
+            >
+              {images.map((_, idx) => (
+                <span
+                  key={idx}
+                  onClick={(e) => handleDotClick(e, idx)}
+                  className="product-slideshow-dot"
+                  style={{
+                    width: idx === currentImgIndex ? "18px" : "6px",
+                    height: "4px",
+                    borderRadius: "4px",
+                    backgroundColor: idx === currentImgIndex ? "#81c408" : "rgba(100, 116, 139, 0.65)",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+                    display: "inline-block"
+                  }}
+                  title={`View image ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Out of stock badge */}
+          {el?.status === false && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: "12px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#424242",
+                color: "#ffffff",
+                padding: "6px 20px",
+                borderRadius: "10px",
+                fontWeight: "700",
+                fontSize: "14px",
+                whiteSpace: "nowrap",
+                zIndex: 10,
+                pointerEvents: "none",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
+              }}
+            >
+              Stock not available
+            </div>
+          )}
+        </div>
+
+        {/* Category Badge on top-left of Card */}
+        {el.category_id?.name && (
+          <div
+            className="text-white bg-secondary px-3 py-1 rounded position-absolute fruite-category-badge"
+            style={{ top: 10, left: 10, zIndex: 3 }}
+          >
+            {el.category_id?.name}
+          </div>
+        )}
+
+        {/* Product Details Section */}
+        <div className="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column flex-grow-1">
+          <h4>{el?.name}</h4>
+          <p className="flex-grow-1">
+            {el?.description}
+          </p>
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-auto">
+            <p className="text-dark fs-5 fw-bold mb-0">
+              ₹{el?.price}
+            </p>
+            <div className="d-flex align-items-center gap-2">
+              {isLogin && (
+                <button
+                  className="btn fs-4 p-0 text-secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModal(el._id);
+                  }}
+                  title="Save to Wishlist"
+                >
+                  <i className="fa-regular fa-bookmark"></i>
+                </button>
+              )}
+              <AddToCartButton product={el} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 const customStyles = {
@@ -371,72 +646,15 @@ export default function CardProduct() {
                       data?.filter(el => (
                         el.name.toLowerCase().includes(search.toLowerCase())
                       )).map((el, index) => (
-                      <div className="col-12 col-sm-6 col-md-6 col-lg-4" key={el._id || index}>
-                        <div onClick={() => {
-                          navotShop(el._id)
-                        }} className="h-100">
-                          <div className="rounded position-relative fruite-item h-100 d-flex flex-column">
-                            <div className="fruite-img position-relative" style={{ position: "relative" }}>
-                              <img
-                                src={Array.isArray(el?.image) ? el?.image?.[0] : el?.image}
-                                className="img-fluid rounded-top"
-                                alt={el?.name || "Image"}
-                              />
-                              {el?.status === false && (
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    bottom: "12px",
-                                    left: "50%",
-                                    transform: "translateX(-50%)",
-                                    backgroundColor: "#424242",
-                                    color: "#ffffff",
-                                    padding: "6px 20px",
-                                    borderRadius: "10px",
-                                    fontWeight: "700",
-                                    fontSize: "14px",
-                                    whiteSpace: "nowrap",
-                                    zIndex: 10,
-                                    pointerEvents: "none",
-                                    boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
-                                  }}
-                                >
-                                  Stock not available
-                                </div>
-                              )}
-                            </div>
-                            <div
-                              className="text-white bg-secondary px-3 py-1 rounded position-absolute"
-                              style={{ top: 10, left: 10 }}
-                            >
-                              {el.category_id?.name}
-                            </div>
-                            <div className="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column flex-grow-1">
-                              <h4>{el?.name}</h4>
-                              <p className="flex-grow-1">
-                                {el?.description}
-                              </p>
-                              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-auto">
-                                <p className="text-dark fs-5 fw-bold mb-0">
-                                  ₹{el?.price}
-                                </p>
-                                <div className="d-flex align-items-center gap-2">
-                                  {isLogin && (
-                                    <button className="btn fs-4 p-0 text-secondary" onClick={(e) => {
-                                      e.stopPropagation();
-                                      openModal(el._id)
-                                    }}>
-                                      <i className="fa-regular fa-bookmark"></i>
-                                    </button>
-                                  )}
-                                  <AddToCartButton product={el} />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                        <div className="col-12 col-sm-6 col-md-6 col-lg-4" key={el._id || index}>
+                          <CustomerProductCardItem
+                            el={el}
+                            isLogin={isLogin}
+                            openModal={openModal}
+                            navotShop={navotShop}
+                          />
                         </div>
-                      </div>
-                    )))}
+                      )))}
                   </div>
                 </div>
               </div>
