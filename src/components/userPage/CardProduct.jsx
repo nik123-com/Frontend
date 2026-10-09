@@ -86,15 +86,6 @@ function CustomerProductCardItem({ el, isLogin, openModal, navotShop }) {
     setCurrentImgIndex(0); // Reset to first image on mouse leave
   };
 
-  const handlePrev = (e) => {
-    e.stopPropagation();
-    setCurrentImgIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const handleNext = (e) => {
-    e.stopPropagation();
-    setCurrentImgIndex((prev) => (prev + 1) % images.length);
-  };
 
   const handleDotClick = (e, index) => {
     e.stopPropagation();
@@ -125,70 +116,7 @@ function CustomerProductCardItem({ el, isLogin, openModal, navotShop }) {
             }}
           />
 
-          {/* Slideshow Image Counter Badge (shows vendor upload count) */}
-          {images.length > 1 && (
-            <div
-              className={`position-absolute badge rounded-pill px-2 py-1 ${
-                isHovered ? "bg-dark bg-opacity-75 text-white" : "bg-dark bg-opacity-50 text-white-50"
-              }`}
-              style={{
-                top: "10px",
-                right: "10px",
-                zIndex: 4,
-                fontSize: "11px",
-                fontWeight: "600",
-                letterSpacing: "0.5px",
-                backdropFilter: "blur(4px)",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                pointerEvents: "none",
-                transition: "all 0.25s ease"
-              }}
-              title={`${images.length} images uploaded by vendor`}
-            >
-              <i className="fa-solid fa-images me-1 text-warning"></i>
-              {currentImgIndex + 1}/{images.length}
-            </div>
-          )}
 
-          {/* Slideshow Arrow Buttons (visible on hover if multiple images) */}
-          {images.length > 1 && isHovered && (
-            <>
-              <button
-                type="button"
-                className="btn btn-sm product-slideshow-btn position-absolute rounded-circle d-flex align-items-center justify-content-center"
-                style={{
-                  left: "8px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: "28px",
-                  height: "28px",
-                  padding: 0,
-                  zIndex: 5
-                }}
-                onClick={handlePrev}
-                title="Previous Image"
-              >
-                <i className="fa-solid fa-chevron-left" style={{ fontSize: "11px" }}></i>
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm product-slideshow-btn position-absolute rounded-circle d-flex align-items-center justify-content-center"
-                style={{
-                  right: "8px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: "28px",
-                  height: "28px",
-                  padding: 0,
-                  zIndex: 5
-                }}
-                onClick={handleNext}
-                title="Next Image"
-              >
-                <i className="fa-solid fa-chevron-right" style={{ fontSize: "11px" }}></i>
-              </button>
-            </>
-          )}
 
           {/* Slideshow Progress Indicators / Dots */}
           {images.length > 1 && (
