@@ -5,6 +5,9 @@ export const baseUrl =
       ? "http://localhost:3000"
       : "https://backend-99kd.onrender.com");
 export const login_api = "/api/login";
+export const send_otp_api = "/api/send-otp";
+export const verify_otp_api = "/api/verify-otp";
+export const verify_reset_otp_api = "/api/verifyResetOtp";
 
 //Category
 export const add_Category = "/api/category/add";

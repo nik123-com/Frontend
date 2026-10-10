@@ -83,7 +83,7 @@ function CustomerProductCardItem({ el, isLogin, openModal, navotShop }) {
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setCurrentImgIndex(0); // Reset to first image on mouse leave
+    setCurrentImgIndex(0);
   };
 
 
