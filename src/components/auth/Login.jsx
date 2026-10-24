@@ -37,8 +37,10 @@ export default function Login() {
           sessionStorage.setItem("userId.name", res.data.data.name);
           sessionStorage.setItem("email", res.data.data.email);
           sessionStorage.setItem("userType", res.data.data.userType);
+          sessionStorage.setItem("gender", res.data.data.gender || "");
           sessionStorage.setItem("token", res.data.token);
           sessionStorage.setItem("isLogin", true);
+          window.dispatchEvent(new Event("userProfileUpdated"));
 
           toast.success("Login Successfully");
 

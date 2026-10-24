@@ -7,6 +7,7 @@ import { allProduct } from "../server/Product";
 import { allCategory } from "../server/Category";
 import { useCart } from "../../context/CartContext";
 import { askContextualStellar } from "../server/Recommendation";
+import { getTimeGreeting, getUserRoleInfo } from "../../utils/greetingUtils";
 
 const categoryEmojiMap = {
   "atta": "🌾",
@@ -224,6 +225,42 @@ async function askStellar(customerName, userMessage, matchedProducts = []) {
   };
 }
 
+function getInitialBotMessage() {
+  const timeInfo = getTimeGreeting();
+  const userInfo = getUserRoleInfo();
+
+  let text = "";
+  let defaultStep = "ask_name";
+  let defaultUserName = "";
+
+  if (userInfo.isLogin) {
+    defaultStep = "chat";
+    defaultUserName = userInfo.name || userInfo.role;
+    if (userInfo.role === "Admin") {
+      text = `${timeInfo.icon} ${timeInfo.greeting}, Admin ${userInfo.name ? userInfo.name : ""}! 🛡️\n\nI'm Stellar, your AI assistant. How can I assist you with platform store catalog, orders, or stock inquiries today?`;
+    } else if (userInfo.role === "Vendor") {
+      const sal = userInfo.salutation ? `${userInfo.salutation} ` : "";
+      text = `${timeInfo.icon} ${timeInfo.greeting}, ${sal}${userInfo.name || "Vendor Partner"}! 🏪\n\nI'm Stellar, your store and catalog assistant. How can I assist your products or inventory today?`;
+    } else {
+      const sal = userInfo.salutation ? `${userInfo.salutation} ` : "";
+      text = `${timeInfo.icon} ${timeInfo.greeting}, ${sal}${userInfo.name || "Valued Customer"}! 😊\n\nWelcome back to Aventra! I'm Stellar, your personal shopping assistant.\n\nWhat are you looking for today?`;
+    }
+  } else {
+    text = `${timeInfo.icon} ${timeInfo.greeting}! Welcome to Aventra. 👋\n\nI'm Stellar, your personal shopping assistant.\n\nWhat's your name?`;
+  }
+
+  return {
+    message: {
+      id: "welcome",
+      sender: "bot",
+      text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    },
+    step: defaultStep,
+    userName: defaultUserName
+  };
+}
+
 export default function MyChatBot() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -241,22 +278,22 @@ export default function MyChatBot() {
         console.error("Error parsing saved messages:", e);
       }
     }
-    return [
-      {
-        id: "welcome",
-        sender: "bot",
-        text: "👋 Welcome to Aventra!\n\nI'm Stellar, your personal shopping assistant.\n\nWhat's your name?",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ];
+    const initial = getInitialBotMessage();
+    return [initial.message];
   });
 
   const [userName, setUserName] = useState(() => {
-    return sessionStorage.getItem("Stellar-chat-username") || "";
+    const saved = sessionStorage.getItem("Stellar-chat-username");
+    if (saved) return saved;
+    const initial = getInitialBotMessage();
+    return initial.userName;
   });
 
   const [step, setStep] = useState(() => {
-    return sessionStorage.getItem("Stellar-chat-step") || "ask_name";
+    const saved = sessionStorage.getItem("Stellar-chat-step");
+    if (saved) return saved;
+    const initial = getInitialBotMessage();
+    return initial.step;
   });
 
   const [inputText, setInputText] = useState("");
@@ -358,10 +395,11 @@ export default function MyChatBot() {
       setStep("chat");
 
       setTimeout(() => {
+        const timeInfo = getTimeGreeting();
         const greetingMsg = {
           id: `bot-greet-${Date.now()}`,
           sender: "bot",
-          text: `Nice to meet you, ${name}! 😊`,
+          text: `${timeInfo.icon} ${timeInfo.greeting}, ${name}! 😊 Nice to meet you.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages((prev) => [...prev, greetingMsg]);
@@ -396,6 +434,33 @@ export default function MyChatBot() {
 
     } else {
       setIsTyping(true);
+
+      // Check greeting intent (e.g. "Good morning", "Hi", "Hello")
+      const lower = userText.toLowerCase().trim();
+      const isGreeting =
+        lower.includes("good morning") ||
+        lower.includes("good afternoon") ||
+        lower.includes("good evening") ||
+        lower.includes("good night") ||
+        /^(hi|hello|hey|greetings|namaste|gm|ga|ge|gn)[\s!.]*$/i.test(lower);
+
+      if (isGreeting) {
+        setTimeout(() => {
+          const currentTimeInfo = getTimeGreeting();
+          const currentUserInfo = getUserRoleInfo();
+          const displayName = userName || currentUserInfo.addressedName || "Friend";
+          const replyText = `${currentTimeInfo.icon} ${currentTimeInfo.greeting}, ${displayName}! 😊\n\n${currentTimeInfo.wish}\n\nWhat are you shopping for today? Ask me for any grocery item, category, or deals!`;
+          const botMsg = {
+            id: `bot-greet-reply-${Date.now()}`,
+            sender: "bot",
+            text: replyText,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          setMessages((prev) => [...prev, botMsg]);
+          setIsTyping(false);
+        }, 400);
+        return;
+      }
 
       // Check blocked keywords
       if (isBlocked(userText)) {
@@ -474,16 +539,10 @@ export default function MyChatBot() {
         sessionStorage.removeItem("Stellar-chat-messages");
         sessionStorage.removeItem("Stellar-chat-username");
         sessionStorage.removeItem("Stellar-chat-step");
-        setMessages([
-          {
-            id: "welcome",
-            sender: "bot",
-            text: "👋 Welcome to Aventra!\n\nI'm Stellar, your personal shopping assistant.\n\nWhat's your name?",
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setUserName("");
-        setStep("ask_name");
+        const initial = getInitialBotMessage();
+        setMessages([initial.message]);
+        setUserName(initial.userName);
+        setStep(initial.step);
       }
     });
   };
@@ -1119,8 +1178,16 @@ export default function MyChatBot() {
                 <span className="Stellar-status-dot"></span>
               </div>
               <div className="Stellar-chat-title-container">
-                <h3 className="Stellar-chat-title">Stellar</h3>
-                <span className="Stellar-chat-subtitle">Shopping Assistant</span>
+                <div className="d-flex align-items-center gap-1.5">
+                  <h3 className="Stellar-chat-title mb-0">Stellar</h3>
+                  <span
+                    className="badge rounded-pill bg-white text-dark shadow-xs px-2 py-0.5"
+                    style={{ fontSize: "10px", fontWeight: "600" }}
+                  >
+                    {getTimeGreeting().icon} {getTimeGreeting().greeting}
+                  </span>
+                </div>
+                <span className="Stellar-chat-subtitle">AI Shopping Assistant</span>
               </div>
             </div>
             <div className="Stellar-chat-header-actions">

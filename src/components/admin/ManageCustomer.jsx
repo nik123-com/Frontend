@@ -343,7 +343,24 @@ export default function ManageCustomer() {
                           <tr key={element._id}>
                             <td className="ps-4 fw-semibold text-muted">{startindex + index + 1}</td>
                             <td>
-                              <div className="fw-bold text-dark">{element.name}</div>
+                              <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                                <span className="fw-bold text-dark">{element.name}</span>
+                                {element.gender && (
+                                  <span
+                                    className={`badge rounded-pill ${
+                                      element.gender.toLowerCase() === 'male'
+                                        ? 'bg-info-subtle text-primary border border-primary'
+                                        : element.gender.toLowerCase() === 'female'
+                                        ? 'bg-danger-subtle text-danger border border-danger'
+                                        : 'bg-light text-secondary border'
+                                    }`}
+                                    style={{ fontSize: "10px" }}
+                                    title={`Gender: ${element.gender}`}
+                                  >
+                                    {element.gender.toLowerCase() === 'male' ? '♂ Male' : element.gender.toLowerCase() === 'female' ? '♀ Female' : '⚧ Other'}
+                                  </span>
+                                )}
+                              </div>
                               <div className="text-muted small">{element.email}</div>
                             </td>
                             <td>

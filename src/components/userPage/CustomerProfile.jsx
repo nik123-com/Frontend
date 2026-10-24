@@ -22,6 +22,7 @@ export default function CustomerProfile() {
   // Form Fields - Personal & Credentials
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
   const [contact, setContact] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [contactNumber, setContactNumber] = useState("");
@@ -88,6 +89,7 @@ export default function CustomerProfile() {
 
         setName(c.name || u.name || "");
         setEmail(c.email || u.email || "");
+        setGender(c.gender || u.gender || "");
         const parsed = splitContact(c.Contact || "");
         setCountryCode(c.countryCode || parsed.countryCode || "+91");
         setContactNumber(parsed.phoneNumber || "");
@@ -195,6 +197,7 @@ export default function CustomerProfile() {
       const formData = new FormData();
       formData.append("name", name.trim());
       formData.append("email", email.trim());
+      formData.append("gender", gender);
       formData.append("Contact", fullContact);
       formData.append("countryCode", countryCode);
       formData.append("Address", address.trim());
@@ -213,6 +216,7 @@ export default function CustomerProfile() {
         }
         sessionStorage.setItem("email", email.trim());
         sessionStorage.setItem("userId.name", name.trim());
+        sessionStorage.setItem("gender", gender);
 
         // Notify other components (like UserHeader) to update immediately
         window.dispatchEvent(new Event("userProfileUpdated"));
@@ -471,6 +475,38 @@ export default function CustomerProfile() {
                         placeholder="Your Full Name"
                         required
                       />
+                    </div>
+                  </div>
+
+                  {/* Gender */}
+                  <div className="col-12 col-md-6">
+                    <label className="form-label fw-bold text-dark small mb-1">
+                      Gender
+                    </label>
+                    <div className="d-flex gap-2">
+                      {[
+                        { val: "Male", label: "Male", icon: "fa-solid fa-mars", color: "#3b82f6" },
+                        { val: "Female", label: "Female", icon: "fa-solid fa-venus", color: "#ec4899" },
+                        { val: "Other", label: "Other", icon: "fa-solid fa-genderless", color: "#8b5cf6" }
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`btn btn-sm d-flex align-items-center gap-1.5 px-3 py-2 rounded-pill fw-semibold flex-grow-1 shadow-xs ${
+                            gender === item.val
+                              ? "text-white"
+                              : "btn-outline-secondary bg-white text-dark"
+                          }`}
+                          style={{
+                            borderColor: gender === item.val ? "#81c408" : "#dee2e6",
+                            backgroundColor: gender === item.val ? "#81c408" : "#ffffff"
+                          }}
+                          onClick={() => setGender(item.val)}
+                        >
+                          <i className={item.icon} style={{ color: gender === item.val ? "#ffffff" : item.color }}></i>
+                          <span>{item.label}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
 

@@ -18,6 +18,7 @@ export default function VendorRegister() {
   const [formData, setFormData] = useState({
     businessName: "",
     ownerName: "",
+    gender: "",
     email: "",
     password: "",
     phone: "",
@@ -118,6 +119,11 @@ export default function VendorRegister() {
       return;
     }
 
+    if (!formData.gender) {
+      toast.error("Please select Owner's Gender.");
+      return;
+    }
+
     if (!phoneDigits) {
       setPhoneError("Contact / Mobile number is required");
       toast.error("Contact / Mobile number is required");
@@ -188,6 +194,34 @@ export default function VendorRegister() {
                 onChange={handleChange}
                 required
               />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Owner Gender *</label>
+              <div className="d-flex gap-2">
+                {[
+                  { val: "Male", label: "Male", icon: "fa-solid fa-mars", color: "#3b82f6" },
+                  { val: "Female", label: "Female", icon: "fa-solid fa-venus", color: "#ec4899" },
+                  { val: "Other", label: "Other", icon: "fa-solid fa-genderless", color: "#8b5cf6" }
+                ].map((item) => (
+                  <button
+                    key={item.val}
+                    type="button"
+                    className={`btn btn-sm d-flex align-items-center gap-1.5 px-3 py-2 rounded-pill fw-semibold flex-grow-1 shadow-xs ${
+                      formData.gender === item.val
+                        ? "btn-primary text-white"
+                        : "btn-outline-secondary bg-white text-dark"
+                    }`}
+                    style={{
+                      borderColor: formData.gender === item.val ? "#0d6efd" : "#dee2e6"
+                    }}
+                    onClick={() => setFormData(prev => ({ ...prev, gender: item.val }))}
+                  >
+                    <i className={item.icon} style={{ color: formData.gender === item.val ? "#ffffff" : item.color }}></i>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="col-md-6">

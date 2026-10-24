@@ -363,7 +363,24 @@ export default function ManageVendors() {
                       <tr key={v._id}>
                         <td className="ps-4">
                           <div className="fw-bold text-dark">{v.businessName}</div>
-                          <small className="text-muted">Owner: {v.ownerName}</small>
+                          <div className="d-flex align-items-center gap-1.5 flex-wrap">
+                            <small className="text-muted">Owner: {v.ownerName}</small>
+                            {v.gender && (
+                              <span
+                                className={`badge rounded-pill ${
+                                  v.gender.toLowerCase() === 'male'
+                                    ? 'bg-info-subtle text-primary border border-primary'
+                                    : v.gender.toLowerCase() === 'female'
+                                    ? 'bg-danger-subtle text-danger border border-danger'
+                                    : 'bg-light text-secondary border'
+                                }`}
+                                style={{ fontSize: "9px" }}
+                                title={`Owner Gender: ${v.gender}`}
+                              >
+                                {v.gender.toLowerCase() === 'male' ? '♂ Male' : v.gender.toLowerCase() === 'female' ? '♀ Female' : '⚧ Other'}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td>
                           {v.rank ? (

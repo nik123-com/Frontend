@@ -12,6 +12,7 @@ export default function VendorSettings() {
   const [formData, setFormData] = useState({
     businessName: "",
     ownerName: "",
+    gender: "",
     phone: "",
     address: "",
     logo: "",
@@ -38,6 +39,7 @@ export default function VendorSettings() {
       setFormData({
         businessName: vendor.businessName || "",
         ownerName: vendor.ownerName || "",
+        gender: vendor.gender || "",
         phone: vendor.phone || "",
         address: vendor.address || "",
         logo: vendor.logo || "",
@@ -123,6 +125,10 @@ export default function VendorSettings() {
       );
       if (res.data.success) {
         toast.success("Store settings updated successfully!");
+        if (formData.gender) {
+          sessionStorage.setItem("gender", formData.gender);
+          window.dispatchEvent(new Event("userProfileUpdated"));
+        }
         if (reloadVendor) reloadVendor();
       } else {
         toast.error(res.data.message || "Failed to update settings");
@@ -173,6 +179,34 @@ export default function VendorSettings() {
                     onChange={handleChange}
                     required
                   />
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Owner Gender</label>
+                  <div className="d-flex gap-2">
+                    {[
+                      { val: "Male", label: "Male", icon: "fa-solid fa-mars", color: "#3b82f6" },
+                      { val: "Female", label: "Female", icon: "fa-solid fa-venus", color: "#ec4899" },
+                      { val: "Other", label: "Other", icon: "fa-solid fa-genderless", color: "#8b5cf6" }
+                    ].map((item) => (
+                      <button
+                        key={item.val}
+                        type="button"
+                        className={`btn btn-sm d-flex align-items-center gap-1.5 px-3 py-2 rounded-pill fw-semibold flex-grow-1 shadow-xs ${
+                          formData.gender === item.val
+                            ? "btn-success text-white"
+                            : "btn-outline-secondary bg-white text-dark"
+                        }`}
+                        style={{
+                          borderColor: formData.gender === item.val ? "#198754" : "#dee2e6"
+                        }}
+                        onClick={() => setFormData(prev => ({ ...prev, gender: item.val }))}
+                      >
+                        <i className={item.icon} style={{ color: formData.gender === item.val ? "#ffffff" : item.color }}></i>
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="col-md-6">

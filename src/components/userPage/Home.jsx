@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import { HashLoader } from "react-spinners";
 import AddToCartButton from "../common/AddToCartButton";
 import RecommendedProductsSection from "../common/RecommendedProductsSection";
+import TimeGreetingBanner from "../common/TimeGreetingBanner";
 
 
 function Home() {
@@ -100,6 +101,7 @@ function Home() {
 
   return (
     <>
+      <TimeGreetingBanner />
       {/* Hero Start */}
       <div className="container-fluid py-5 mb-5 hero-header">
         <div className="container py-5">

@@ -1,12 +1,21 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { getTimeGreeting } from "../../../utils/greetingUtils";
 
 function AdminHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [timeGreeting, setTimeGreeting] = useState(() => getTimeGreeting());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeGreeting(getTimeGreeting());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
@@ -62,6 +71,11 @@ function AdminHeader() {
                   admin@gmail.com
                 </a>
               </small>
+            </div>
+            {/* Center Dynamic Admin Greeting Badge */}
+            <div className="d-none d-lg-flex align-items-center bg-white bg-opacity-25 px-3 py-1 rounded-pill text-white fw-semibold small shadow-2xs" style={{ border: "1px solid rgba(255,255,255,0.25)" }}>
+              <span className="me-1.5">{timeGreeting.icon}</span>
+              <span>{timeGreeting.greeting}, Admin!</span>
             </div>
             <div className="top-link d-flex align-items-center">
               <a

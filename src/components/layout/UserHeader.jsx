@@ -7,6 +7,7 @@ import { checkRankReward } from "../server/Customer";
 import { toast } from "react-toastify";
 import socket from "../../socket";
 import LogoutVideoModal from "./LogoutVideoModal";
+import { formatTimeGreeting } from "../../utils/greetingUtils";
 
 function UserHeader() {
   const location = useLocation();
@@ -16,6 +17,7 @@ function UserHeader() {
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
   const [cartCount, setCartCount] = useState(0);
+  const [greetingData, setGreetingData] = useState(() => formatTimeGreeting());
 
   // Notification state
   const [notifications, setNotifications] = useState([]);
@@ -60,9 +62,18 @@ function UserHeader() {
 
     const handleProfileUpdate = () => {
       setCustomerName(getStoredName());
+      setGreetingData(formatTimeGreeting());
     };
     window.addEventListener("userProfileUpdated", handleProfileUpdate);
-    return () => window.removeEventListener("userProfileUpdated", handleProfileUpdate);
+
+    const greetingInterval = setInterval(() => {
+      setGreetingData(formatTimeGreeting());
+    }, 30000);
+
+    return () => {
+      window.removeEventListener("userProfileUpdated", handleProfileUpdate);
+      clearInterval(greetingInterval);
+    };
   }, [isLogin]);
 
   const loadNotifications = () => {
@@ -281,6 +292,11 @@ function UserHeader() {
                   admin@gmail.com
                 </a>
               </small>
+            </div>
+            {/* Center Dynamic Time-based Greeting Badge */}
+            <div className="d-none d-lg-flex align-items-center bg-white bg-opacity-25 px-3 py-1 rounded-pill text-white fw-semibold small shadow-2xs" style={{ border: "1px solid rgba(255,255,255,0.25)" }}>
+              <span className="me-1.5">{greetingData.icon}</span>
+              <span>{greetingData.formattedGreeting}</span>
             </div>
             <div className="top-link pe-3 d-flex align-items-center">
               <a href="/assets/privacyPolicy/Privacy.pdf" target="_blank" rel="noreferrer" className="text-white text-decoration-none">

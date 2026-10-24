@@ -11,6 +11,7 @@ export default function CustomerReg() {
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [gender, setGender] = useState("")
   const [countryCode, setCountryCode] = useState("+91")
   const [phoneDigits, setPhoneDigits] = useState("")
   const [phoneError, setPhoneError] = useState("")
@@ -64,6 +65,10 @@ export default function CustomerReg() {
       toast.error("Please enter your email");
       return;
     }
+    if (!gender) {
+      toast.error("Please select your gender");
+      return;
+    }
     if (!password) {
       toast.error("Please enter password");
       return;
@@ -90,6 +95,7 @@ export default function CustomerReg() {
     let data = {
       name: name.trim(),
       email: email.trim(),
+      gender: gender,
       Contact: formattedContact,
       countryCode: countryCode,
       evidence: evidence,
@@ -203,6 +209,38 @@ export default function CustomerReg() {
                     onChange={ChangePassword}
                     value={password}
                   />
+
+                  {/* Gender Selection */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold text-secondary small mb-2 d-block">
+                      Gender *
+                    </label>
+                    <div className="d-flex gap-2 flex-wrap">
+                      {[
+                        { val: "Male", label: "Male", icon: "fa-solid fa-mars", color: "#3b82f6" },
+                        { val: "Female", label: "Female", icon: "fa-solid fa-venus", color: "#ec4899" },
+                        { val: "Other", label: "Other", icon: "fa-solid fa-genderless", color: "#8b5cf6" }
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`btn d-flex align-items-center gap-2 px-4 py-2.5 rounded-pill fw-semibold shadow-xs ${
+                            gender === item.val
+                              ? "text-white"
+                              : "btn-outline-secondary bg-white text-dark"
+                          }`}
+                          style={{
+                            borderColor: gender === item.val ? "#81c408" : "#ced4da",
+                            backgroundColor: gender === item.val ? "#81c408" : "#ffffff"
+                          }}
+                          onClick={() => setGender(item.val)}
+                        >
+                          <i className={item.icon} style={{ color: gender === item.val ? "#ffffff" : item.color }}></i>
+                          <span>{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <PhoneInputLayout
                     label="Contact / Mobile Number"
                     countryCode={countryCode}
