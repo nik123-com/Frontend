@@ -76,11 +76,69 @@ export function getGenderBadgeInfo(gender) {
 }
 
 export function getUserRoleInfo() {
-  const isLogin = sessionStorage.getItem("isLogin") === "true";
-  const userType = sessionStorage.getItem("userType") || "";
-  const rawName = sessionStorage.getItem("userId.name") || sessionStorage.getItem("name") || "";
-  const gender = sessionStorage.getItem("gender") || "";
-  const email = sessionStorage.getItem("email") || "";
+  const token = sessionStorage.getItem("token");
+  let decodedPayload = {};
+  if (token) {
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const json = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+        decodedPayload = JSON.parse(json) || {};
+      }
+    } catch (e) {
+      try {
+        const parts = token.split(".");
+        decodedPayload = JSON.parse(atob(parts[1])) || {};
+      } catch (err) {}
+    }
+  }
+
+  const isLogin =
+    sessionStorage.getItem("isLogin") === "true" ||
+    sessionStorage.getItem("isLogin") === true ||
+    Boolean(token);
+
+  const userType =
+    sessionStorage.getItem("userType") ||
+    (decodedPayload.userType !== undefined ? String(decodedPayload.userType) : "") ||
+    "";
+
+  const rawName =
+    sessionStorage.getItem("userId.name") ||
+    sessionStorage.getItem("name") ||
+    sessionStorage.getItem("userName") ||
+    sessionStorage.getItem("customerName") ||
+    decodedPayload.name ||
+    "";
+
+  const gender =
+    sessionStorage.getItem("gender") ||
+    decodedPayload.gender ||
+    "";
+
+  const email =
+    sessionStorage.getItem("email") ||
+    decodedPayload.email ||
+    "";
+
+  const cleanName = rawName.trim();
+
+  // Keep sessionStorage keys populated for consistency across the application
+  if (cleanName && !sessionStorage.getItem("userId.name")) {
+    sessionStorage.setItem("userId.name", cleanName);
+  }
+  if (cleanName && !sessionStorage.getItem("name")) {
+    sessionStorage.setItem("name", cleanName);
+  }
+  if (gender && !sessionStorage.getItem("gender")) {
+    sessionStorage.setItem("gender", gender);
+  }
 
   let role = "Guest";
   let roleBadge = "Guest Shopper";
@@ -107,7 +165,6 @@ export function getUserRoleInfo() {
   }
 
   const salutation = getSalutation(gender);
-  const cleanName = rawName.trim();
 
   let addressedName = "Guest";
   if (isLogin) {

@@ -243,7 +243,8 @@ function getInitialBotMessage() {
       text = `${timeInfo.icon} ${timeInfo.greeting}, ${sal}${userInfo.name || "Vendor Partner"}! 🏪\n\nI'm Stellar, your store and catalog assistant. How can I assist your products or inventory today?`;
     } else {
       const sal = userInfo.salutation ? `${userInfo.salutation} ` : "";
-      text = `${timeInfo.icon} ${timeInfo.greeting}, ${sal}${userInfo.name || "Valued Customer"}! 😊\n\nWelcome back to Aventra! I'm Stellar, your personal shopping assistant.\n\nWhat are you looking for today?`;
+      const displayName = userInfo.name ? `${sal}${userInfo.name}` : "Valued Customer";
+      text = `${timeInfo.icon} ${timeInfo.greeting}, ${displayName}! 😊\n\nWelcome back to Aventra! I'm Stellar, your personal shopping assistant.\n\nWhat are you looking for today?`;
     }
   } else {
     text = `${timeInfo.icon} ${timeInfo.greeting}! Welcome to Aventra. 👋\n\nI'm Stellar, your personal shopping assistant.\n\nWhat's your name?`;
@@ -270,10 +271,26 @@ export default function MyChatBot() {
   const [categories, setCategories] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(() => {
+    const userInfo = getUserRoleInfo();
     const saved = sessionStorage.getItem("Stellar-chat-messages");
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // If the user is logged in, but the saved messages have the guest "What's your name?" prompt:
+          const hasGuestAskName = parsed.some(
+            (m) => m.text && (m.text.includes("What's your name?") || m.text.includes("What's your name"))
+          );
+          if (userInfo.isLogin && (parsed.length === 1 || hasGuestAskName)) {
+            const initial = getInitialBotMessage();
+            if (parsed.length === 1) {
+              return [initial.message];
+            } else {
+              return parsed.map((m, idx) => (idx === 0 && m.id === "welcome" ? initial.message : m));
+            }
+          }
+          return parsed;
+        }
       } catch (e) {
         console.error("Error parsing saved messages:", e);
       }
@@ -283,6 +300,10 @@ export default function MyChatBot() {
   });
 
   const [userName, setUserName] = useState(() => {
+    const userInfo = getUserRoleInfo();
+    if (userInfo.isLogin && userInfo.name) {
+      return userInfo.name;
+    }
     const saved = sessionStorage.getItem("Stellar-chat-username");
     if (saved) return saved;
     const initial = getInitialBotMessage();
@@ -290,6 +311,10 @@ export default function MyChatBot() {
   });
 
   const [step, setStep] = useState(() => {
+    const userInfo = getUserRoleInfo();
+    if (userInfo.isLogin) {
+      return "chat";
+    }
     const saved = sessionStorage.getItem("Stellar-chat-step");
     if (saved) return saved;
     const initial = getInitialBotMessage();
@@ -300,6 +325,59 @@ export default function MyChatBot() {
   const [isTyping, setIsTyping] = useState(false);
 
   const messagesEndRef = useRef(null);
+
+  // Synchronize login state dynamically (on mount, location change, chat open, or userProfileUpdated event)
+  useEffect(() => {
+    const syncLoginState = () => {
+      const userInfo = getUserRoleInfo();
+      if (userInfo.isLogin) {
+        const detectedName = userInfo.name || userInfo.addressedName || "Customer";
+
+        // 1. Ensure step is never "ask_name" when logged in
+        setStep((prevStep) => {
+          if (prevStep !== "chat") {
+            sessionStorage.setItem("Stellar-chat-step", "chat");
+            return "chat";
+          }
+          return prevStep;
+        });
+
+        // 2. Automatically set userName to logged in user's name
+        setUserName((prevName) => {
+          if (!prevName || prevName !== detectedName) {
+            sessionStorage.setItem("Stellar-chat-username", detectedName);
+            return detectedName;
+          }
+          return prevName;
+        });
+
+        // 3. If messages currently contains the guest "What's your name?" prompt, replace it with logged in greeting
+        setMessages((prevMsgs) => {
+          const hasGuestAskName = prevMsgs.some(
+            (m) => m.text && (m.text.includes("What's your name?") || m.text.includes("What's your name"))
+          );
+          if (hasGuestAskName || (prevMsgs.length === 1 && prevMsgs[0].id === "welcome" && !prevMsgs[0].text.includes(detectedName))) {
+            const initial = getInitialBotMessage();
+            if (prevMsgs.length === 1) {
+              return [initial.message];
+            }
+            return prevMsgs.map((m, idx) => (idx === 0 && m.id === "welcome" ? initial.message : m));
+          }
+          return prevMsgs;
+        });
+      }
+    };
+
+    syncLoginState();
+
+    window.addEventListener("userProfileUpdated", syncLoginState);
+    window.addEventListener("storage", syncLoginState);
+
+    return () => {
+      window.removeEventListener("userProfileUpdated", syncLoginState);
+      window.removeEventListener("storage", syncLoginState);
+    };
+  }, [location.pathname, isOpen]);
 
   // Fetch actual products and store categories on component mount
   useEffect(() => {
@@ -388,7 +466,10 @@ export default function MyChatBot() {
 
     setMessages((prev) => [...prev, userMsg]);
 
-    if (step === "ask_name") {
+    const userInfo = getUserRoleInfo();
+    const isUserLoggedIn = userInfo.isLogin;
+
+    if (step === "ask_name" && !isUserLoggedIn) {
       setIsTyping(true);
       const name = userText;
       setUserName(name);
@@ -433,6 +514,13 @@ export default function MyChatBot() {
       }, 600);
 
     } else {
+      // If user was logged in but step had not transitioned, ensure it's in chat mode with their name
+      if (step === "ask_name" && isUserLoggedIn) {
+        setStep("chat");
+        if (userInfo.name) {
+          setUserName(userInfo.name);
+        }
+      }
       setIsTyping(true);
 
       // Check greeting intent (e.g. "Good morning", "Hi", "Hello")
@@ -1321,7 +1409,7 @@ export default function MyChatBot() {
 
           {/* Footer Input Area */}
           <form className="Stellar-chat-footer" onSubmit={(e) => handleSend(e)}>
-            {step === "chat" && (
+            {(step === "chat" || getUserRoleInfo().isLogin) && (
               <div className="Stellar-quick-chips">
                 {quickCategories.map((cat, idx) => (
                   <button
@@ -1340,7 +1428,7 @@ export default function MyChatBot() {
               <input
                 type="text"
                 className="Stellar-chat-input"
-                placeholder={step === "ask_name" ? "Enter your name..." : "Ask Stellar something..."}
+                placeholder={step === "ask_name" && !getUserRoleInfo().isLogin ? "Enter your name..." : "Ask Stellar something..."}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isTyping}

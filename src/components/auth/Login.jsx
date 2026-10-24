@@ -35,11 +35,16 @@ export default function Login() {
         if (res.data.success) {
           sessionStorage.setItem("userId", res.data.data.userId);
           sessionStorage.setItem("userId.name", res.data.data.name);
+          sessionStorage.setItem("name", res.data.data.name);
           sessionStorage.setItem("email", res.data.data.email);
           sessionStorage.setItem("userType", res.data.data.userType);
           sessionStorage.setItem("gender", res.data.data.gender || "");
           sessionStorage.setItem("token", res.data.token);
           sessionStorage.setItem("isLogin", true);
+          // Clear stale guest chatbot session so Stellar automatically welcomes the logged-in user
+          sessionStorage.removeItem("Stellar-chat-messages");
+          sessionStorage.removeItem("Stellar-chat-username");
+          sessionStorage.removeItem("Stellar-chat-step");
           window.dispatchEvent(new Event("userProfileUpdated"));
 
           toast.success("Login Successfully");

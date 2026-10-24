@@ -44,6 +44,7 @@ function UserHeader() {
   const handleFinishLogout = () => {
     setShowLogoutModal(false);
     sessionStorage.clear();
+    window.dispatchEvent(new Event("userProfileUpdated"));
     toast.info("Logged out successfully");
     navigate("/");
   };
