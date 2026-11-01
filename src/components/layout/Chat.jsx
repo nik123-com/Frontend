@@ -63,6 +63,25 @@ export function getCategoryIcon(catName) {
   return "🛍️";
 }
 
+export function renderFormattedText(text) {
+  if (!text) return "";
+  const lines = String(text).split("\n");
+  return lines.map((line, idx) => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/g);
+    return (
+      <React.Fragment key={idx}>
+        {parts.map((part, pIdx) => {
+          if (part.startsWith("**") && part.endsWith("**")) {
+            return <strong key={pIdx}>{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        })}
+        {idx < lines.length - 1 && <br />}
+      </React.Fragment>
+    );
+  });
+}
+
 const blockedKeywords = [
   "hack",
   "hacking",
@@ -156,41 +175,42 @@ function findMatchingProducts(userMessage, products) {
   return matched.slice(0, 10);
 }
 
-async function askStellar(customerName, userMessage, matchedProducts = []) {
+async function askStellar(
+  customerName,
+  userMessage,
+  matchedProducts = [],
+  conversationHistory = [],
+  currentProductId = null
+) {
   try {
     const userId = sessionStorage.getItem("userId");
     const response = await askContextualStellar({
       query: userMessage,
       customerName: customerName || "Shopper",
-      userId: userId || null
+      userId: userId || null,
+      conversationHistory,
+      currentProductId
     });
 
     if (response.data && response.data.success) {
-      const backendMessage = response.data.message || "";
-      const isNotFound =
-        backendMessage.toLowerCase().includes("don't found") ||
-        backendMessage.toLowerCase().includes("not found") ||
-        backendMessage.toLowerCase().includes("check back soon") ||
-        backendMessage.toLowerCase().includes("none of the products");
+      const data = response.data;
+      const backendMessage = data.message || "";
+      const isProductSearch =
+        data.type === "product_recommendation" ||
+        data.type === "product_search" ||
+        data.intent === "PRODUCT_SEARCH";
 
-      // If backend says not found or returned no products, DO NOT show any products!
-      if (isNotFound || !Array.isArray(response.data.products) || response.data.products.length === 0) {
+      const strictlyInStock = Array.isArray(data.products)
+        ? data.products.filter((p) => p && p.status !== false && Number(p.stock) > 0)
+        : [];
+
+      // If it was explicitly a product search inquiry with zero in-stock matches
+      if (isProductSearch && strictlyInStock.length === 0) {
         return {
-          message: "Sorry sir/Ma'am, We don't Found it in our stock right now.",
+          message: backendMessage || "Sorry sir/Ma'am, We don't have this in our stock right now. None of the products in this category are currently available.",
           products: [],
-          reasons: [],
-          type: "general_answer"
-        };
-      }
-
-      const strictlyInStock = response.data.products.filter(
-        (p) => p && p.status !== false && Number(p.stock) > 0
-      );
-
-      if (strictlyInStock.length === 0) {
-        return {
-          message: "Sorry sir/Ma'am, We don't Found it in our stock right now.",
-          products: [],
+          actions: data.actions || [],
+          grounding: data.grounding || null,
           reasons: [],
           type: "general_answer"
         };
@@ -199,29 +219,64 @@ async function askStellar(customerName, userMessage, matchedProducts = []) {
       return {
         message: backendMessage,
         products: strictlyInStock,
-        reasons: response.data.reasons || [],
-        type: response.data.type || "product_recommendation"
+        actions: data.actions || [],
+        actionTask: data.actionTask || null,
+        grounding: data.grounding || null,
+        reasons: data.reasons || [],
+        type: data.type || "rag_response"
       };
     }
   } catch (err) {
     console.debug("Contextual Stellar call error, falling back:", err);
   }
 
-  // Graceful fallback: If no products in stock, politely apologize and return empty products
-  if (matchedProducts.length === 0) {
+  // Graceful local RAG fallback if backend is momentarily unreachable
+  const lower = (userMessage || "").toLowerCase();
+  if (lower.includes("cart")) {
     return {
-      message: "Sorry sir/Ma'am, We don't Found it in our stock right now.",
+      message: `Hello ${customerName || "Customer"}! You can review and manage your shopping cart anytime. Use the buttons below to open your Cart or proceed to checkout!`,
       products: [],
-      reasons: []
+      actions: [
+        { label: "🛒 Open Cart", action: "NAVIGATE", target: "/cart", primary: true },
+        { label: "💳 Checkout", action: "NAVIGATE", target: "/checkout", primary: false }
+      ],
+      grounding: { sources: ["Store Knowledge: Cart & Checkout Navigation"] },
+      type: "action_navigation"
     };
   }
 
-  const prompt = `You are Stellar, a professional AI Shopping Assistant for Aventra.\nCustomer Name: ${customerName}\nCustomer Message: ${userMessage}\nIn-Stock Products: ${matchedProducts.map(p => p.name).join(", ")}\nROLE: Act as personal shopping assistant. If in-stock products are available, introduce them warmly. If not found, say politely: 'Sorry sir/Ma'am, We don't Found it'.`;
-  const res = await axios.post(`${baseUrl}/api/aiCall`, { prompt });
+  if (lower.includes("order")) {
+    return {
+      message: `Hello ${customerName || "Customer"}! You can track your active shipments and view order history on your My Orders page.`,
+      products: [],
+      actions: [
+        { label: "📦 View My Orders", action: "NAVIGATE", target: "/myorders", primary: true }
+      ],
+      grounding: { sources: ["Store Knowledge: Orders & Tracking"] },
+      type: "action_navigation"
+    };
+  }
+
+  if (matchedProducts.length === 0) {
+    return {
+      message: "Sorry sir/Ma'am, We don't have this in our stock right now. None of the products in this category are currently available.",
+      products: [],
+      actions: [
+        { label: "🛍️ View All Products", action: "NAVIGATE", target: "/CardProduct", primary: true },
+        { label: "📂 Browse Categories", action: "NAVIGATE", target: "/CardCategory", primary: false }
+      ],
+      reasons: [],
+      type: "general_answer"
+    };
+  }
+
   return {
-    message: res.data?.message || "Here are the available products in stock for your request:",
+    message: `Hello ${customerName || "Customer"}, here are the verified products in stock matching your request:`,
     products: matchedProducts,
-    reasons: []
+    actions: [],
+    grounding: { sources: ["Store Verified Inventory"] },
+    reasons: [],
+    type: "product_recommendation"
   };
 }
 
@@ -567,9 +622,18 @@ export default function MyChatBot() {
 
       try {
         // Find matching in-stock products for query
-        const localMatches = findMatchingProducts(userText, allProducts);
+        const pathParts = (location.pathname || "").split("/");
+        const currentProductId = location.pathname.toLowerCase().includes("/shopdetail/")
+          ? pathParts[pathParts.length - 1]
+          : null;
 
-        const StellarResult = await askStellar(userName || "Customer", userText, localMatches);
+        const StellarResult = await askStellar(
+          userName || "Customer",
+          userText,
+          localMatches,
+          messages.slice(-6).map((m) => ({ sender: m.sender, text: m.text })),
+          currentProductId
+        );
         
         // Strictly filter to active, in-stock products only
         let finalProducts = Array.isArray(StellarResult.products)
@@ -577,16 +641,58 @@ export default function MyChatBot() {
           : [];
 
         let botReplyText = StellarResult.message || "";
-        const isNotFound =
-          botReplyText.toLowerCase().includes("don't found") ||
-          botReplyText.toLowerCase().includes("not found") ||
-          botReplyText.toLowerCase().includes("check back soon") ||
-          botReplyText.toLowerCase().includes("none of the products") ||
-          finalProducts.length === 0;
+        const isActionOrPolicy =
+          StellarResult.type === "action_navigation" ||
+          StellarResult.type === "action_execution" ||
+          StellarResult.type === "store_policy_faq" ||
+          Boolean(StellarResult.actionTask) ||
+          (Array.isArray(StellarResult.actions) && StellarResult.actions.length > 0);
 
-        if (isNotFound) {
-          botReplyText = "Sorry sir/Ma'am, We don't Found it in our stock right now.";
-          finalProducts = [];
+        // Perform actual tasks if customer asked to add product to cart or order
+        if (StellarResult.actionTask && StellarResult.actionTask.product) {
+          const task = StellarResult.actionTask;
+          const targetProd = task.product;
+          const isOrderTask = task.type === "ORDER_NOW";
+          const currentUserId = sessionStorage.getItem("userId");
+
+          if (!currentUserId) {
+            botReplyText = `🔒 Please log in so I can add **${targetProd.name}** to your cart!`;
+            StellarResult.actions = [
+              { label: "🔑 Log In", action: "NAVIGATE", target: "/login", primary: true }
+            ];
+          } else {
+            try {
+              await handleAddToCart(targetProd, navigate);
+              if (isOrderTask) {
+                botReplyText = `🎉 Added **${targetProd.name}** (₹${targetProd.price}) to your cart! Ready to place your order now:`;
+                StellarResult.actions = [
+                  { label: "💳 Proceed to Checkout", action: "NAVIGATE", target: "/checkout", primary: true },
+                  { label: "🛒 View Cart", action: "NAVIGATE", target: "/cart", primary: false }
+                ];
+              } else {
+                botReplyText = `✅ Successfully added **${targetProd.name}** (₹${targetProd.price}) to your shopping cart!`;
+                StellarResult.actions = [
+                  { label: "🛒 Open Cart", action: "NAVIGATE", target: "/cart", primary: true },
+                  { label: "💳 Checkout", action: "NAVIGATE", target: "/checkout", primary: false }
+                ];
+              }
+            } catch (cartErr) {
+              console.error("Auto add to cart error:", cartErr);
+            }
+          }
+        }
+
+        if (!isActionOrPolicy) {
+          const isExplicitNotFound =
+            botReplyText.toLowerCase().includes("don't found") ||
+            botReplyText.toLowerCase().includes("not found") ||
+            botReplyText.toLowerCase().includes("check back soon") ||
+            botReplyText.toLowerCase().includes("none of the products");
+
+          if (isExplicitNotFound || (StellarResult.type === "product_recommendation" && finalProducts.length === 0)) {
+            botReplyText = "Sorry sir/Ma'am, We don't have this in our stock right now.";
+            finalProducts = [];
+          }
         }
 
         const botMsg = {
@@ -594,7 +700,10 @@ export default function MyChatBot() {
           sender: "bot",
           text: botReplyText,
           products: finalProducts,
+          actions: StellarResult.actions || [],
+          grounding: StellarResult.grounding || null,
           reasons: StellarResult.reasons || [],
+          type: StellarResult.type || "rag_response",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages((prev) => [...prev, botMsg]);
@@ -887,6 +996,78 @@ export default function MyChatBot() {
         .Stellar-message-wrapper.user .Stellar-message-time {
           align-self: flex-end;
           margin-right: 4px;
+        }
+
+        /* RAG Interactive Actions & Grounding Badges */
+        .Stellar-actions-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 8px;
+          margin-bottom: 2px;
+        }
+        .Stellar-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 14px;
+          font-size: 13px;
+          font-weight: 600;
+          border-radius: 20px;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          text-decoration: none;
+        }
+        .Stellar-action-btn.primary {
+          background: #81c408;
+          color: white;
+          box-shadow: 0 2px 8px rgba(129, 196, 8, 0.35);
+        }
+        .Stellar-action-btn.primary:hover {
+          background: #6ea707;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(129, 196, 8, 0.45);
+        }
+        .Stellar-action-btn.secondary {
+          background: #ffffff;
+          color: #1e293b;
+          border: 1px solid #cbd5e1;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+        .Stellar-action-btn.secondary:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+          transform: translateY(-2px);
+        }
+        .Stellar-rag-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 6px;
+          padding: 3px 10px;
+          border-radius: 12px;
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+          color: #166534;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.2px;
+          width: fit-content;
+          box-shadow: 0 1px 3px rgba(34, 197, 94, 0.1);
+          cursor: default;
+        }
+        .Stellar-rag-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #22c55e;
+          box-shadow: 0 0 6px #22c55e;
+          animation: StellarPulse 2s infinite ease-in-out;
+        }
+        @keyframes StellarPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.25); }
         }
 
         /* Product Cards Styling inside Chat */
@@ -1313,8 +1494,40 @@ export default function MyChatBot() {
               return (
                 <div key={msg.id} className={`Stellar-message-wrapper ${msg.sender} ${hasProducts ? 'has-products' : ''}`}>
                   <div className="Stellar-message-bubble">
-                    {msg.text}
+                    {renderFormattedText(msg.text)}
                   </div>
+
+                  {/* Interactive Action Buttons (e.g. Open Cart, My Orders) */}
+                  {Array.isArray(msg.actions) && msg.actions.length > 0 && (
+                    <div className="Stellar-actions-container">
+                      {msg.actions.map((act, actIdx) => (
+                        <button
+                          key={actIdx}
+                          type="button"
+                          className={`Stellar-action-btn ${act.primary ? "primary" : "secondary"}`}
+                          onClick={() => {
+                            if (act.action === "NAVIGATE" && act.target) {
+                              navigate(act.target);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                        >
+                          {act.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Grounded by RAG Badge */}
+                  {msg.sender === "bot" && msg.grounding && Array.isArray(msg.grounding.sources) && msg.grounding.sources.length > 0 && (
+                    <div
+                      className="Stellar-rag-badge"
+                      title={`Verified Sources:\n${msg.grounding.sources.map((s, i) => `${i + 1}. ${s}`).join("\n")}`}
+                    >
+                      <span className="Stellar-rag-dot"></span>
+                      <span className="Stellar-rag-label">Grounded by RAG</span>
+                    </div>
+                  )}
 
                   {/* Render Product Cards inside Bot Message */}
                   {hasProducts && (
